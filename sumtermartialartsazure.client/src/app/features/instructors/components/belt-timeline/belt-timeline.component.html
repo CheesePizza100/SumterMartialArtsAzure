@@ -1,0 +1,11 @@
+<section class="belt-timeline">
+  <h2>Belt Progression</h2>
+  <div class="timeline">
+    <div 
+      class="belt-step" 
+      *ngFor="let item of progression">
+      <div class="dot" [class.active]="item.achieved"></div>
+      <p class="belt-label">{{ item.belt }}</p>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,50 @@
+<div *ngIf="isLoading" class="loading">Loading...</div>
+
+<div *ngIf="error" class="error">{{ error }}</div>
+
+<div class="instructor-details" *ngIf="instructor">
+  <!-- Header / Hero -->
+  <div class="hero">
+    <img [src]="instructor.photoUrl" [alt]="instructor.name" class="profile-img">
+    <div class="header-text">
+      <h1>{{ instructor.name }}</h1>
+      <p class="rank">{{ instructor.rank }}</p>
+    </div>
+  </div>
+
+  <!-- Bio -->
+  <section class="bio-section">
+    <h2>About {{ instructor.name }}</h2>
+    <p>{{ instructor.bio }}</p>
+  </section>
+
+  <!-- Belt Timeline -->
+  <app-belt-timeline [currentRank]="instructor.rank"></app-belt-timeline>
+
+  <!-- Achievements -->
+  <section class="achievements" *ngIf="instructor.achievements?.length">
+    <h2>Achievements</h2>
+    <ul>
+      <li *ngFor="let achievement of instructor.achievements">{{ achievement }}</li>
+    </ul>
+  </section>
+
+  <!-- Programs taught -->
+  <!--<section class="programs" *ngIf="instructor.programs?.length">
+    <h2>Programs Taught</h2>
+    <ul>
+      <li *ngFor="let program of instructor.programs">
+        <a [routerLink]="['/programs', program.id]">{{ program.name }}</a>
+      </li>
+    </ul>
+  </section>-->
+
+  <!-- Private Lesson CTA -->
+  <div class="private-lesson-box">
+    <button mat-raised-button color="primary" (click)="openPrivateLessonDialog()">
+      Book a Private Lesson
+    </button>
+  </div>
+
+  <a routerLink="/about" class="back">← Back to Instructors</a>
+</div>

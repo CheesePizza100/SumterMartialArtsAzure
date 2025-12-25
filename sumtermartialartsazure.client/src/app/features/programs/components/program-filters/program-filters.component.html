@@ -1,0 +1,7 @@
+<div class="program-filters">
+  <button *ngFor="let filter of filters"
+          [class.active]="currentFilter === filter.value"
+          (click)="onFilterChange(filter.value)">
+    {{ filter.label }}
+  </button>
+</div>

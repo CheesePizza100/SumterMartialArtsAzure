@@ -1,0 +1,126 @@
+<div class="admin-container">
+  <h1>Private Lesson Requests</h1>
+
+  <!-- Tabs -->
+  <mat-tab-group (selectedIndexChange)="onTabChange($event)">
+    <mat-tab>
+      <ng-template mat-tab-label>
+        Pending
+        <span class="badge" *ngIf="pendingCount > 0">{{ pendingCount }}</span>
+      </ng-template>
+
+      <!-- Tab Content -->
+      <ng-container *ngTemplateOutlet="tableContent"></ng-container>
+    </mat-tab>
+
+    <mat-tab label="Recent (30 days)">
+      <ng-container *ngTemplateOutlet="tableContent"></ng-container>
+    </mat-tab>
+
+    <mat-tab label="All">
+      <ng-container *ngTemplateOutlet="tableContent"></ng-container>
+    </mat-tab>
+  </mat-tab-group>
+</div>
+
+<!-- Reusable Table Template -->
+<ng-template #tableContent>
+  <div class="tab-content">
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-container">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>Loading requests...</p>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="error && !isLoading" class="error-container">
+      <p>{{ error }}</p>
+      <button mat-raised-button color="primary" (click)="loadRequests()">
+        Retry
+      </button>
+    </div>
+
+    <!-- Table -->
+    <div *ngIf="!isLoading && !error" class="table-container mat-elevation-z8">
+      <table mat-table [dataSource]="requests">
+
+        <!-- Student Name -->
+        <ng-container matColumnDef="studentName">
+          <th mat-header-cell *matHeaderCellDef>Student</th>
+          <td mat-cell *matCellDef="let request">
+            <div class="student-info">
+              <strong>{{ request.studentName }}</strong>
+              <small>{{ request.studentEmail }}</small>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Instructor Name -->
+        <ng-container matColumnDef="instructorName">
+          <th mat-header-cell *matHeaderCellDef>Instructor</th>
+          <td mat-cell *matCellDef="let request">{{ request.instructorName }}</td>
+        </ng-container>
+
+        <!-- Requested Time -->
+        <ng-container matColumnDef="requestedTime">
+          <th mat-header-cell *matHeaderCellDef>Requested Time</th>
+          <td mat-cell *matCellDef="let request">
+            {{ formatTimeRange(request.requestedStart, request.requestedEnd) }}
+          </td>
+        </ng-container>
+
+        <!-- Status -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let request">
+            <mat-chip [color]="getStatusColor(request.status)" selected>
+              {{ request.status }}
+            </mat-chip>
+            <span *ngIf="request.rejectionReason"
+                  [matTooltip]="'Reason: ' + request.rejectionReason"
+                  class="info-icon">
+              ℹ️
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Created At -->
+        <ng-container matColumnDef="createdAt">
+          <th mat-header-cell *matHeaderCellDef>Submitted</th>
+          <td mat-cell *matCellDef="let request">
+            {{ formatDateTime(request.createdAt) }}
+          </td>
+        </ng-container>
+
+        <!-- Actions -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let request">
+            <div class="action-buttons" *ngIf="isPending(request)">
+              <button mat-raised-button
+                      color="primary"
+                      (click)="approve(request)">
+                Approve
+              </button>
+              <button mat-stroked-button
+                      color="warn"
+                      (click)="reject(request)">
+                Reject
+              </button>
+            </div>
+            <span *ngIf="!isPending(request)" class="no-actions">
+              —
+            </span>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+
+      <div *ngIf="requests.length === 0" class="no-data">
+        <p>No private lesson requests found.</p>
+      </div>
+    </div>
+  </div>
+</ng-template>

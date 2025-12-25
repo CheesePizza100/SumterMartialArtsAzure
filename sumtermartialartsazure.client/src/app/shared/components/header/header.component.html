@@ -1,0 +1,86 @@
+<header class="header">
+  <div class="left">
+    <div class="logo-box">LOGO</div>
+    <div class="academy-name">Sumter Martial Arts</div>
+  </div>
+
+  <!-- Desktop Navigation -->
+  <nav class="nav desktop-nav">
+    <!-- Main Navigation Links -->
+    <a *ngFor="let link of navLinks"
+       [routerLink]="link.path"
+       routerLinkActive="active"
+       [routerLinkActiveOptions]="{ exact: link.exact }">
+      {{ link.label }}
+    </a>
+
+    <!-- Auth Links (when not logged in) -->
+    <ng-container *ngIf="!auth.isLoggedIn()">
+      <a *ngFor="let link of authLinks"
+         [routerLink]="link.path"
+         routerLinkActive="active">
+        {{ link.label }}
+      </a>
+    </ng-container>
+
+    <!-- Admin Link (when admin) -->
+    <a *ngIf="isAdmin"
+       routerLink="/admin/private-lessons"
+       routerLinkActive="active">
+      Admin
+    </a>
+
+    <!-- User Actions (when logged in) -->
+    <div *ngIf="auth.isLoggedIn()" class="user-actions">
+      <span class="username">
+        {{ (auth.currentUser$ | async)?.firstName || (auth.currentUser$ | async)?.email }}
+      </span>
+      <button class="btn-logout" (click)="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <!-- Hamburger Menu Button -->
+  <button class="hamburger"
+          (click)="toggleMobile()"
+          [class.open]="mobileMenuOpen"
+          aria-label="Toggle menu"
+          [attr.aria-expanded]="mobileMenuOpen.toString()">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+</header>
+
+<!-- Mobile Menu Overlay -->
+<div class="mobile-menu" [class.open]="mobileMenuOpen">
+  <!-- Main Navigation Links -->
+  <a *ngFor="let link of navLinks"
+     (click)="closeMobileMenu()"
+     [routerLink]="link.path"
+     routerLinkActive="active"
+     [routerLinkActiveOptions]="{ exact: link.exact }">
+    {{ link.label }}
+  </a>
+
+  <!-- Auth Links (when not logged in) -->
+  <ng-container *ngIf="!auth.isLoggedIn()">
+    <a *ngFor="let link of authLinks"
+       (click)="closeMobileMenu()"
+       [routerLink]="link.path">
+      {{ link.label }}
+    </a>
+  </ng-container>
+
+  <!-- Admin Link (when admin) -->
+  <a *ngIf="isAdmin"
+     (click)="closeMobileMenu()"
+     routerLink="/admin/private-lessons">
+    Admin
+  </a>
+
+  <!-- User Actions (when logged in) -->
+  <div *ngIf="auth.isLoggedIn()" class="mobile-user">
+    <div>{{ (auth.currentUser$ | async)?.firstName || (auth.currentUser$ | async)?.email }}</div>
+    <button class="btn-logout" (click)="logout()">Logout</button>
+  </div>
+</div>

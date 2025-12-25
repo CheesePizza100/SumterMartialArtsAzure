@@ -1,0 +1,6 @@
+@SumterMartialArtsAzure.Server_HostAddress = http://localhost:5036
+
+GET {{SumterMartialArtsAzure.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -1,0 +1,117 @@
+.instructor-details {
+  max-width: 900px;
+  margin: auto;
+  padding: 2rem;
+}
+
+.loading, .error {
+  text-align: center;
+  padding: 3rem;
+  font-size: 1.2rem;
+}
+
+.error {
+  color: #d32f2f;
+}
+
+.hero {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.profile-img {
+  width: 180px;
+  height: 180px;
+  border-radius: 100px;
+  object-fit: cover;
+  box-shadow: 0 4px 15px rgba(0,0,0,.2);
+}
+
+.header-text h1 {
+  font-size: 2.4rem;
+  margin: 0 0 .3rem;
+  color: #b30000;
+}
+
+.rank {
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.bio-section {
+  margin: 2rem 0;
+}
+
+  .bio-section h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+.achievements, .programs {
+  margin: 2rem 0;
+}
+
+  .achievements h2, .programs h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .achievements ul {
+    list-style-type: "✔ ";
+    padding-left: 1rem;
+    margin-top: .5rem;
+  }
+
+  .achievements li, .programs li {
+    margin-bottom: .4rem;
+  }
+
+  .programs a {
+    color: #b30000;
+    text-decoration: none;
+  }
+
+    .programs a:hover {
+      text-decoration: underline;
+    }
+
+.private-lesson-box {
+  text-align: center;
+  margin: 3rem 0;
+}
+
+  .private-lesson-box button {
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    font-size: 1.1rem;
+  }
+
+.back {
+  display: inline-block;
+  margin-top: 2rem;
+  color: #444;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+  .back:hover {
+    color: #b30000;
+  }
+
+@media (max-width: 768px) {
+  .hero {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .profile-img {
+    width: 150px;
+    height: 150px;
+  }
+}
+.success-snackbar {
+  background-color: #4caf50;
+  color: white;
+}

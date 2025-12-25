@@ -1,0 +1,22 @@
+<h2 mat-dialog-title>Reject Lesson Request</h2>
+<div mat-dialog-content>
+  <p>Please provide a reason for rejecting {{ data.studentName }}'s request:</p>
+  <mat-form-field appearance="fill" style="width: 100%;">
+    <mat-label>Rejection Reason</mat-label>
+    <textarea matInput
+              [(ngModel)]="reason"
+              rows="4"
+              placeholder="e.g., Instructor unavailable, time conflict, etc."
+              required>
+    </textarea>
+  </mat-form-field>
+</div>
+<div mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">Cancel</button>
+  <button mat-raised-button 
+          color="warn" 
+          [disabled]="!reason || reason.trim().length === 0"
+          (click)="submit()">
+    Reject Request
+  </button>
+</div>

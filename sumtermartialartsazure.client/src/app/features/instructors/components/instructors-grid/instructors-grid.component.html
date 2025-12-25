@@ -1,0 +1,9 @@
+<div class="instructors-section">
+  <h2 *ngIf="showTitle">{{ title }}</h2>
+  <div class="instructors-grid">
+    <app-instructor-card
+      *ngFor="let instructor of instructors"
+      [instructor]="instructor">
+    </app-instructor-card>
+  </div>
+</div>

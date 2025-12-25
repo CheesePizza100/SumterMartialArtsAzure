@@ -1,0 +1,10 @@
+<div class="program-card fade-in" [routerLink]="['/programs', program.id]">
+  <div class="card-image">
+    <img [src]="program.imageUrl" [alt]="program.name" />
+    <span class="badge">{{ program.ageGroup }}</span>
+  </div>
+  <div class="card-body">
+    <h3>{{ program.name }}</h3>
+    <p>{{ program.description }}</p>
+  </div>
+</div>

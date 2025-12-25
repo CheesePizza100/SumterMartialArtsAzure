@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.VisualStudio.JavaScript.Sdk/0.5.128-alpha">
+  <PropertyGroup>
+    <StartupCommand>npm start</StartupCommand>
+    <JavaScriptTestFramework>Jasmine</JavaScriptTestFramework>
+    <!-- Allows the build (or compile) script located on package.json to run on Build -->
+    <ShouldRunBuildScript>false</ShouldRunBuildScript>
+    <!-- Folder where production build objects will be placed -->
+    <PublishAssetsDirectory>$(MSBuildProjectDirectory)\dist\sumtermartialartsazure.client\</PublishAssetsDirectory>
+  </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="src\app\core\services\" />
+    <Folder Include="src\app\features\about\components\instructor-card-compact\" />
+    <Folder Include="src\app\features\admin\models\" />
+    <Folder Include="src\app\features\admin\services\" />
+    <Folder Include="src\app\features\instructors\models\" />
+    <Folder Include="src\app\features\instructors\utils\" />
+    <Folder Include="src\app\features\instructors\services\" />
+    <Folder Include="src\app\features\private-lessons\models\" />
+    <Folder Include="src\app\features\private-lessons\utils\" />
+    <Folder Include="src\app\features\private-lessons\services\" />
+    <Folder Include="src\app\features\programs\models\" />
+    <Folder Include="src\app\features\programs\utils\" />
+    <Folder Include="src\app\features\programs\services\" />
+  </ItemGroup>
+</Project>

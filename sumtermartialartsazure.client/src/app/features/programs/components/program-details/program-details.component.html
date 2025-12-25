@@ -1,0 +1,48 @@
+<nav class="breadcrumbs">
+  <a routerLink="/programs">Programs</a> / <span>{{ program?.name }}</span>
+</nav>
+
+<div *ngIf="isLoading" class="loading">Loading...</div>
+
+<div *ngIf="error" class="error">{{ error }}</div>
+
+<div class="program-details fade-in" *ngIf="program">
+  <header class="details-header">
+    <h1>{{ program.name }}</h1>
+    <p class="age">{{ program.ageGroup }}</p>
+  </header>
+
+  <img class="details-banner" [src]="program.imageUrl" [alt]="program.name" />
+
+  <section>
+    <h2>About This Program</h2>
+    <p>{{ program.description }}</p>
+    <p *ngIf="program.details">{{ program.details }}</p>
+  </section>
+
+  <section class="info-cards">
+    <div class="info-card">
+      <h3>Duration</h3>
+      <p>{{ program.duration }}</p>
+    </div>
+    <div class="info-card">
+      <h3>Schedule</h3>
+      <p>{{ program.schedule }}</p>
+    </div>
+  </section>
+
+  <section class="instructors" *ngIf="program.instructors?.length">
+    <h2>Your Instructors</h2>
+    <div class="instructor-grid">
+      <div class="instructor-card" *ngFor="let instructor of program.instructors">
+        <img [src]="instructor.photoUrl" [alt]="instructor.name" />
+        <h3>{{ instructor.name }}</h3>
+        <p class="rank">{{ instructor.rank }}</p>
+        <p class="bio">{{ instructor.bio }}</p>
+      </div>
+    </div>
+  </section>
+
+  <a class="sticky-cta" (click)="openEnrollDialog()">Enroll Now</a>
+  <a routerLink="/programs" class="floating-back">← Back</a>
+</div>

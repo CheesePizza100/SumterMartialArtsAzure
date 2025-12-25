@@ -1,0 +1,22 @@
+<div class="about-container">
+  <section class="hero-section">
+    <h1>About Us</h1>
+    <p class="intro-text">
+      Sumter Martial Arts is dedicated to teaching traditional values while
+      developing modern martial artists of all ages. We believe in discipline,
+      respect, and continuous growth.
+    </p>
+  </section>
+
+  <app-mission-section></app-mission-section>
+
+  <section class="instructors-wrapper">
+    <div *ngIf="isLoading" class="loading">Loading instructors...</div>
+    <div *ngIf="error" class="error">{{ error }}</div>
+
+    <app-instructors-grid *ngIf="!isLoading && !error"
+                          [instructors]="instructors"
+                          [title]="'Meet the Instructors'">
+    </app-instructors-grid>
+  </section>
+</div>

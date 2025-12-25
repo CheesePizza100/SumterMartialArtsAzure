@@ -1,0 +1,95 @@
+<h2 mat-dialog-title>Book a Private Lesson with {{ data.instructorName }}</h2>
+
+<div mat-dialog-content>
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-box">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Loading availability...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !isLoading" class="error-box">
+    <p>{{ error }}</p>
+  </div>
+
+  <!-- Form -->
+  <form *ngIf="!isLoading && !error" [formGroup]="lessonForm" class="lesson-form">
+    <mat-form-field appearance="fill">
+      <mat-label>Your Name</mat-label>
+      <input matInput formControlName="studentName" required>
+      <mat-error *ngIf="lessonForm.get('studentName')?.hasError('required')">
+        Name is required
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Email</mat-label>
+      <input matInput type="email" formControlName="studentEmail" required>
+      <mat-error *ngIf="lessonForm.get('studentEmail')?.hasError('required')">
+        Email is required
+      </mat-error>
+      <mat-error *ngIf="lessonForm.get('studentEmail')?.hasError('email')">
+        Please enter a valid email
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Phone (optional)</mat-label>
+      <input matInput formControlName="studentPhone">
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Preferred Date</mat-label>
+      <input matInput
+             [matDatepicker]="picker"
+             [matDatepickerFilter]="dateFilter"
+             formControlName="preferredDate"
+             required>
+      <mat-hint>Select from available dates (highlighted)</mat-hint>
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker
+                      [dateClass]="dateClass">
+      </mat-datepicker>
+      <mat-error *ngIf="lessonForm.get('preferredDate')?.hasError('required')">
+        Please select a date
+      </mat-error>
+    </mat-form-field>
+
+    <!-- New Time Slot Selector -->
+    <mat-form-field appearance="fill">
+      <mat-label>Available Time Slots</mat-label>
+      <mat-select formControlName="selectedSlot" required>
+        <mat-option *ngFor="let slot of filteredSlots" [value]="slot">
+          {{ formatTimeSlot(slot) }}
+        </mat-option>
+      </mat-select>
+      <mat-hint *ngIf="!lessonForm.get('preferredDate')?.value">
+        Select a date first
+      </mat-hint>
+      <mat-hint *ngIf="lessonForm.get('preferredDate')?.value && filteredSlots.length === 0">
+        No available slots for this date
+      </mat-hint>
+      <mat-error *ngIf="lessonForm.get('selectedSlot')?.hasError('required')">
+        Please select a time slot
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Notes (optional)</mat-label>
+      <textarea matInput
+                formControlName="notes"
+                rows="3"
+                placeholder="Any specific requests or questions?"></textarea>
+    </mat-form-field>
+  </form>
+</div>
+
+<div mat-dialog-actions class="dialog-buttons">
+  <button mat-stroked-button (click)="close()">Cancel</button>
+  <button mat-raised-button
+          color="primary"
+          [disabled]="lessonForm.invalid || isLoading"
+          (click)="submit()">
+    Submit Request
+  </button>
+</div>

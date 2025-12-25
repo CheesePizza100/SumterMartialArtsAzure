@@ -1,0 +1,76 @@
+.admin-container {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+h1 {
+  margin-bottom: 1.5rem;
+}
+
+.badge {
+  background-color: #f44336;
+  color: white;
+  border-radius: 10px;
+  padding: 2px 8px;
+  font-size: 12px;
+  margin-left: 8px;
+  font-weight: bold;
+}
+
+.tab-content {
+  padding-top: 1.5rem;
+}
+
+.loading-container,
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+}
+
+.student-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+  .student-info small {
+    color: #666;
+    font-size: 0.85rem;
+  }
+
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.no-actions {
+  color: #999;
+}
+
+.info-icon {
+  margin-left: 0.5rem;
+  cursor: help;
+  font-size: 1.1rem;
+}
+
+.no-data {
+  text-align: center;
+  padding: 3rem;
+  color: #666;
+}
+
+mat-chip {
+  font-size: 0.85rem;
+}

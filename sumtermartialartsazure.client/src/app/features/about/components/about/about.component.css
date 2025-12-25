@@ -1,0 +1,66 @@
+.about-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem;
+  color: #222;
+  line-height: 1.7;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.hero-section {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+  .hero-section h1 {
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+    color: #b30000;
+    font-weight: 700;
+  }
+
+.intro-text {
+  font-size: 1.25rem;
+  color: #333;
+  max-width: 800px;
+  margin: 0 auto;
+  line-height: 1.8;
+}
+
+.instructors-wrapper {
+  margin-top: 4rem;
+}
+
+.loading, .error {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.1rem;
+}
+
+.error {
+  color: #d32f2f;
+}
+
+@media (max-width: 768px) {
+  .hero-section h1 {
+    font-size: 2.25rem;
+  }
+
+  .intro-text {
+    font-size: 1.1rem;
+  }
+
+  .about-container {
+    padding: 2rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-section h1 {
+    font-size: 2rem;
+  }
+
+  .intro-text {
+    font-size: 1rem;
+  }
+}

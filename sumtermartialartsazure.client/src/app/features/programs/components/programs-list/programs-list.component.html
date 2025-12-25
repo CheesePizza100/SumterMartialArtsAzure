@@ -1,0 +1,14 @@
+<section class="programs-header">
+  <h1>Our Martial Arts Programs</h1>
+  <p>Training options for kids, adults, and competitors.</p>
+
+  <app-program-filters [currentFilter]="currentFilter"
+                       (filterChange)="onFilterChange($event)">
+  </app-program-filters>
+</section>
+
+<div class="programs-grid">
+  <app-program-card *ngFor="let program of filteredPrograms"
+                    [program]="program">
+  </app-program-card>
+</div>

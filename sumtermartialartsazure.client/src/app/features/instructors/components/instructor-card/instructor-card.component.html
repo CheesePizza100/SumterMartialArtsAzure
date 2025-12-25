@@ -1,0 +1,8 @@
+<div class="instructor-card" [routerLink]="['/instructors', instructor.id]">
+  <img [src]="instructor.photoUrl" [alt]="instructor.name" class="instructor-photo">
+  <div class="instructor-info">
+    <h3>{{ instructor.name }}</h3>
+    <p class="rank">{{ instructor.rank }}</p>
+    <p class="bio">{{ instructor.bio | slice:0:120 }}{{ instructor.bio.length > 120 ? '...' : '' }}</p>
+  </div>
+</div>
