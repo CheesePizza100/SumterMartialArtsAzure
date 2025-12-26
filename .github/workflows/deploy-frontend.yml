@@ -3,7 +3,7 @@
 on:
   push:
     branches:
-      - main
+      - master
     paths:
       - 'sumtermartialartsazure.client/**'
   workflow_dispatch:
