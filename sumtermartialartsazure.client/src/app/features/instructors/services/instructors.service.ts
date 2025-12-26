@@ -2,33 +2,22 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, forkJoin, map } from 'rxjs';
 import { Instructor, InstructorWithPrograms, ProgramSummary } from '../models/instructor.model';
+import { environment } from '../../../../environments/environment.development';
 
 @Injectable({
   providedIn: 'root'
 })
 
 export class InstructorsService {
-  private baseUrl = '/api';
-
+  private baseUrl = `${environment.apiUrl}/api`;
   constructor(private http: HttpClient) { }
 
-  //getInstructors(): Observable<Instructor[]> {
-  //  return this.http.get<{ instructors: Instructor[] }>(`${this.baseUrl}/instructors`).pipe(
-  //    map(response => response.instructors) // Extract the array from the wrapper
-  //  );
-  //}
-  //getInstructors(): Observable<Instructor[]> {
-  //  return this.http.get<Instructor[]>(`${this.baseUrl}/instructors`);
-  //}
   getInstructors(): Observable<Instructor[]> {
     return this.http.get<{ instructor: Instructor }[]>(`${this.baseUrl}/instructors`).pipe(
       map(response => response.map(item => item.instructor)) // Unwrap each 'instructor' object
     );
   }
 
-  //getInstructorById(id: number): Observable<Instructor> {
-  //  return this.http.get<Instructor>(`${this.baseUrl}/Instructors/${id}`);
-  //}
   getInstructorById(id: number): Observable<Instructor> {
     return this.http.get<{ instructor: Instructor }>(`${this.baseUrl}/instructors/${id}`).pipe(
       map(response => response.instructor) // Extract from wrapper

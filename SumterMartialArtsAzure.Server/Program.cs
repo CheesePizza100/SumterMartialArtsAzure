@@ -37,8 +37,9 @@ builder.Services.AddCors(options =>
         policy =>
         {
             policy.WithOrigins(
-                    "http://localhost:4200", // Local development
-                    "https://*.azurestaticapps.net" // Azure Static Web Apps
+                    "https://localhost:4200",
+                    "http://localhost:4200",
+                    "https://*.azurestaticapps.net"
                 )
                 .AllowAnyHeader()
                 .AllowAnyMethod();
@@ -53,8 +54,13 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     DbSeeder.Seed(db);
 }
-app.UseDefaultFiles();
-app.UseStaticFiles();
+app.UseCors("AllowFrontend");
+
+// since we're separating frontend and backend, we need to remove the frontend hosting from your API.
+// the visual studio project type web api and angular hosts both together
+//app.UseDefaultFiles();
+//app.UseStaticFiles();
+//app.MapFallbackToFile("/index.html");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -63,13 +69,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors("AllowFrontend");
-
 app.UseAuthorization();
-
 app.MapProgramEndpoints();
-app.MapFallbackToFile("/index.html");
-
 app.MapHealthChecks("/health");
 
 app.Run();

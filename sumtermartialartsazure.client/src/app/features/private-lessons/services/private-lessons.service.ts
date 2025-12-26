@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { PrivateLessonRequest, LessonTime } from '../models/private-lesson.model';
+import { environment } from '../../../../environments/environment.development';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PrivateLessonsService {
-  private baseUrl = '/api';
+  private baseUrl = `${environment.apiUrl}/api`;
 
   constructor(private http: HttpClient) { }
 
@@ -18,13 +19,6 @@ export class PrivateLessonsService {
     );
   }
 
-  //getInstructorAvailability(instructorId: number): Observable<Date[]> {
-  //  return this.http.get<{ availableSlots: { start: string, end: string, durationMinutes: number }[] }>(
-  //    `${this.baseUrl}/instructors/${instructorId}/availability`
-  //  ).pipe(
-  //    map(response => response.availableSlots.map(slot => new Date(slot.start)))
-  //  );
-  //}
   getInstructorAvailability(instructorId: number, count: number = 30): Observable<LessonTime[]> {
     return this.http.get<{ availableSlots: LessonTime[] }>(
       `${this.baseUrl}/instructors/${instructorId}/availability?count=${count}`

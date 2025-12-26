@@ -2,16 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Program } from '../models/program.model';
+import { environment } from '../../../../environments/environment.development';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProgramsService {
-  // adjust to your .NET backend URL
-  //http://localhost:5208/api/Programs
-  //https://localhost:5208/api/programs
-  //private baseUrl = 'http://localhost:5208/api';
-  private baseUrl = '/api';
+  private baseUrl = `${environment.apiUrl}/api`;
 
   constructor(private http: HttpClient) { }
 

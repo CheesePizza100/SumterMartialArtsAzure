@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { PrivateLessonRequest, UpdateStatus } from '../models/private-lesson-request.model';
+import { environment } from '../../../../environments/environment.development';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AdminPrivateLessonsService {
-  private baseUrl = '/api';
+  private baseUrl = `${environment.apiUrl}/api`;
   constructor(private http: HttpClient) { }
 
   getAllRequests(filter: string = 'Pending'): Observable<PrivateLessonRequest[]> {
