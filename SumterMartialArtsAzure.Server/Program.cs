@@ -39,6 +39,7 @@ builder.Services.AddCors(options =>
             policy.WithOrigins(
                     "https://localhost:4200",
                     "http://localhost:4200",
+                    "https://jolly-smoke-0f6352e10.4.azurestaticapps.net",
                     "https://*.azurestaticapps.net"
                 )
                 .AllowAnyHeader()
