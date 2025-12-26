@@ -21,7 +21,7 @@ A full-stack web application for managing martial arts programs, instructors, an
 
 ---
 
-## 🎯 Overview
+## Overview
 
 This project demonstrates enterprise-level software engineering practices in a real-world martial arts management system. The application handles program information, instructor profiles, and a complete private lesson request/approval workflow with intelligent availability checking.
 
@@ -34,7 +34,7 @@ This project demonstrates enterprise-level software engineering practices in a r
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ### Backend Architecture
 
@@ -114,7 +114,7 @@ Each feature is organized as a self-contained vertical slice with its own:
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Backend
 - **.NET 8** - Latest LTS version
@@ -145,7 +145,7 @@ Each feature is organized as a self-contained vertical slice with its own:
 
 ---
 
-## ✨ Key Features
+## Key Features
 
 ### Architecture & Patterns
 
@@ -195,7 +195,7 @@ Each feature is organized as a self-contained vertical slice with its own:
 
 ---
 
-## 🎨 Domain Modeling
+## Domain Modeling
 
 ### Value Objects
 
@@ -248,7 +248,7 @@ public class PrivateLessonRequestApproved : INotification
 
 ---
 
-## ☁️ Azure Infrastructure
+## Azure Infrastructure
 
 ### Resources Deployed
 
@@ -280,7 +280,7 @@ public class PrivateLessonRequestApproved : INotification
 
 ---
 
-## 🚀 CI/CD Pipeline
+## CI/CD Pipeline
 
 ### Automated Workflows
 
@@ -332,7 +332,7 @@ Developer → Git Push → GitHub Actions → Azure
 
 ---
 
-## 💻 Local Development
+## Local Development
 
 ### Prerequisites
 
@@ -390,7 +390,7 @@ The application automatically seeds sample data on startup:
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 SumterMartialArtsAzure/
@@ -413,11 +413,9 @@ SumterMartialArtsAzure/
 │   │   ├── Programs/
 │   │   ├── Instructors/
 │   │   └── PrivateLessons/
-│   ├── Data/
-│   │   ├── AppDbContext.cs
-│   │   └── DbSeeder.cs
 │   ├── Endpoints/                  # Minimal API endpoints
-│   └── Program.cs                  # App configuration
+│   └── DbSeeder.cs
+│   └── Program.cs
 ├── SumterMartialArtsAzure.Server.Domain/
 │   ├── Entities/
 │   │   ├── Instructor.cs
@@ -428,13 +426,16 @@ SumterMartialArtsAzure/
 │       ├── BusinessHours.cs
 │       └── AvailabilityRule.cs
 ├── SumterMartialArtsAzure.Server.DataAccess/
-│   └── Configurations/             # EF Core configurations
+│   └── Migrations/
+│   │   ├── AppDbContext.cs
+│   │   ├── AppDbContextFactory.cs
+│   │   ├── DomainEventNotification.cs
 └── global.json
 ```
 
 ---
 
-## 🎓 What I Learned
+## What I Learned
 
 ### Technical Skills
 
