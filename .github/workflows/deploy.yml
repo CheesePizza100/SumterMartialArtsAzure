@@ -23,11 +23,15 @@ jobs:
         cd SumterMartialArtsAzure.Server
         dotnet restore
         dotnet build --configuration Release
-        dotnet publish -c Release -o ../myapp
+        dotnet publish -c Release -o ${{github.workspace}}/publish
+
+    - name: Login to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
 
     - name: Deploy to Azure Web App
-      uses: azure/webapps-deploy@v2
-      with:
-        app-name: 'sumter-martial-arts-api'
-        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-        package: ./myapp
+      run: |
+        cd ${{github.workspace}}/publish
+        zip -r ../app.zip .
+        az webapp deploy --name sumter-martial-arts-api --resource-group sumter-martial-arts-rg --src-path ../app.zip --type zip
