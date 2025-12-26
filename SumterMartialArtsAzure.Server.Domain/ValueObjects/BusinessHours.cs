@@ -49,9 +49,14 @@ public sealed class BusinessHours
     public IEnumerable<LessonTime> GenerateSlots(DateTime fromDate, int daysAhead)
     {
         var slots = new List<LessonTime>();
-        var endDate = fromDate.AddDays(daysAhead);
 
-        for (var date = fromDate.Date; date < endDate; date = date.AddDays(1))
+        // Use Eastern Time zone
+        var easternZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
+        var today = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, easternZone).Date;
+
+        var endDate = today.AddDays(daysAhead);
+
+        for (var date = today; date < endDate; date = date.AddDays(1))
         {
             if (!OperatingDays.Contains(date.DayOfWeek))
                 continue;
@@ -59,8 +64,10 @@ public sealed class BusinessHours
             var currentTime = OpenTime;
             while (currentTime.Add(SlotDuration) <= CloseTime)
             {
-                var start = date.Add(currentTime);
+                // Create DateTime in Eastern time, then specify it's unspecified (not UTC)
+                var start = DateTime.SpecifyKind(date.Add(currentTime), DateTimeKind.Unspecified);
                 var end = start.Add(SlotDuration);
+
                 slots.Add(new LessonTime(start, end));
                 currentTime = currentTime.Add(SlotDuration);
             }

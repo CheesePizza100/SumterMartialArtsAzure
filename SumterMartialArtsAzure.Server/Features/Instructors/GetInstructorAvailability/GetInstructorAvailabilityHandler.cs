@@ -30,7 +30,9 @@ public class GetInstructorAvailabilityHandler
 
         // Generate all potential slots during business hours
         var businessHours = BusinessHours.Default;
-        var allPotentialSlots = businessHours.GenerateSlots(DateTime.Today, 30);
+        var easternZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
+        var todayEastern = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, easternZone).Date;
+        var allPotentialSlots = businessHours.GenerateSlots(todayEastern, 30);
 
         // Get instructor's class schedule times to exclude
         var classScheduleTimes = instructor.ClassSchedule
