@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using SumterMartialArtsAzure.Server.Domain;
 using SumterMartialArtsAzure.Server.Domain.Common;
+using SumterMartialArtsAzure.Server.Domain.Events;
 using SumterMartialArtsAzure.Server.Domain.ValueObjects;
 
 namespace SumterMartialArtsAzure.Server.DataAccess;
@@ -20,6 +21,8 @@ public class AppDbContext : DbContext
     public DbSet<Program> Programs => Set<Program>();
     public DbSet<Instructor> Instructors => Set<Instructor>();
     public DbSet<PrivateLessonRequest> PrivateLessonRequests => Set<PrivateLessonRequest>();
+    public DbSet<Student> Students => Set<Student>();
+    public DbSet<StudentProgressionEventRecord> StudentProgressionEvents => Set<StudentProgressionEventRecord>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -128,6 +131,58 @@ public class AppDbContext : DbContext
             b.Property(p => p.Notes).HasMaxLength(1000);
             b.Property(p => p.RejectionReason).HasMaxLength(1000).IsRequired(false);
             b.Property(p => p.CreatedAt).IsRequired();
+        });
+
+        modelBuilder.Entity<Student>(entity =>
+        {
+            entity.HasKey(s => s.Id);
+
+            // Owned value object
+            entity.OwnsOne(s => s.Attendance, attendance =>
+            {
+                attendance.Property(a => a.Last30Days).HasColumnName("Attendance_Last30Days");
+                attendance.Property(a => a.Total).HasColumnName("Attendance_Total");
+                attendance.Property(a => a.AttendanceRate).HasColumnName("Attendance_Rate");
+            });
+
+            // Enrollments collection
+            entity.HasMany(s => s.ProgramEnrollments)
+                .WithOne(e => e.Student)
+                .HasForeignKey(e => e.StudentId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Test history collection
+            entity.HasMany(s => s.TestHistory)
+                .WithOne(t => t.Student)
+                .HasForeignKey(t => t.StudentId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // Configure backing fields for encapsulated collections
+        modelBuilder.Entity<Student>()
+            .Metadata
+            .FindNavigation(nameof(Student.ProgramEnrollments))!
+            .SetField("_programEnrollments");
+
+        modelBuilder.Entity<Student>()
+            .Metadata
+            .FindNavigation(nameof(Student.TestHistory))!
+            .SetField("_testHistory");
+
+        // Event Store configuration
+        modelBuilder.Entity<StudentProgressionEventRecord>(entity =>
+        {
+            entity.HasKey(e => e.EventId);
+
+            entity.HasIndex(e => new { e.StudentId, e.ProgramId, e.Version })
+                .HasDatabaseName("IX_StudentProgression_Stream");
+
+            entity.HasIndex(e => e.OccurredAt)
+                .HasDatabaseName("IX_StudentProgression_OccurredAt");
+
+            entity.Property(e => e.EventType).HasMaxLength(100).IsRequired();
+            entity.Property(e => e.EventData).IsRequired();
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
         });
     }
 
