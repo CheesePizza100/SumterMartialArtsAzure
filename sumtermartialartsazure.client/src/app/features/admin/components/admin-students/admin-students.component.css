@@ -1,0 +1,512 @@
+.admin-container {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Header Section */
+.header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+h1 {
+  margin: 0;
+}
+
+.search-field {
+  width: 320px;
+}
+
+/* Loading State */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+}
+
+/* Table Styles */
+.table-container {
+  overflow-x: auto;
+  background: white;
+  border-radius: 8px;
+}
+
+table {
+  width: 100%;
+}
+
+.clickable-row {
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+  .clickable-row:hover {
+    background-color: #f5f5f5;
+  }
+
+/* Student Cell */
+.student-cell {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  background-color: #e3f2fd;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+  .avatar mat-icon {
+    color: #1976d2;
+  }
+
+/* Contact Info */
+.contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+  .contact-info small {
+    color: #666;
+    font-size: 0.85rem;
+  }
+
+/* Programs Cell */
+.programs-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.program-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.rank {
+  color: #1976d2;
+  font-weight: 500;
+}
+
+/* Attendance Info */
+.attendance-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+  .attendance-info small {
+    color: #666;
+    font-size: 0.85rem;
+  }
+
+/* No Data */
+.no-data {
+  text-align: center;
+  padding: 3rem;
+  color: #666;
+}
+
+/* Student Detail View */
+.student-detail {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.back-button-container {
+  margin-bottom: 1rem;
+}
+
+.detail-card {
+  background: white;
+  border-radius: 8px;
+  padding: 2rem;
+}
+
+/* Student Header */
+.student-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.avatar-large {
+  width: 64px;
+  height: 64px;
+  background-color: #e3f2fd;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+  .avatar-large mat-icon {
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+    color: #1976d2;
+  }
+
+.header-info h2 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.75rem;
+}
+
+.header-info p {
+  margin: 0.25rem 0;
+  color: #666;
+}
+
+.header-right {
+  text-align: right;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+}
+
+.stat-value {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #1976d2;
+}
+
+/* Tab Content */
+.tab-content {
+  padding: 1.5rem 0;
+}
+
+/* Program Cards */
+.program-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+  .program-card:last-child {
+    margin-bottom: 0;
+  }
+
+.program-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+  .program-header h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.25rem;
+  }
+
+.current-rank {
+  margin: 0;
+  color: #666;
+}
+
+.rank-badge {
+  color: #1976d2;
+  font-weight: 600;
+}
+
+.program-dates {
+  text-align: right;
+  font-size: 0.875rem;
+  color: #666;
+}
+
+  .program-dates div {
+    margin-bottom: 0.25rem;
+  }
+
+.instructor-notes {
+  background-color: #e3f2fd;
+  border-left: 4px solid #1976d2;
+  padding: 1rem;
+  border-radius: 4px;
+}
+
+  .instructor-notes strong {
+    display: block;
+    color: #0d47a1;
+    margin-bottom: 0.5rem;
+  }
+
+  .instructor-notes p {
+    margin: 0;
+    color: #1565c0;
+  }
+
+/* Test Cards */
+.test-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+  transition: box-shadow 0.2s;
+}
+
+  .test-card:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .test-card:last-child {
+    margin-bottom: 0;
+  }
+
+.test-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+.test-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+  .test-title h4 {
+    margin: 0;
+    font-size: 1.125rem;
+  }
+
+.test-header p {
+  margin: 0;
+  color: #666;
+}
+
+.test-header strong {
+  color: #333;
+}
+
+.test-date {
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.test-notes {
+  background-color: #f5f5f5;
+  padding: 0.75rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  color: #555;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 3rem;
+  color: #999;
+}
+
+  .empty-state mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 1rem;
+    color: #ccc;
+  }
+
+/* Attendance Stats */
+.attendance-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  padding: 1.5rem;
+  border-radius: 8px;
+  text-align: center;
+}
+
+  .stat-card.blue {
+    background-color: #e3f2fd;
+  }
+
+  .stat-card.green {
+    background-color: #e8f5e9;
+  }
+
+  .stat-card.purple {
+    background-color: #f3e5f5;
+  }
+
+.stat-number {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.stat-card.blue .stat-number {
+  color: #1976d2;
+}
+
+.stat-card.green .stat-number {
+  color: #388e3c;
+}
+
+.stat-card.purple .stat-number {
+  color: #7b1fa2;
+}
+
+.stat-text {
+  font-size: 0.875rem;
+  color: #666;
+}
+
+/* Attendance Pattern */
+.attendance-pattern {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+  .attendance-pattern h4 {
+    margin: 0 0 1rem 0;
+    font-size: 1rem;
+    color: #333;
+  }
+
+.pattern-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+  .pattern-row:last-child {
+    margin-bottom: 0;
+  }
+
+.pattern-label {
+  width: 130px;
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.pattern-bar {
+  flex: 1;
+  height: 12px;
+  background-color: #e0e0e0;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.pattern-fill {
+  height: 100%;
+  background-color: #1976d2;
+  border-radius: 6px;
+  transition: width 0.3s ease;
+}
+
+.pattern-value {
+  width: 80px;
+  text-align: right;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #333;
+}
+
+/* Attendance Note */
+.attendance-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  background-color: #fff8e1;
+  border-left: 4px solid #fbc02d;
+  padding: 1rem;
+  border-radius: 4px;
+}
+
+  .attendance-note mat-icon {
+    color: #f57f17;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+
+  .attendance-note span {
+    font-size: 0.875rem;
+    color: #f57f17;
+  }
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .admin-container {
+    padding: 1rem;
+  }
+
+  .header-section {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .search-field {
+    width: 100%;
+  }
+
+  .student-header {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .header-right {
+    text-align: left;
+  }
+
+  .attendance-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .pattern-label {
+    width: 100px;
+    font-size: 0.75rem;
+  }
+
+  .pattern-value {
+    width: 60px;
+    font-size: 0.75rem;
+  }
+}

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
@@ -12,6 +12,7 @@ import { AuthService } from '../../../core/services/auth.service';
 })
 export class HeaderComponent {
   mobileMenuOpen = false;
+  adminDropdownOpen = false;
 
   // Navigation links
   navLinks = [
@@ -24,7 +25,12 @@ export class HeaderComponent {
   authLinks = [
     { path: '/login', label: 'Login' },
     { path: '/register', label: 'Register' },
-    { path: '/admin', label: 'Admin' }
+  ];
+
+  // Admin dropdown links
+  adminLinks = [
+    { path: '/admin/private-lessons', label: 'Private Lessons' },
+    { path: '/admin/students', label: 'Students' }
   ];
 
   constructor(
@@ -32,12 +38,29 @@ export class HeaderComponent {
     private router: Router
   ) { }
 
+  // Close dropdown when clicking outside
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.admin-dropdown-container')) {
+      this.adminDropdownOpen = false;
+    }
+  }
+
   toggleMobile(): void {
     this.mobileMenuOpen = !this.mobileMenuOpen;
   }
 
   closeMobileMenu(): void {
     this.mobileMenuOpen = false;
+  }
+
+  toggleAdminDropdown(): void {
+    this.adminDropdownOpen = !this.adminDropdownOpen;
+  }
+
+  closeAdminDropdown(): void {
+    this.adminDropdownOpen = false;
   }
 
   logout(): void {

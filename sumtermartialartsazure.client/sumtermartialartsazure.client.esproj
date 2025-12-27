@@ -10,8 +10,6 @@
   <ItemGroup>
     <Folder Include="src\app\core\services\" />
     <Folder Include="src\app\features\about\components\instructor-card-compact\" />
-    <Folder Include="src\app\features\admin\models\" />
-    <Folder Include="src\app\features\admin\services\" />
     <Folder Include="src\app\features\instructors\models\" />
     <Folder Include="src\app\features\instructors\utils\" />
     <Folder Include="src\app\features\instructors\services\" />
