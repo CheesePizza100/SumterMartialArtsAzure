@@ -29,4 +29,13 @@
     <ProjectReference Include="..\SumterMartialArtsAzure.Server.Domain\SumterMartialArtsAzure.Server.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Features\Students\GetStudentById\" />
+    <Folder Include="Features\Students\AddTestResult\" />
+    <Folder Include="Features\Students\GetStudentAttendance\" />
+    <Folder Include="Features\Students\UpdateProgramNotes\" />
+    <Folder Include="Features\Students\UpdateStudent\" />
+    <Folder Include="Features\Students\StudentSearch\" />
+  </ItemGroup>
+
 </Project>
