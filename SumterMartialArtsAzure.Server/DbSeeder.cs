@@ -1,5 +1,4 @@
 ﻿using SumterMartialArtsAzure.Server.DataAccess;
-using Microsoft.EntityFrameworkCore;
 using SumterMartialArtsAzure.Server.Domain;
 using SumterMartialArtsAzure.Server.Domain.ValueObjects;
 
@@ -10,7 +9,15 @@ public static class DbSeeder
     public static void Seed(AppDbContext context)
     {
         if (context.Programs.Any() || context.Instructors.Any())
+        {
+            // Programs/Instructors already seeded, but check students
+            if (!context.Students.Any())
+            {
+                StudentSeeder.SeedStudents(context);
+                EventStoreSeeder.SeedEventStore(context);
+            }
             return;
+        }
 
         Instructor lauraKim = new Instructor()
         {
