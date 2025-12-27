@@ -67,17 +67,17 @@ public static class DbSeeder
 
         Instructor mikeStevens = new Instructor()
         {
-            Name = "Coach Daniel Ruiz",
-            Rank = "1st Degree Black Belt",
-            Bio = "Focuses on discipline and confidence building.",
-            PhotoUrl = "https://placehold.co/300x300?text=Daniel",
+            Name = "Professor Mike Stevens",
+            Rank = "Black Belt",
+            Bio = "25 years of grappling and competitive experience.",
+            PhotoUrl = "https://placehold.co/300x300?text=Mike",
         };
         List<string> mikeStevensAchievements = new List<string>()
         {
-                    "Pan-American Grappling Bronze Medalist",
-                    "Multiple-Time State Champion",
-                    "Coach of 12 National-Level Competitors",
-                    "IBJJF Certified Instructor"
+            "Pan-American Grappling Bronze Medalist",
+            "Multiple-Time State Champion",
+            "Coach of 12 National-Level Competitors",
+            "IBJJF Certified Instructor"
         };
         mikeStevens.AddAchievements(mikeStevensAchievements);
         List<AvailabilityRule> mikeStevensAvailabilityRules = new List<AvailabilityRule>()
@@ -275,5 +275,8 @@ public static class DbSeeder
 
         context.Programs.AddRange(programs);
         context.SaveChanges();
+
+        StudentSeeder.SeedStudents(context);
+        EventStoreSeeder.SeedEventStore(context);
     }
 }
