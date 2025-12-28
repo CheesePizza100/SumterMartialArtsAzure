@@ -22,15 +22,10 @@ jobs:
         dotnet build --configuration Release
         dotnet publish -c Release -o ${{github.workspace}}/publish
     
-    - name: Install EF Core tools
-      run: dotnet tool install --global dotnet-ef
-    
     - name: Run database migrations
       run: |
         cd SumterMartialArtsAzure.Server.DataAccess
         dotnet ef database update --project . --startup-project ../SumterMartialArtsAzure.Server --connection "${{ secrets.AZURE_SQL_CONNECTION_STRING }}"
-      env:
-        AZURE_SQL_CONNECTION_STRING: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
     
     - name: Login to Azure
       uses: azure/login@v1
