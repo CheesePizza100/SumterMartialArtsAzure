@@ -24,6 +24,8 @@ jobs:
     
     - name: Run database migrations
       run: |
+        dotnet new tool-manifest || true
+        dotnet tool install dotnet-ef --version 8.0.0
         cd SumterMartialArtsAzure.Server.DataAccess
         dotnet ef database update --project . --startup-project ../SumterMartialArtsAzure.Server --connection "${{ secrets.AZURE_SQL_CONNECTION_STRING }}"
     
