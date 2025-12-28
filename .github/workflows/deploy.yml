@@ -1,35 +1,42 @@
-﻿name: Deploy to Azure App Service
-
+name: Deploy to Azure App Service
 on:
   push:
     branches:
       - master
   workflow_dispatch:
-
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v4
-
+    
     - name: Set up .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '8.0.x'
-
+    
     - name: Build and publish
       run: |
         cd SumterMartialArtsAzure.Server
         dotnet restore
         dotnet build --configuration Release
         dotnet publish -c Release -o ${{github.workspace}}/publish
-
+    
+    - name: Install EF Core tools
+      run: dotnet tool install --global dotnet-ef
+    
+    - name: Run database migrations
+      run: |
+        cd SumterMartialArtsAzure.Server.DataAccess
+        dotnet ef database update --project . --startup-project ../SumterMartialArtsAzure.Server --connection "${{ secrets.AZURE_SQL_CONNECTION_STRING }}"
+      env:
+        AZURE_SQL_CONNECTION_STRING: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
+    
     - name: Login to Azure
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
-
+    
     - name: Deploy to Azure Web App
       run: |
         cd ${{github.workspace}}/publish
