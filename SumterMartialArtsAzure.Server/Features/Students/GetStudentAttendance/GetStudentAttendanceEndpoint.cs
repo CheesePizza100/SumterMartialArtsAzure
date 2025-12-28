@@ -6,7 +6,7 @@ public class GetStudentAttendanceEndpoint
 {
     public static void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapGet("/api/admin/students/{id}/attendance",
+        app.MapGet("/api/students/{id}/attendance",
                 async (int id, IMediator mediator) =>
                 {
                     var result = await mediator.Send(new GetStudentAttendanceQuery(id));

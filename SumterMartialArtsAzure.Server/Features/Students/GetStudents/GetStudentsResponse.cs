@@ -1,12 +1,13 @@
-﻿namespace SumterMartialArtsAzure.Server.Api.Features.Students.GetStudents;
+﻿using SumterMartialArtsAzure.Server.Api.Features.Students.Shared;
+
+namespace SumterMartialArtsAzure.Server.Api.Features.Students.GetStudents;
 
 public record GetStudentsResponse(
     int Id,
     string Name,
-    string Description,
-    string AgeGroup,
-    string ImageUrl,
-    string Duration,
-    string Schedule,
-    List<int> InstructorIds
+    string Email,
+    string Phone,
+    List<ProgramEnrollmentDto> Programs,
+    AttendanceDto Attendance,
+    List<TestHistoryDto> TestHistory
 );

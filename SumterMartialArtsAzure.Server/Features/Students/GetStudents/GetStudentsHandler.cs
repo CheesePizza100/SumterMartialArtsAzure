@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using SumterMartialArtsAzure.Server.Api.Features.Programs.GetPrograms;
+using SumterMartialArtsAzure.Server.Api.Features.Students.Shared;
 using SumterMartialArtsAzure.Server.DataAccess;
 
 namespace SumterMartialArtsAzure.Server.Api.Features.Students.GetStudents;
@@ -19,19 +20,40 @@ public class GetStudentsHandler
         GetStudentsQuery request,
         CancellationToken cancellationToken)
     {
-        var programs = await _dbContext.Programs
-            .Include(p => p.Instructors)
-            .Select(p => new GetProgramsResponse(
-                p.Id,
-                p.Name,
-                p.Description,
-                p.AgeGroup,
-                p.ImageUrl,
-                p.Duration,
-                p.Schedule,
-                p.Instructors.Select(i => i.Id).ToList()
-            )).ToListAsync(cancellationToken: cancellationToken);
+        var students = await _dbContext.Students
+            .Include(s => s.ProgramEnrollments)
+            .Include(s => s.TestHistory)
+            .Select(s => new GetStudentsResponse(
+                s.Id,
+                s.Name,
+                s.Email,
+                s.Phone,
+                s.ProgramEnrollments
+                    .Where(e => e.IsActive)
+                    .Select(e => new ProgramEnrollmentDto(
+                        e.ProgramName,
+                        e.CurrentRank,
+                        e.EnrolledDate,
+                        e.LastTestDate,
+                        e.InstructorNotes
+                    )).ToList(),
+                new AttendanceDto(
+                    s.Attendance.Last30Days,
+                    s.Attendance.Total,
+                    s.Attendance.AttendanceRate
+                ),
+                s.TestHistory
+                    .OrderByDescending(t => t.TestDate)
+                    .Select(t => new TestHistoryDto(
+                        t.TestDate,
+                        t.ProgramName,
+                        t.RankAchieved,
+                        t.Result,
+                        t.Notes
+                    )).ToList()
+            ))
+            .ToListAsync(cancellationToken);
 
-        return null;
+        return students;
     }
 }

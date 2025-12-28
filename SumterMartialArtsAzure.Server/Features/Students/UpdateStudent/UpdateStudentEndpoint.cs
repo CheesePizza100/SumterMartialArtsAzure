@@ -6,7 +6,7 @@ public static class UpdateStudentEndpoint
 {
     public static void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapPut("/api/admin/students/{id}",
+        app.MapPut("/api/students/{id}",
                 async (int id, UpdateStudentRequest request, IMediator mediator) =>
                 {
                     var command = new UpdateStudentCommand(

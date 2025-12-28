@@ -6,7 +6,7 @@ public static class AddTestResultEndpoint
 {
     public static void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapPost("/api/admin/students/{id}/test-results",
+        app.MapPost("/api/students/{id}/test-results",
                 async (int id, AddTestResultRequest request, IMediator mediator) =>
                 {
                     var command = new AddTestResultCommand(

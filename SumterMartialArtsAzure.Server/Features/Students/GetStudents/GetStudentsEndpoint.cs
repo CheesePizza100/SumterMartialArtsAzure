@@ -10,10 +10,7 @@ public class GetStudentsEndpoint
                 async (IMediator mediator) =>
                 {
                     var result = await mediator.Send(new GetStudentsQuery());
-
-                    return result is not null
-                        ? Results.Ok(result)
-                        : Results.NotFound();
+                    return Results.Ok(result);
                 })
             .WithName("GetStudents")
             .WithTags("Students");

@@ -1,71 +1,65 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Student } from '../models/student.model';
-import { environment } from '../../../environments/environment';
+import { Student, Attendance } from '../models/student.model';
+import { environment } from '../../../../environments/environment.development';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AdminStudentsService {
-  private apiUrl = `${environment.apiUrl}/admin/students`;
+  private baseUrl = `${environment.apiUrl}/api`;
 
   constructor(private http: HttpClient) { }
 
-  /**
-   * Get all students
-   */
   getAllStudents(): Observable<Student[]> {
-    return this.http.get<Student[]>(this.apiUrl);
+    return this.http.get<Student[]>(`${this.baseUrl}/students`);
   }
 
-  /**
-   * Get a single student by ID
-   */
   getStudentById(id: number): Observable<Student> {
-    return this.http.get<Student>(`${this.apiUrl}/${id}`);
+    return this.http.get<Student>(`${this.baseUrl}/students/${id}`);
   }
 
-  /**
-   * Search students by name, email, or program
-   */
   searchStudents(searchTerm: string): Observable<Student[]> {
-    return this.http.get<Student[]>(`${this.apiUrl}/search`, {
+    return this.http.get<Student[]>(`${this.baseUrl}/students/search`, {
       params: { q: searchTerm }
     });
   }
 
-  /**
-   * Update student information
-   */
-  updateStudent(id: number, student: Partial<Student>): Observable<Student> {
-    return this.http.put<Student>(`${this.apiUrl}/${id}`, student);
+  updateStudent(id: number, student: {
+    name?: string;
+    email?: string;
+    phone?: string;
+  }): Observable<Student> {
+    return this.http.put<Student>(`${this.baseUrl}/students/${id}`, student);
   }
 
-  /**
-   * Add test result for a student
-   */
   addTestResult(studentId: number, testData: {
+    programId: number;
     programName: string;
     rank: string;
-    result: 'Pass' | 'Fail';
+    result: string;
     notes: string;
     testDate: string;
-  }): Observable<any> {
-    return this.http.post(`${this.apiUrl}/${studentId}/test-results`, testData);
+  }): Observable<{ success: boolean; message: string }> {
+    return this.http.post<{ success: boolean; message: string }>(
+      `${this.baseUrl}/students/${studentId}/test-results`,
+      testData
+    );
   }
 
-  /**
-   * Update program notes for a student
-   */
-  updateProgramNotes(studentId: number, programName: string, notes: string): Observable<any> {
-    return this.http.patch(`${this.apiUrl}/${studentId}/programs/${programName}/notes`, { notes });
+  updateProgramNotes(
+    studentId: number,
+    programId: number,
+    notes: string
+  ): Observable<{ success: boolean; message: string }> {
+    return this.http.patch<{ success: boolean; message: string }>(
+      `${this.baseUrl}/students/${studentId}/programs/${programId}/notes`,
+      { notes }
+    );
   }
 
-  /**
-   * Get attendance details for a student
-   */
-  getAttendanceDetails(studentId: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}/${studentId}/attendance`);
+  getAttendanceDetails(studentId: number): Observable<Attendance> {
+    return this.http.get<Attendance>(`${this.baseUrl}/students/${studentId}/attendance`);
   }
 }
