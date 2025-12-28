@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
+using SumterMartialArtsAzure.Server.Api.Features.Students.Shared;
 using SumterMartialArtsAzure.Server.DataAccess;
 
 namespace SumterMartialArtsAzure.Server.Api.Features.Students.UpdateStudent;

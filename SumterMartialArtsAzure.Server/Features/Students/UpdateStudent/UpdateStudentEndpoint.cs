@@ -17,7 +17,9 @@ public static class UpdateStudentEndpoint
                     );
 
                     var result = await mediator.Send(command);
-                    return result != null ? Results.Ok(result) : Results.NotFound();
+                    return result != null 
+                        ? Results.Ok(result) 
+                        : Results.NotFound();
                 })
             .WithName("UpdateStudent")
             .WithTags("Students");

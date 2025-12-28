@@ -13,8 +13,8 @@ public static class DbSeeder
             // Programs/Instructors already seeded, but check students
             if (!context.Students.Any())
             {
-                StudentSeeder.SeedStudents(context);
-                EventStoreSeeder.SeedEventStore(context);
+                //StudentSeeder.SeedStudents(context);
+                //EventStoreSeeder.SeedEventStore(context);
             }
             return;
         }
