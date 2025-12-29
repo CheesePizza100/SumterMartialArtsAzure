@@ -7,8 +7,11 @@ using SumterMartialArtsAzure.Server.Api.Features.PrivateLessons.UpdatePrivateLes
 using SumterMartialArtsAzure.Server.Api.Features.Programs.GetProgramById;
 using SumterMartialArtsAzure.Server.Api.Features.Programs.GetPrograms;
 using SumterMartialArtsAzure.Server.Api.Features.Students.AddTestResult;
+using SumterMartialArtsAzure.Server.Api.Features.Students.GetProgressionAnalytics;
 using SumterMartialArtsAzure.Server.Api.Features.Students.GetStudentAttendance;
 using SumterMartialArtsAzure.Server.Api.Features.Students.GetStudentById;
+using SumterMartialArtsAzure.Server.Api.Features.Students.GetStudentEventStream;
+using SumterMartialArtsAzure.Server.Api.Features.Students.GetStudentRankAtDate;
 using SumterMartialArtsAzure.Server.Api.Features.Students.GetStudents;
 using SumterMartialArtsAzure.Server.Api.Features.Students.StudentSearch;
 using SumterMartialArtsAzure.Server.Api.Features.Students.UpdateProgramNotes;
@@ -35,5 +38,8 @@ public static class ProgramEndpoints
         StudentSearchEndpoint.MapEndpoint(app);
         UpdateProgramNotesEndpoint.MapEndpoint(app);
         UpdateStudentEndpoint.MapEndpoint(app);
+        GetProgressionAnalyticsEndpoint.MapEndpoint(app);
+        GetStudentEventStreamEndpoint.MapEndpoint(app);
+        GetStudentRankAtDateEndpoint.MapEndpoint(app);
     }
 }
