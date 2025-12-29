@@ -30,7 +30,8 @@ export class HeaderComponent {
   // Admin dropdown links
   adminLinks = [
     { path: '/admin/private-lessons', label: 'Private Lessons' },
-    { path: '/admin/students', label: 'Students' }
+    { path: '/admin/students', label: 'Students' },
+    { path: '/admin/analytics', label: 'Analytics' }
   ];
 
   constructor(

@@ -24,5 +24,10 @@ export const ADMIN_ROUTES: Routes = [
     path: 'students',
     loadComponent: () => import('./components/admin-students/admin-students.component')
       .then(m => m.AdminStudentsComponent)
+  },
+  {
+    path: 'analytics',
+    loadComponent: () => import('./components/analytics-dashboard/analytics-dashboard.component')
+      .then(m => m.AnalyticsDashboardComponent)
   }
 ];

@@ -1,0 +1,140 @@
+<div class="analytics-container">
+  <div class="header">
+    <h1>Belt Progression Analytics</h1>
+    <p class="subtitle">Powered by Event Sourcing</p>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading analytics...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !isLoading" class="error-container">
+    <p>{{ error }}</p>
+    <button mat-raised-button color="primary" (click)="loadAnalytics()">
+      Retry
+    </button>
+  </div>
+
+  <!-- Analytics Dashboard -->
+  <div *ngIf="analytics && !isLoading" class="dashboard">
+
+    <!-- Key Metrics -->
+    <div class="metrics-grid">
+      <mat-card class="metric-card blue">
+        <div class="metric-value">{{ analytics.totalEnrollments }}</div>
+        <div class="metric-label">Total Enrollments</div>
+      </mat-card>
+
+      <mat-card class="metric-card green">
+        <div class="metric-value">{{ analytics.totalPromotions }}</div>
+        <div class="metric-label">Total Promotions</div>
+      </mat-card>
+
+      <mat-card class="metric-card purple">
+        <div class="metric-value">{{ analytics.totalTests }}</div>
+        <div class="metric-label">Total Tests</div>
+      </mat-card>
+
+      <mat-card class="metric-card orange">
+        <div class="metric-value">{{ analytics.passRate | number:'1.0-1' }}%</div>
+        <div class="metric-label">Pass Rate</div>
+      </mat-card>
+    </div>
+
+    <!-- Test Results Breakdown -->
+    <mat-card class="chart-card">
+      <h2>Test Results Breakdown</h2>
+      <div class="test-breakdown">
+        <div class="breakdown-item passed">
+          <div class="breakdown-bar"
+               [style.width.%]="analytics.totalTests > 0 ? (analytics.passedTests / analytics.totalTests * 100) : 0">
+          </div>
+          <div class="breakdown-label">
+            <span class="count">{{ analytics.passedTests }}</span>
+            <span class="text">Passed</span>
+          </div>
+        </div>
+        <div class="breakdown-item failed">
+          <div class="breakdown-bar"
+               [style.width.%]="analytics.totalTests > 0 ? (analytics.failedTests / analytics.totalTests * 100) : 0">
+          </div>
+          <div class="breakdown-label">
+            <span class="count">{{ analytics.failedTests }}</span>
+            <span class="text">Failed</span>
+          </div>
+        </div>
+      </div>
+    </mat-card>
+
+    <!-- Average Time to Blue Belt -->
+    <mat-card class="stat-card" *ngIf="analytics.averageDaysToBlue > 0">
+      <h2>Average Time to Blue Belt</h2>
+      <div class="stat-value">
+        {{ analytics.averageDaysToBlue }} days
+        <span class="stat-subtext">({{ (analytics.averageDaysToBlue / 30) | number:'1.0-0' }} months)</span>
+      </div>
+      <p class="stat-description">
+        Based on event sourcing data from all students who have achieved blue belt
+      </p>
+    </mat-card>
+
+    <!-- Most Active Testing Months -->
+    <mat-card class="chart-card">
+      <h2>Most Active Testing Months</h2>
+      <div class="monthly-chart">
+        <div *ngFor="let month of analytics.mostActiveTestingMonths" class="month-bar">
+          <div class="bar-container">
+            <div class="bar"
+                 [style.height.%]="getBarWidth(month.testCount, maxTestCount)">
+            </div>
+          </div>
+          <div class="month-label">
+            {{ getMonthName(month.month) }} {{ month.year }}
+          </div>
+          <div class="month-count">{{ month.testCount }}</div>
+        </div>
+        <div *ngIf="analytics.mostActiveTestingMonths.length === 0" class="no-data">
+          No testing data available yet
+        </div>
+      </div>
+    </mat-card>
+
+    <!-- Current Rank Distribution -->
+    <mat-card class="chart-card">
+      <h2>Current Rank Distribution</h2>
+      <div class="rank-distribution">
+        <div *ngFor="let rank of analytics.currentRankDistribution" class="rank-row">
+          <div class="rank-name">{{ rank.rank }}</div>
+          <div class="rank-bar-container">
+            <div class="rank-bar"
+                 [style.width.%]="getBarWidth(rank.count, maxRankCount)">
+            </div>
+          </div>
+          <div class="rank-count">{{ rank.count }}</div>
+        </div>
+        <div *ngIf="analytics.currentRankDistribution.length === 0" class="no-data">
+          No rank data available yet
+        </div>
+      </div>
+    </mat-card>
+
+    <!-- Event Sourcing Info Card -->
+    <mat-card class="info-card">
+      <h3>💡 About This Dashboard</h3>
+      <p>
+        This analytics dashboard is powered by <strong>Event Sourcing</strong>.
+        All statistics are computed from the complete event history stored in the event store,
+        allowing for:
+      </p>
+      <ul>
+        <li>Complete audit trail of all belt progressions</li>
+        <li>Time-travel queries to see historical states</li>
+        <li>Accurate analytics based on immutable event data</li>
+        <li>Ability to replay events and rebuild state at any point in time</li>
+      </ul>
+    </mat-card>
+  </div>
+</div>
