@@ -510,3 +510,47 @@ table {
     font-size: 0.75rem;
   }
 }
+.header-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+  .header-actions button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .header-actions mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+
+/* Update student-header to accommodate the button */
+.student-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #e0e0e0;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .student-header {
+    flex-direction: column;
+  }
+
+  .header-actions {
+    width: 100%;
+  }
+
+    .header-actions button {
+      width: 100%;
+      justify-content: center;
+    }
+}

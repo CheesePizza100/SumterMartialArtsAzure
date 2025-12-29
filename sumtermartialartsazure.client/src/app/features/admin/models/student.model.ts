@@ -1,4 +1,5 @@
 export interface Program {
+  programId: number;
   name: string;
   rank: string;
   enrolledDate: string;

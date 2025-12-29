@@ -45,6 +45,7 @@ public class UpdateStudentHandler
             student.ProgramEnrollments
                 .Where(e => e.IsActive)
                 .Select(e => new ProgramEnrollmentDto(
+                    e.ProgramId,
                     e.ProgramName,
                     e.CurrentRank,
                     e.EnrolledDate,

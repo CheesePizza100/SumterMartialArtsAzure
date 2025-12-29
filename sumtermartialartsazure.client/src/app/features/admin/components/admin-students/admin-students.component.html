@@ -118,6 +118,13 @@
           <div class="stat-label">Total Classes Attended</div>
           <div class="stat-value">{{ selectedStudent.attendance.total }}</div>
         </div>
+        <div class="header-actions">
+          <button mat-raised-button color="primary" (click)="openRecordTestDialog()">
+            <mat-icon>assessment</mat-icon>
+            Record Test Result
+          </button>
+        </div>
+      </div>
       </div>
 
       <!-- Tabs -->
@@ -236,4 +243,3 @@
       </mat-tab-group>
     </div>
   </div>
-</div>
