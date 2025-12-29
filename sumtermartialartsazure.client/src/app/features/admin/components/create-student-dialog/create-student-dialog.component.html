@@ -1,0 +1,65 @@
+<h2 mat-dialog-title>Create New Student</h2>
+
+<mat-dialog-content>
+  <div class="dialog-form">
+    <p class="info-text">
+      Add a new student to the system. You'll be able to enroll them in programs after creation.
+    </p>
+
+    <!-- Student Name -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Full Name</mat-label>
+      <input matInput
+             [(ngModel)]="name"
+             placeholder="e.g., John Smith"
+             required
+             autocomplete="name">
+    </mat-form-field>
+
+    <!-- Email -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Email Address</mat-label>
+      <input matInput
+             type="email"
+             [(ngModel)]="email"
+             placeholder="e.g., john.smith@email.com"
+             required
+             autocomplete="email">
+      <mat-error *ngIf="email && !isValidEmail(email)">
+        Please enter a valid email address
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Phone -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Phone Number</mat-label>
+      <input matInput
+             type="tel"
+             [(ngModel)]="phone"
+             placeholder="e.g., (555) 123-4567"
+             required
+             autocomplete="tel">
+    </mat-form-field>
+
+    <!-- Info Box -->
+    <div class="info-box">
+      <span>
+        After creating the student, you'll be able to enroll them in programs
+        and start tracking their belt progression.
+      </span>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()" [disabled]="isSubmitting">
+    Cancel
+  </button>
+  <button mat-raised-button
+          color="primary"
+          (click)="onSubmit()"
+          [disabled]="!canSubmit">
+    <mat-spinner diameter="20" *ngIf="isSubmitting"></mat-spinner>
+    <span *ngIf="!isSubmitting">Create Student</span>
+  </button>
+</mat-dialog-actions>

@@ -62,4 +62,12 @@ export class AdminStudentsService {
   getAttendanceDetails(studentId: number): Observable<Attendance> {
     return this.http.get<Attendance>(`${this.baseUrl}/students/${studentId}/attendance`);
   }
+
+  createStudent(student: {
+    name: string;
+    email: string;
+    phone: string;
+  }): Observable<Student> {
+    return this.http.post<Student>(`${this.baseUrl}/students`, student);
+  }
 }

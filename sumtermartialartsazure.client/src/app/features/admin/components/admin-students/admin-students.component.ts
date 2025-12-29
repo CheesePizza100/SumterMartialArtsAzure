@@ -11,9 +11,10 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
-import { Program, TestHistory, Attendance, Student } from '../../models/student.model'
+import { Student } from '../../models/student.model'
 import { AdminStudentsService } from '../../services/admin-students.service';
 import { RecordTestDialogComponent } from '../record-test-dialog/record-test-dialog.component';
+import { CreateStudentDialogComponent } from '../create-student-dialog/create-student-dialog.component';
 
 @Component({
   selector: 'app-admin-students',
@@ -180,6 +181,37 @@ export class AdminStudentsComponent implements OnInit {
       error: (err) => {
         console.error('Error recording test:', err);
         this.snackBar.open('Error recording test result', 'Close', {
+          duration: 3000
+        });
+      }
+    });
+  }
+
+  openCreateStudentDialog(): void {
+    const dialogRef = this.dialog.open(CreateStudentDialogComponent, {
+      width: '600px'
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.createStudent(result);
+      }
+    });
+  }
+
+  createStudent(studentData: { name: string; email: string; phone: string }): void {
+    this.adminStudentsService.createStudent(studentData).subscribe({
+      next: (student) => {
+        this.snackBar.open('Student created successfully!', 'Close', {
+          duration: 3000,
+          panelClass: ['success-snackbar']
+        });
+        // Reload students list
+        this.loadStudents();
+      },
+      error: (err) => {
+        console.error('Error creating student:', err);
+        this.snackBar.open('Error creating student', 'Close', {
           duration: 3000
         });
       }
