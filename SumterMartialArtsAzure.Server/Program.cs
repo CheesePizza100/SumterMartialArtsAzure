@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using SumterMartialArtsAzure.Server.Api;
+using SumterMartialArtsAzure.Server.Api.Behaviors;
 using SumterMartialArtsAzure.Server.Api.Features.Instructors.GetInstructorAvailability;
 using SumterMartialArtsAzure.Server.Api.Features.Instructors.GetInstructorById;
 using SumterMartialArtsAzure.Server.Api.Features.Instructors.GetInstructors;
@@ -16,7 +17,16 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddMediatR(cfg =>
-    cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
+{
+    cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
+
+    // Order matters! These run in the order registered:
+    // 1. Logging (first - logs everything)
+    // 2. Validation (validates before executing)
+    // 3. Exception Handling (catches exceptions from handlers)
+    cfg.AddOpenBehavior(typeof(LoggingBehavior<,>));
+    cfg.AddOpenBehavior(typeof(ExceptionHandlingBehavior<,>));
+});
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(
@@ -47,9 +57,8 @@ builder.Services.AddCors(options =>
         });
 });
 
-//app.UseMiddleware<ExceptionHandlingMiddleware>();
-
 var app = builder.Build();
+app.UseGlobalExceptionHandling();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
