@@ -15,6 +15,8 @@ import { Student } from '../../models/student.model'
 import { AdminStudentsService } from '../../services/admin-students.service';
 import { RecordTestDialogComponent } from '../record-test-dialog/record-test-dialog.component';
 import { CreateStudentDialogComponent } from '../create-student-dialog/create-student-dialog.component';
+import { EnrollProgramDialogComponent } from '../enroll-program-dialog/enroll-program-dialog.component';
+import { ProgramsService } from '../../../programs/services/programs.service';
 
 @Component({
   selector: 'app-admin-students',
@@ -53,6 +55,7 @@ export class AdminStudentsComponent implements OnInit {
   ];
 
   constructor(private adminStudentsService: AdminStudentsService,
+              private programsService: ProgramsService,
               private dialog: MatDialog,
               private snackBar: MatSnackBar) { }
 
@@ -212,6 +215,78 @@ export class AdminStudentsComponent implements OnInit {
       error: (err) => {
         console.error('Error creating student:', err);
         this.snackBar.open('Error creating student', 'Close', {
+          duration: 3000
+        });
+      }
+    });
+  }
+
+  openEnrollProgramDialog(): void {
+    if (!this.selectedStudent) return;
+
+    // Get programs the student is NOT already enrolled in
+    const enrolledProgramIds = this.selectedStudent.programs.map(p => p.programId);
+
+    // You'll need to fetch all available programs
+    // For now, hardcode or add a service method to get all programs
+    // Example:
+    this.programsService.getPrograms().subscribe(allPrograms => {
+      const availablePrograms = allPrograms.filter(
+        p => !enrolledProgramIds.includes(p.id)
+      );
+
+      const dialogRef = this.dialog.open(EnrollProgramDialogComponent, {
+        width: '600px',
+        data: {
+          studentId: this.selectedStudent!.id,
+          studentName: this.selectedStudent!.name,
+          availablePrograms: availablePrograms.map(p => ({
+            id: p.id,
+            name: p.name
+          }))
+        }
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+          this.enrollInProgram(result);
+        }
+      });
+    });
+  }
+
+  enrollInProgram(enrollmentData: {
+    programId: number;
+    programName: string;
+    initialRank: string;
+  }): void {
+    if (!this.selectedStudent) return;
+
+    this.adminStudentsService.enrollInProgram(
+      this.selectedStudent.id,
+      enrollmentData
+    ).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.snackBar.open(response.message, 'Close', {
+            duration: 3000,
+            panelClass: ['success-snackbar']
+          });
+          // Reload the student data
+          this.adminStudentsService.getStudentById(this.selectedStudent!.id).subscribe({
+            next: (student) => {
+              this.selectedStudent = student;
+            }
+          });
+        } else {
+          this.snackBar.open(response.message, 'Close', {
+            duration: 5000
+          });
+        }
+      },
+      error: (err) => {
+        console.error('Error enrolling student:', err);
+        this.snackBar.open('Error enrolling student in program', 'Close', {
           duration: 3000
         });
       }

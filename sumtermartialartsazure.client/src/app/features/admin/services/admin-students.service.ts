@@ -70,4 +70,15 @@ export class AdminStudentsService {
   }): Observable<Student> {
     return this.http.post<Student>(`${this.baseUrl}/students`, student);
   }
+
+  enrollInProgram(studentId: number, enrollment: {
+    programId: number;
+    programName: string;
+    initialRank: string;
+  }): Observable<{ success: boolean; message: string }> {
+    return this.http.post<{ success: boolean; message: string }>(
+      `${this.baseUrl}/students/${studentId}/enroll`,
+      enrollment
+    );
+  }
 }

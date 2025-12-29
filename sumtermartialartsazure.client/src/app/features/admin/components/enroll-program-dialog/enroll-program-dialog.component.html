@@ -1,0 +1,53 @@
+<h2 mat-dialog-title>Enroll in Program</h2>
+
+<mat-dialog-content>
+  <div class="dialog-form">
+    <p class="student-info">
+      Enrolling: <strong>{{ data.studentName }}</strong>
+    </p>
+
+    <!-- Program Selection -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Program</mat-label>
+      <mat-select [(ngModel)]="selectedProgramId" required>
+        <mat-option *ngFor="let program of data.availablePrograms" [value]="program.id">
+          {{ program.name }}
+        </mat-option>
+      </mat-select>
+      <mat-hint *ngIf="data.availablePrograms.length === 0">
+        No available programs (student may already be enrolled in all programs)
+      </mat-hint>
+    </mat-form-field>
+
+    <!-- Initial Rank -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Initial Rank</mat-label>
+      <input matInput
+             [(ngModel)]="initialRank"
+             placeholder="e.g., White Belt, Beginner"
+             required>
+      <mat-hint>The rank the student will start at in this program</mat-hint>
+    </mat-form-field>
+
+    <!-- Info Box -->
+    <div class="info-box">
+      <span>
+        Enrolling the student will create an event in the event store and allow
+        them to begin testing for belt progression in <strong>{{ selectedProgram?.name }}</strong>.
+      </span>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()" [disabled]="isSubmitting">
+    Cancel
+  </button>
+  <button mat-raised-button
+          color="primary"
+          (click)="onSubmit()"
+          [disabled]="!canSubmit">
+    <mat-spinner diameter="20" *ngIf="isSubmitting"></mat-spinner>
+    <span *ngIf="!isSubmitting">Enroll Student</span>
+  </button>
+</mat-dialog-actions>
