@@ -1,14 +1,15 @@
 # Sumter Martial Arts Management System
 
-A full-stack web application for managing martial arts programs, instructors, and private lesson bookings, built with .NET 8 and Angular, deployed on Microsoft Azure.
+A full-stack web application for managing martial arts programs, instructors, student progression, and private lesson bookings, built with .NET 8 and Angular, deployed on Microsoft Azure. **Features Event Sourcing for belt progression tracking and CQRS architecture.**
 
 🔗 **Live Demo:** [https://jolly-smoke-0f6352e10.4.azurestaticapps.net](https://jolly-smoke-0f6352e10.4.azurestaticapps.net)  
 
 ---
 
-## 📋 Table of Contents
+## Table of Contents
 
 - [Overview](#overview)
+- [Event Sourcing Showcase](#event-sourcing-showcase)
 - [Architecture](#architecture)
 - [Tech Stack](#tech-stack)
 - [Key Features](#key-features)
@@ -16,21 +17,93 @@ A full-stack web application for managing martial arts programs, instructors, an
 - [Azure Infrastructure](#azure-infrastructure)
 - [CI/CD Pipeline](#cicd-pipeline)
 - [Local Development](#local-development)
-- [Project Structure](#project-structure)
 - [What I Learned](#what-i-learned)
 
 ---
 
 ## Overview
 
-This project demonstrates enterprise-level software engineering practices in a real-world martial arts management system. The application handles program information, instructor profiles, and a complete private lesson request/approval workflow with intelligent availability checking.
+This project demonstrates **enterprise-level software engineering practices** with a focus on **Domain-Driven Design**, **Event Sourcing**, and **CQRS**. The application manages martial arts programs, instructor schedules, student belt progression tracking, and a complete private lesson booking workflow.
 
 ### Why This Project Stands Out
 
-- **Domain-Driven Design:** Rich domain models with proper encapsulation and business rule enforcement
-- **Vertical Slices:** Vertical slice architecture with CQRS pattern
-- **Cloud-Native:** Deployed on Azure with proper separation of concerns (Static Web App + App Service)
-- **Production-Ready:** CI/CD pipelines, health checks, monitoring, and secure credential management
+- **🎯 Event Sourcing Architecture** - Complete audit trail of student belt progressions with time-travel queries
+- **📊 Analytics from Events** - Real-time analytics dashboard powered by event store data
+- **🏗️ Domain-Driven Design** - Rich domain models with proper encapsulation and business rule enforcement
+- **⚡ CQRS with MediatR** - Clean separation of commands and queries
+- **☁️ Cloud-Native** - Production deployment on Azure with CI/CD pipelines
+- **🔒 Production-Ready** - Automated migrations, health checks, monitoring, and secure credential management
+
+---
+
+## Event Sourcing Showcase
+
+### What Makes This Special
+
+The student belt progression system uses **Event Sourcing** to maintain a complete, immutable history of every student's martial arts journey. This demonstrates advanced architectural patterns rarely seen in portfolio projects.
+
+### Event Sourcing Features
+
+**📅 Complete Event History**
+```
+Student: Sarah Johnson → BJJ Program
+├─ 2023-06-27: Enrolled (White Belt)
+├─ 2023-09-27: Test Attempted (Stripe 1) → Pass
+├─ 2023-09-27: Promoted (White Belt → Stripe 1)
+├─ 2023-12-27: Test Attempted (Stripe 2) → Pass
+├─ 2023-12-27: Promoted (Stripe 1 → Stripe 2)
+└─ 2024-06-27: Test Attempted (Blue Belt) → Pass
+    └─ 2024-06-27: Promoted (Stripe 2 → Blue Belt)
+```
+
+**⏰ Time-Travel Queries**
+```csharp
+// "What rank was Sarah on June 1, 2024?"
+GET /api/students/1/programs/1/rank-at-date?asOfDate=2024-06-01
+
+Response:
+{
+  "rank": "White Belt - Stripe 2",
+  "enrolledDate": "2023-06-27",
+  "lastTestDate": "2023-12-27",
+  "totalEventsProcessed": 6
+}
+```
+
+**📊 Analytics Dashboard**
+
+Powered entirely by replaying events from the event store:
+- Pass/fail rates computed from test events
+- Average time to blue belt (calculated by finding enrollment → promotion events)
+- Most active testing months
+- Current rank distribution
+- Total promotions across all programs
+
+### Event Store Architecture
+
+**Event Types:**
+- `EnrollmentEventData` - When a student joins a program
+- `TestAttemptEventData` - Every test (pass AND fail) 
+- `PromotionEventData` - Rank advancements
+
+**Storage:**
+```sql
+StudentProgressionEventRecords
+├─ EventId (GUID)
+├─ StudentId (FK)
+├─ ProgramId (FK)
+├─ EventType (EnrollmentEventData | TestAttemptEventData | PromotionEventData)
+├─ EventData (JSON - full event details)
+├─ OccurredAt (Timestamp)
+└─ Version (Optimistic concurrency)
+```
+
+**Why This Matters:**
+- ✅ **Complete Audit Trail** - Never lose history, even if entities are deleted
+- ✅ **Temporal Queries** - Reconstruct state at any point in time
+- ✅ **Debugging** - Replay events to understand how current state was reached
+- ✅ **Analytics** - Derive insights from immutable event history
+- ✅ **Compliance** - Meets requirements for record keeping in professional settings
 
 ---
 
@@ -38,37 +111,109 @@ This project demonstrates enterprise-level software engineering practices in a r
 
 ### Backend Architecture
 
-**Vertical Slice Architecture + CQRS**
+**Vertical Slice Architecture + CQRS + Event Sourcing**
 
-Each feature is organized as a self-contained vertical slice with its own:
-- Command/Query handlers (MediatR)
-- Domain logic
-- Data access
-- API endpoints
+Each feature is organized as a self-contained vertical slice with:
+- **Commands** - Write operations (MediatR handlers)
+- **Queries** - Read operations (optimized for presentation)
+- **Domain Events** - Cross-cutting concerns and audit trail
+- **Event Store** - Immutable event history
+- **Read Models** - Projections from events
 
-**Domain-Driven Design Principles:**
-- ✅ Rich domain entities with encapsulation
-- ✅ Value objects for domain concepts
-- ✅ Domain events for cross-cutting concerns
-- ✅ Aggregates with consistency boundaries
-- ✅ Domain services for complex business logic
+### Domain-Driven Design Implementation
+
+**Student Management Aggregate:**
+```csharp
+public class Student : BaseEntity
+{
+    // Encapsulated state - private setters
+    public string Name { get; private set; }
+    public string Email { get; private set; }
+    
+    // Encapsulated collections
+    private readonly List<StudentProgramEnrollment> _programEnrollments = new();
+    public IReadOnlyCollection<StudentProgramEnrollment> ProgramEnrollments 
+        => _programEnrollments.AsReadOnly();
+    
+    // Business methods enforce invariants
+    public void RecordTestResult(int programId, string rank, bool passed, string notes)
+    {
+        var enrollment = _programEnrollments
+            .FirstOrDefault(e => e.ProgramId == programId && e.IsActive);
+        
+        if (enrollment == null)
+            throw new InvalidOperationException("Must be enrolled to test");
+        
+        // Record test event
+        var testResult = TestResult.Create(programId, rank, passed, notes);
+        _testHistory.Add(testResult);
+        
+        // Raise domain event → saved to event store
+        AddDomainEvent(new StudentTestRecorded { ... });
+        
+        // Auto-promote on pass
+        if (passed)
+        {
+            enrollment.PromoteToRank(rank);
+            AddDomainEvent(new StudentPromoted { ... });
+        }
+    }
+}
+```
+
+**Value Objects:**
+- `StudentAttendance` - Owned entity with computed properties
+- `LessonTime` - Immutable time slot with validation
+- `RequestStatus` - Type-safe status with state transitions
+
+**Event Sourcing Pattern:**
+```csharp
+// Event store persists domain events
+public class StudentProgressionEventRecord
+{
+    public Guid EventId { get; set; }
+    public int StudentId { get; set; }
+    public string EventType { get; set; }
+    public string EventData { get; set; } // JSON
+    public DateTime OccurredAt { get; set; }
+    public int Version { get; set; }
+}
+
+// Time-travel by replaying events
+public StudentRankAtDate GetRankAsOf(DateTime date)
+{
+    var events = _eventStore
+        .GetEvents(studentId, programId)
+        .Where(e => e.OccurredAt <= date)
+        .OrderBy(e => e.Version);
+    
+    // Rebuild state by replaying
+    foreach (var evt in events) { /* apply event */ }
+}
+```
 
 ### Frontend Architecture
 
 **Angular 18** with:
-- Reactive Forms for complex validation
-- Material Design components
-- Service-based architecture
-- Environment-based configuration
-- Responsive design
+- **Reactive Forms** - Complex validation
+- **Material Design** - Professional UI components
+- **Service Layer** - API abstraction
+- **Event Sourcing Service** - Dedicated service for analytics and time-travel queries
+- **Responsive Design** - Mobile-first approach
 
 ### System Architecture Diagram
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                    Azure Static Web Apps                     │
-│                  (Angular Frontend - SPA)                    │
+│                  (Angular 18 Frontend - SPA)                 │
 │              jolly-smoke-0f6352e10.4.azurestaticapps.net    │
+│  ┌───────────────────────────────────────────────────────┐  │
+│  │  • Student Management Dashboard                       │  │
+│  │  • Belt Progression Analytics (Event Sourcing)        │  │
+│  │  • Private Lesson Management                          │  │
+│  │  • Time-Travel Queries UI                             │  │
+│  └───────────────────────────────────────────────────────┘  │
 └────────────────────────┬────────────────────────────────────┘
                          │ HTTPS
                          │ CORS configured
@@ -78,35 +223,40 @@ Each feature is organized as a self-contained vertical slice with its own:
 │                    .NET 8 Web API (F1 Free)                 │
 │              sumter-martial-arts-api.azurewebsites.net      │
 │  ┌─────────────────────────────────────────────────────┐   │
-│  │  • Health Checks                                     │   │
-│  │  • Application Logging                               │   │
-│  │  • HTTPS Only                                        │   │
-│  │  • Managed Identity (future)                         │   │
+│  │  CQRS Handlers (MediatR)                            │   │
+│  │  ├─ Commands: RecordTest, EnrollStudent             │   │
+│  │  ├─ Queries: GetStudents, GetAnalytics              │   │
+│  │  └─ Event Handlers: StudentPromoted, TestRecorded   │   │
+│  │                                                       │   │
+│  │  Domain Events → Event Store                         │   │
 │  └─────────────────────────────────────────────────────┘   │
 └────────────────────────┬────────────────────────────────────┘
-                         │ Connection String (secured)
-                         │ EF Core
+                         │ EF Core + Migrations
                          ▼
 ┌─────────────────────────────────────────────────────────────┐
 │                    Azure SQL Database                        │
 │                    (Basic Tier - 2GB)                        │
 │     sumter-martial-arts-sql2.database.windows.net          │
 │  ┌─────────────────────────────────────────────────────┐   │
-│  │  • Instructors                                       │   │
-│  │  • Programs                                          │   │
-│  │  • PrivateLessonRequests                            │   │
-│  │  • ClassSchedules                                    │   │
-│  │  • Firewall Rules configured                         │   │
+│  │  Read Models (CQRS):                                 │   │
+│  │  ├─ Students, Programs, Instructors                  │   │
+│  │  ├─ PrivateLessonRequests                           │   │
+│  │  └─ StudentProgramEnrollments                        │   │
+│  │                                                       │   │
+│  │  Event Store (Event Sourcing):                       │   │
+│  │  └─ StudentProgressionEventRecords                   │   │
+│  │     • Complete immutable event history               │   │
+│  │     • Time-travel capable                            │   │
 │  └─────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────┐
 │                      GitHub Actions                          │
-│                    (CI/CD Pipelines)                         │
+│                 (CI/CD with EF Migrations)                   │
 │  ┌──────────────────────┐  ┌──────────────────────┐        │
 │  │  Backend Pipeline    │  │  Frontend Pipeline   │        │
 │  │  • Build .NET        │  │  • Build Angular     │        │
-│  │  • Run Tests         │  │  • Deploy to Static  │        │
+│  │  • Run Migrations    │  │  • Deploy to Static  │        │
 │  │  • Deploy to App Svc │  │    Web Apps          │        │
 │  └──────────────────────┘  └──────────────────────┘        │
 └─────────────────────────────────────────────────────────────┘
@@ -118,13 +268,13 @@ Each feature is organized as a self-contained vertical slice with its own:
 
 ### Backend
 - **.NET 8** - Latest LTS version
-- **ASP.NET Core Web API** - RESTful API
+- **ASP.NET Core Web API** - RESTful API with Minimal APIs
 - **Entity Framework Core 8** - ORM with migrations
 - **MediatR** - CQRS implementation and domain events
 - **Azure SQL Database** - Managed database service
 
 ### Frontend
-- **Angular 18** - Modern SPA framework
+- **Angular 18** - Modern SPA framework with signals
 - **Angular Material** - UI component library
 - **TypeScript** - Type-safe JavaScript
 - **RxJS** - Reactive programming
@@ -133,117 +283,146 @@ Each feature is organized as a self-contained vertical slice with its own:
 - **Azure App Service** - API hosting (Linux, F1 Free tier)
 - **Azure Static Web Apps** - Frontend hosting (Free tier)
 - **Azure SQL Database** - Database (Basic tier)
-- **GitHub Actions** - CI/CD pipelines
+- **GitHub Actions** - CI/CD pipelines with automated migrations
 - **Azure CLI** - Infrastructure management
 - **Service Principal** - Secure Azure authentication
-
-### Development Tools
-- **Visual Studio 2022** - IDE
-- **SQL Server Management Studio** - Database management
-- **Git/GitHub** - Version control
-- **PowerShell** - Scripting and automation
 
 ---
 
 ## Key Features
 
-### Architecture & Patterns
+### 🎯 Event Sourcing & Analytics
 
-- ✅ **Vertical Slice Architecture** - Features organized by business capability
-- ✅ **Domain-Driven Design** - Rich entities, value objects, aggregates
-- ✅ **Domain Events with MediatR** - Decoupled event handling
-- ✅ **CQRS Pattern** - Separation of reads and writes
-- ✅ **Proper Encapsulation** - Private backing fields, controlled mutation
-- ✅ **Domain Services** - Complex business logic in domain layer
+- ✅ **Complete Event History** - Every test, promotion, enrollment stored as immutable events
+- ✅ **Time-Travel Queries** - Reconstruct student rank at any point in history
+- ✅ **Analytics Dashboard** - Real-time metrics from event store
+  - Pass/fail rates
+  - Average time to blue belt
+  - Most active testing months
+  - Rank distribution
+- ✅ **Event Store** - Dedicated table with versioning and optimistic concurrency
+- ✅ **Audit Trail** - Complete compliance-ready history
 
-### Domain Modeling
+### 👨‍🎓 Student Management
 
-**Value Objects:**
-- `LessonTime` - Represents a time slot with start/end and validation
-- `RequestStatus` - Type-safe status with state transitions
-- `BusinessHours` - Operating hours with slot generation logic
-- `AvailabilityRule` - Weekly schedule patterns
+- ✅ **Student Profiles** - Contact info, program enrollments, attendance tracking
+- ✅ **Belt Progression Tracking** - Visual timeline of rank advancements
+- ✅ **Test Result Recording** - Modal dialog with validation
+  - Select program
+  - Enter rank being tested
+  - Mark pass/fail
+  - Add instructor notes
+  - Automatic promotion on pass
+- ✅ **Test History** - Complete record of all test attempts (including failures)
+- ✅ **Attendance Tracking** - Last 30 days, total classes, attendance rate
+- ✅ **Program Notes** - Instructor feedback per program enrollment
 
-**Entities:**
-- `Instructor` - Rich entity with schedules and business rules
-- `PrivateLessonRequest` - Request aggregate with approval workflow
-- `Program` - Martial arts program information
-- `ClassSchedule` - Recurring class schedules
+### 🥋 Private Lesson Management
 
-**Business Rules:**
-- State machine (Pending → Approved/Rejected) with validation
-- Availability checking (business hours + class conflicts + existing bookings)
-- Timezone handling (UTC storage, Eastern Time display)
-- Duration and overlap validation
-
-### Full-Stack Features
-
-- ✅ **Private Lesson Request/Approval Workflow** - Complete booking system
+- ✅ **Request/Approval Workflow** - Complete booking system
 - ✅ **Admin Dashboard** - Tabbed interface with status filtering
-- ✅ **Intelligent Availability** - Checks business hours, class schedule conflicts, and existing bookings
-- ✅ **Domain Events** - Audit trail and extensibility
-- ✅ **Material Design UI** - Modern, responsive interface
-- ✅ **Real-time Validation** - Client and server-side validation
+- ✅ **Intelligent Availability** - Checks business hours, class schedule conflicts, existing bookings
+- ✅ **Domain Events** - Audit trail for approvals/rejections
 
-### Enterprise Qualities
+### 🏗️ Architecture & Patterns
 
-- ✅ **Testable Design** - Dependency injection, interfaces, separation of concerns
-- ✅ **Security** - CORS configured, HTTPS enforced, secrets in Azure
-- ✅ **Proper Error Handling** - Validation, null checks, meaningful messages
-- ✅ **Clean Code** - SOLID principles, DRY, meaningful names
-- ✅ **Health Checks** - `/health` endpoint for monitoring
+- ✅ **Domain-Driven Design** - Rich entities, value objects, aggregates
+- ✅ **CQRS Pattern** - Commands and queries separated
+- ✅ **Event Sourcing** - Immutable event stream for belt progression
+- ✅ **Vertical Slice Architecture** - Features organized by business capability
+- ✅ **Domain Events with MediatR** - Decoupled event handling
+- ✅ **Proper Encapsulation** - Private backing fields, controlled mutation
 
 ---
 
 ## Domain Modeling
 
-### Value Objects
+### Student Aggregate (Event Sourced)
 
 ```csharp
-// LessonTime - Immutable value object with validation
-public record LessonTime(DateTime Start, DateTime End)
+public class Student : BaseEntity
 {
-    public TimeSpan Duration => End - Start;
-    
-    public bool Overlaps(LessonTime other) =>
-        Start < other.End && End > other.Start;
-}
-
-// RequestStatus - Type-safe enum with behavior
-public enum RequestStatus
-{
-    Pending,
-    Approved,
-    Rejected
-}
-```
-
-### Rich Entities
-
-```csharp
-public class Instructor
-{
-    private readonly List<ClassSchedule> _classSchedule = new();
-    
-    public IReadOnlyList<ClassSchedule> ClassSchedule => _classSchedule.AsReadOnly();
-    
-    // Business logic encapsulated in entity
-    public IEnumerable<LessonTime> GenerateNextOccurrences(DateTime from, int days)
+    // Factory method - only way to create valid student
+    public static Student Create(string name, string email, string phone)
     {
-        // Complex scheduling logic...
+        // Validation logic
+        var student = new Student { Name = name, Email = email, Phone = phone };
+        student.AddDomainEvent(new StudentCreated { ... });
+        return student;
+    }
+    
+    // Business methods enforce invariants
+    public void EnrollInProgram(int programId, string programName, string initialRank)
+    {
+        if (_programEnrollments.Any(e => e.ProgramId == programId && e.IsActive))
+            throw new InvalidOperationException("Already enrolled");
+        
+        var enrollment = StudentProgramEnrollment.Create(...);
+        _programEnrollments.Add(enrollment);
+        
+        AddDomainEvent(new StudentEnrolledInProgram { ... });
+    }
+    
+    public void RecordTestResult(int programId, string rank, bool passed, string notes)
+    {
+        // Validate enrollment
+        // Record test
+        // Raise events → persisted to event store
+        // Auto-promote on pass
     }
 }
 ```
 
-### Domain Events
+### Value Objects
 
 ```csharp
-public class PrivateLessonRequestApproved : INotification
+// StudentAttendance - Value object (no identity)
+public class StudentAttendance
 {
-    public int RequestId { get; init; }
-    public DateTime ApprovedAt { get; init; }
-    // Handled by audit/notification handlers
+    public int Last30Days { get; private set; }
+    public int Total { get; private set; }
+    public int AttendanceRate { get; private set; }
+    
+    public static StudentAttendance Create(int last30Days, int total)
+    {
+        // Validation and calculation
+        return new StudentAttendance { /* ... */ };
+    }
+    
+    // Immutable updates
+    public StudentAttendance RecordAttendance(int additionalClasses)
+    {
+        return Create(
+            Math.Min(Last30Days + additionalClasses, 30),
+            Total + additionalClasses
+        );
+    }
 }
+
+// LessonTime - Immutable value object
+public record LessonTime(DateTime Start, DateTime End)
+{
+    public TimeSpan Duration => End - Start;
+    public bool Overlaps(LessonTime other) => ...;
+}
+```
+
+### Event Store Schema
+
+```sql
+CREATE TABLE StudentProgressionEventRecords (
+    EventId UNIQUEIDENTIFIER PRIMARY KEY,
+    StudentId INT NOT NULL,
+    ProgramId INT NOT NULL,
+    EventType NVARCHAR(100) NOT NULL,
+    EventData NVARCHAR(MAX) NOT NULL, -- JSON
+    OccurredAt DATETIME2 NOT NULL,
+    Version INT NOT NULL,
+    CreatedAt DATETIME2 DEFAULT GETUTCDATE(),
+    
+    INDEX IX_Student_Program (StudentId, ProgramId, Version),
+    INDEX IX_OccurredAt (OccurredAt)
+);
 ```
 
 ---
@@ -256,27 +435,35 @@ public class PrivateLessonRequestApproved : INotification
 |----------|---------|------|---------|
 | **App Service** | Azure App Service | F1 (Free) | Hosts .NET 8 Web API |
 | **Static Web App** | Azure Static Web Apps | Free | Hosts Angular SPA |
-| **SQL Database** | Azure SQL Database | Basic | Persistent data storage |
+| **SQL Database** | Azure SQL Database | Basic | Persistent data + event store |
 | **Resource Group** | Azure Resource Manager | N/A | Logical container |
 
-### Security & Configuration
+### Database Schema
 
-- **HTTPS Enforced** - All traffic encrypted
-- **CORS Configured** - Specific origin allowlist
-- **Connection Strings** - Stored in Azure App Service configuration (not in code)
-- **Firewall Rules** - Azure SQL restricted to Azure services + admin IP
-- **Service Principal** - GitHub Actions authentication to Azure
-- **Health Checks** - `/health` endpoint monitored by Azure
+**Read Models (Current State):**
+- Students
+- Programs
+- Instructors
+- StudentProgramEnrollments
+- TestResults
+- PrivateLessonRequests
 
-### Cost Breakdown
+**Event Store (History):**
+- StudentProgressionEventRecords
 
-**Monthly Operating Cost: ~$5**
+### CI/CD with Automated Migrations
 
-- App Service (F1): **FREE** (750 hours/month free tier)
-- Static Web Apps: **FREE** (100 GB bandwidth included)
-- Azure SQL (Basic): **~$5/month**
+**Backend Pipeline** includes EF Core migrations:
+```yaml
+- name: Install and run EF migrations
+  run: |
+    dotnet new tool-manifest || true
+    dotnet tool install dotnet-ef --version 8.0.0
+    cd SumterMartialArtsAzure.Server.DataAccess
+    dotnet ef database update --connection "${{ secrets.AZURE_SQL_CONNECTION_STRING }}"
+```
 
-*Note: With Azure for Students, all services are FREE*
+Every deployment automatically applies pending migrations to Azure SQL!
 
 ---
 
@@ -286,49 +473,26 @@ public class PrivateLessonRequestApproved : INotification
 
 **Backend Pipeline** (`deploy.yml`)
 ```yaml
-Trigger: Push to main branch
+Trigger: Push to master branch
 Steps:
   1. Checkout code
   2. Set up .NET 8
   3. Restore dependencies
-  4. Build (Release configuration)
-  5. Publish
-  6. Login to Azure (Service Principal)
-  7. Deploy to App Service via Azure CLI
+  4. Build (Release)
+  5. Install EF Core tools
+  6. Run database migrations  ← Automatic schema updates!
+  7. Login to Azure
+  8. Deploy to App Service
 ```
 
 **Frontend Pipeline** (`deploy-frontend.yml`)
 ```yaml
-Trigger: Push to main branch (frontend changes)
+Trigger: Push to master branch
 Steps:
   1. Checkout code
-  2. Build Angular app (production)
+  2. Build Angular (production)
   3. Deploy to Static Web Apps
 ```
-
-### Deployment Process
-
-```
-Developer → Git Push → GitHub Actions → Azure
-                           ↓
-                    ┌──────┴──────┐
-                    │             │
-              Build & Test    Build Angular
-                    │             │
-              Deploy API    Deploy Frontend
-                    │             │
-                    └──────┬──────┘
-                           ↓
-                    Live in Azure
-```
-
-### Key Features of CI/CD
-
-- ✅ **Automatic Deployment** - Every push to `main` triggers deployment
-- ✅ **Build Validation** - Won't deploy if build fails
-- ✅ **Separate Pipelines** - Frontend and backend deploy independently
-- ✅ **Secure Credentials** - Service principal and deployment tokens in GitHub Secrets
-- ✅ **Azure CLI Integration** - Direct deployment via Azure tooling
 
 ---
 
@@ -355,7 +519,6 @@ Developer → Git Push → GitHub Actions → Azure
    cd SumterMartialArtsAzure.Server
    
    # Update connection string in appsettings.json
-   # Default: Server=(localdb)\\mssqllocaldb;Database=SumterMartialArts;Trusted_Connection=True;
    
    # Run migrations
    dotnet ef database update
@@ -364,7 +527,7 @@ Developer → Git Push → GitHub Actions → Azure
    dotnet run
    ```
    
-   API runs on: `https://localhost:5036` (or your configured port)
+   API runs on: `https://localhost:5036`
 
 3. **Frontend Setup**
    ```bash
@@ -372,9 +535,6 @@ Developer → Git Push → GitHub Actions → Azure
    
    # Install dependencies
    npm install
-   
-   # Update environment file (if needed)
-   # src/environments/environment.development.ts
    
    # Run the Angular app
    npm start
@@ -384,112 +544,79 @@ Developer → Git Push → GitHub Actions → Azure
 
 ### Database Seeding
 
-The application automatically seeds sample data on startup:
-- Programs (Brazilian Jiu-Jitsu, Muay Thai, MMA)
-- Instructors with schedules
+The application automatically seeds:
+- 6 Programs (BJJ, Judo, Kickboxing, etc.)
+- 7 Instructors with schedules
+- 7 Students with belt progression history
+- 100+ event store records showing complete progression journeys
 
----
-
-## Project Structure
-
-```
-SumterMartialArtsAzure/
-├── .github/
-│   └── workflows/
-│       ├── deploy.yml              # Backend CI/CD
-│       └── deploy-frontend.yml     # Frontend CI/CD
-├── sumtermartialartsazure.client/  # Angular Frontend
-│   ├── src/
-│   │   ├── app/
-│   │   │   ├── admin/              # Admin dashboard
-│   │   │   ├── programs/           # Program features
-│   │   │   ├── instructors/        # Instructor features
-│   │   │   └── services/           # API services
-│   │   └── environments/           # Environment config
-│   ├── angular.json
-│   └── package.json
-├── SumterMartialArtsAzure.Server/  # .NET Backend
-│   ├── Features/                   # Vertical slices
-│   │   ├── Programs/
-│   │   ├── Instructors/
-│   │   └── PrivateLessons/
-│   ├── Endpoints/                  # Minimal API endpoints
-│   └── DbSeeder.cs
-│   └── Program.cs
-├── SumterMartialArtsAzure.Server.Domain/
-│   ├── Entities/
-│   │   ├── Instructor.cs
-│   │   ├── Program.cs
-│   │   └── PrivateLessonRequest.cs
-│   └── ValueObjects/
-│       ├── LessonTime.cs
-│       ├── BusinessHours.cs
-│       └── AvailabilityRule.cs
-├── SumterMartialArtsAzure.Server.DataAccess/
-│   └── Migrations/
-│   │   ├── AppDbContext.cs
-│   │   ├── AppDbContextFactory.cs
-│   │   ├── DomainEventNotification.cs
-└── global.json
-```
+**Seed Data Includes:**
+- Sarah Johnson: BJJ Blue Belt (2.5 year journey, 5 tests)
+- David Kim: BJJ Purple Belt (4+ years, multi-program student)
+- Michael O'Brien: Student with failed test then successful retry
+- And more realistic scenarios!
 
 ---
 
 ## What I Learned
 
-### Technical Skills
+### Advanced Architectural Patterns
 
-**Backend Development:**
-- Implementing Domain-Driven Design in a real application
-- CQRS pattern with MediatR for clean separation of concerns
-- Complex business logic with value objects and domain services
-- Entity Framework Core migrations and seeding strategies
-- Minimal APIs and endpoint organization
+**Event Sourcing:**
+- Designing event schemas for domain events
+- Implementing time-travel queries by replaying events
+- Building analytics from event streams
+- Versioning and migration strategies for events
+- Optimistic concurrency with event versions
 
-**Frontend Development:**
-- Angular 18 features and best practices
-- Reactive Forms with complex validation
-- Material Design component library
-- Environment-based configuration management
-- Handling timezone conversions between backend and frontend
+**CQRS:**
+- Separating read models from write models
+- Command handlers that enforce business rules
+- Query handlers optimized for specific UI needs
+- Projections from event store to read models
+
+**Domain-Driven Design:**
+- Aggregate design with proper boundaries
+- Encapsulation using private setters and backing fields
+- Value objects for domain concepts
+- Domain events for cross-cutting concerns
+- Factory methods to prevent invalid state
+
+### Technical Depth
+
+**Backend:**
+- MediatR for clean CQRS implementation
+- EF Core migrations in CI/CD pipeline
+- Minimal APIs with proper organization
+- Domain event handling and dispatching
+- JSON serialization for event data
+
+**Frontend:**
+- Angular Material dialogs for complex workflows
+- Reactive forms with validation
+- Service layer for event sourcing APIs
+- Data visualization with CSS (charts without libraries)
+- Responsive design patterns
 
 **Cloud & DevOps:**
-- Azure App Service configuration and deployment
-- Azure Static Web Apps for SPAs
-- Azure SQL Database management and firewall rules
-- GitHub Actions for CI/CD pipelines
-- Service principal authentication for secure deployments
-- Managing secrets and connection strings in Azure
-
-**Architecture:**
-- Vertical slice architecture vs layered architecture
-- When to use CQRS and when it's overkill
-- Proper domain modeling with value objects and entities
-- Encapsulation and information hiding in domain models
-- Cross-cutting concerns with domain events
+- Automated database migrations in deployment pipeline
+- Managing event store alongside traditional tables
+- GitHub Actions with EF Core tools
+- Connection string management in Azure
 
 ### Problem-Solving
 
 **Challenges Overcome:**
-- ✅ Azure quota limits (free tier restrictions) - solved with region switching
-- ✅ Timezone handling between UTC storage and Eastern Time display
-- ✅ CORS configuration for separate frontend/backend deployments
-- ✅ GitHub Actions deployment authentication (publish profile → service principal)
-- ✅ Entity Framework design-time DbContext configuration
-- ✅ Complex availability checking with multiple conflict sources
-
-### Professional Practices
-
-- Git workflow with feature branches and pull requests
-- Writing meaningful commit messages
-- Comprehensive README documentation
-- Separation of development and production configurations
-- Security best practices (no secrets in code)
-- Code organization for maintainability
+- ✅ Event schema design for belt progression domain
+- ✅ Balancing event sourcing with CRUD operations
+- ✅ Building analytics by aggregating events
+- ✅ EF Core configuration for value objects and encapsulated collections
+- ✅ Automated migrations in CI/CD pipeline
+- ✅ Time-travel query implementation
 
 ---
 
-## 🔗 Links
+## Links
 
 - **Live Application:** [https://jolly-smoke-0f6352e10.4.azurestaticapps.net](https://jolly-smoke-0f6352e10.4.azurestaticapps.net)
 - **API Health Check:** [https://sumter-martial-arts-api.azurewebsites.net/health](https://sumter-martial-arts-api.azurewebsites.net/health)
@@ -497,25 +624,17 @@ SumterMartialArtsAzure/
 
 ---
 
-## 👤 Author
+## Author
 
 **Your Name**
 - GitHub: [@CheesePizza100](https://github.com/CheesePizza100)
 
 ---
 
-## 📝 License
+## License
 
 This project is for portfolio purposes.
 
 ---
 
-## 🙏 Acknowledgments
-
-- Martial arts domain knowledge from real-world requirements
-- Azure documentation and community resources
-- Angular and .NET communities for excellent documentation
-
----
-
-**Built with ❤️ using .NET 8, Angular 18, and Microsoft Azure**
+**Built with ❤️ using .NET 8, Angular 18, Event Sourcing, CQRS, and Microsoft Azure**
