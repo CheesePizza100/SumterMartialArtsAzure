@@ -1,7 +1,6 @@
 ﻿using SumterMartialArtsAzure.Server.Domain.Common;
 using SumterMartialArtsAzure.Server.Domain.Entities;
 using SumterMartialArtsAzure.Server.Domain.Events;
-using SumterMartialArtsAzure.Server.Domain.ValueObjects;
 
 namespace SumterMartialArtsAzure.Server.Domain;
 
@@ -15,7 +14,7 @@ public class Student : Entity
     public string Name { get; private set; } = string.Empty;
     public string Email { get; private set; } = string.Empty;
     public string Phone { get; private set; } = string.Empty;
-
+    public bool IsActive { get; private set; } = true;
     public IReadOnlyCollection<StudentProgramEnrollment> ProgramEnrollments => _programEnrollments.AsReadOnly();
     public IReadOnlyCollection<TestResult> TestHistory => _testHistory.AsReadOnly();
 
@@ -222,5 +221,41 @@ public class Student : Entity
         {
             return false;
         }
+    }
+
+    public void Deactivate()
+    {
+        if (!IsActive)
+            throw new InvalidOperationException("Student is already deactivated");
+
+        IsActive = false;
+
+        // Deactivate all program enrollments
+        foreach (var enrollment in _programEnrollments)
+        {
+            enrollment.Deactivate();
+        }
+
+        AddDomainEvent(new StudentDeactivated
+        {
+            StudentId = Id,
+            StudentName = Name,
+            DeactivatedAt = DateTime.UtcNow
+        });
+    }
+
+    public void Reactivate()
+    {
+        if (IsActive)
+            throw new InvalidOperationException("Student is already active");
+
+        IsActive = true;
+
+        AddDomainEvent(new StudentReactivated
+        {
+            StudentId = Id,
+            StudentName = Name,
+            ReactivatedAt = DateTime.UtcNow
+        });
     }
 }

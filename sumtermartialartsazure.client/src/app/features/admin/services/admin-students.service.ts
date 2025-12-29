@@ -92,4 +92,10 @@ export class AdminStudentsService {
       { programId, classesAttended }
     );
   }
+
+  deactivateStudent(studentId: number): Observable<{ success: boolean; message: string }> {
+    return this.http.delete<{ success: boolean; message: string }>(
+      `${this.baseUrl}/students/${studentId}`
+    );
+  }
 }

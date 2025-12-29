@@ -18,6 +18,7 @@ import { CreateStudentDialogComponent } from '../create-student-dialog/create-st
 import { EnrollProgramDialogComponent } from '../enroll-program-dialog/enroll-program-dialog.component';
 import { ProgramsService } from '../../../programs/services/programs.service';
 import { RecordAttendanceDialogComponent } from '../record-attendance-dialog/record-attendance-dialog.component';
+import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-admin-students',
@@ -355,5 +356,55 @@ export class AdminStudentsComponent implements OnInit {
       ? Math.round(student.programs.reduce((sum, p) => sum + p.attendance.attendanceRate, 0) / student.programs.length)
       : 0;
     return { total, last30Days, rate };
+  }
+
+  openDeactivateStudentDialog(): void {
+    if (!this.selectedStudent) return;
+
+    // Use Material Dialog for confirmation
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Deactivate Student',
+        message: `Are you sure you want to deactivate ${this.selectedStudent.name}? This will deactivate all their program enrollments. You can reactivate them later if needed.`,
+        confirmText: 'Deactivate',
+        cancelText: 'Cancel',
+        isDestructive: true
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.deactivateStudent();
+      }
+    });
+  }
+
+  deactivateStudent(): void {
+    if (!this.selectedStudent) return;
+
+    this.adminStudentsService.deactivateStudent(this.selectedStudent.id).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.snackBar.open(response.message, 'Close', {
+            duration: 3000,
+            panelClass: ['success-snackbar']
+          });
+          // Go back to list and reload
+          this.backToList();
+          this.loadStudents();
+        } else {
+          this.snackBar.open(response.message, 'Close', {
+            duration: 5000
+          });
+        }
+      },
+      error: (err) => {
+        console.error('Error deactivating student:', err);
+        this.snackBar.open('Error deactivating student', 'Close', {
+          duration: 3000
+        });
+      }
+    });
   }
 }
