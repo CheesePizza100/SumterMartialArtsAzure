@@ -81,4 +81,15 @@ export class AdminStudentsService {
       enrollment
     );
   }
+
+  recordAttendance(
+    studentId: number,
+    programId: number,
+    classesAttended: number
+  ): Observable<{ success: boolean; message: string }> {
+    return this.http.post<{ success: boolean; message: string }>(
+      `${this.baseUrl}/students/${studentId}/attendance`,
+      { programId, classesAttended }
+    );
+  }
 }

@@ -1,5 +1,6 @@
 ﻿using SumterMartialArtsAzure.Server.Domain.Common;
 using SumterMartialArtsAzure.Server.Domain.Entities;
+using SumterMartialArtsAzure.Server.Domain.Events;
 using SumterMartialArtsAzure.Server.Domain.ValueObjects;
 
 namespace SumterMartialArtsAzure.Server.Domain;
@@ -19,12 +20,12 @@ public class Student : Entity
     public IReadOnlyCollection<TestResult> TestHistory => _testHistory.AsReadOnly();
 
     // Value object
-    public StudentAttendance Attendance { get; private set; }
+    //public StudentAttendance Attendance { get; private set; }
 
     // EF Core requires parameterless constructor
     private Student()
     {
-        Attendance = StudentAttendance.Create(0, 0);
+        //Attendance = StudentAttendance.Create(0, 0);
     }
 
     // Factory method for creating new students
@@ -45,7 +46,7 @@ public class Student : Entity
             Name = name,
             Email = email,
             Phone = phone,
-            Attendance = StudentAttendance.Create(0, 0)
+            //Attendance = StudentAttendance.Create(0, 0)
         };
     }
 
@@ -137,17 +138,31 @@ public class Student : Entity
     /// <summary>
     /// Record attendance for classes
     /// </summary>
-    public void RecordAttendance(int classesAttended)
+    public void RecordAttendance(int programId, int classesAttended)
     {
         if (classesAttended <= 0)
             throw new ArgumentException("Classes attended must be positive", nameof(classesAttended));
 
-        Attendance = Attendance.RecordAttendance(classesAttended);
+        var enrollment = _programEnrollments
+            .FirstOrDefault(e => e.ProgramId == programId && e.IsActive);
+
+        if (enrollment == null)
+            throw new InvalidOperationException("Student must be enrolled in program to record attendance");
+
+        enrollment.RecordAttendance(classesAttended);
+
+        AddDomainEvent(new StudentAttendanceRecorded
+        {
+            StudentId = Id,
+            ProgramId = programId,
+            StudentName = Name,
+            ClassesAttended = classesAttended,
+            NewTotal = enrollment.Attendance.Total,
+            NewAttendanceRate = enrollment.Attendance.AttendanceRate,
+            RecordedAt = DateTime.UtcNow
+        });
     }
 
-    /// <summary>
-    /// Update student contact information
-    /// </summary>
     public void UpdateContactInfo(string? name = null, string? email = null, string? phone = null)
     {
         if (!string.IsNullOrWhiteSpace(name))
@@ -191,7 +206,7 @@ public class Student : Entity
         // 2. Must have minimum attendance rate
         // 3. Must have been in current rank for minimum time (e.g., 3 months)
         var enrolledLongEnough = enrollment.EnrolledDate <= DateTime.UtcNow.AddMonths(-3);
-        var hasGoodAttendance = Attendance.AttendanceRate >= minimumAttendanceRate;
+        var hasGoodAttendance = enrollment.Attendance.AttendanceRate >= minimumAttendanceRate;
 
         return enrolledLongEnough && hasGoodAttendance;
     }

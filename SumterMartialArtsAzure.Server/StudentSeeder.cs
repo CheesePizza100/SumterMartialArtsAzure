@@ -52,12 +52,19 @@ public static class StudentSeeder
             "Beginner"
         );
 
-        // Record attendance - 156 total classes, 18 in last 30 days
-        for (int i = 0; i < 15; i++) // Simulate attendance over time
+        // Record attendance - Split between BJJ (more) and Kickboxing (less)
+        // BJJ: 120 total, 15 in last 30 days
+        for (int i = 0; i < 12; i++)
         {
-            sarahJohnson.RecordAttendance(10);
+            sarahJohnson.RecordAttendance(americanJiuJitsu.Id, 10);
         }
-        sarahJohnson.RecordAttendance(6); // Recent classes
+
+        // Kickboxing: 36 total, 8 in last 30 days  
+        for (int i = 0; i < 3; i++)
+        {
+            sarahJohnson.RecordAttendance(kickboxing.Id, 10);
+        }
+        sarahJohnson.RecordAttendance(kickboxing.Id, 6);
 
         // BJJ Test History - Progressive journey to Blue Belt
         var testDates = new[]
@@ -135,11 +142,12 @@ public static class StudentSeeder
         );
 
         // High attendance - 312 total, 24 in last 30 days
+        // High attendance - 312 total, 24 in last 30 days (Kickboxing only)
         for (int i = 0; i < 29; i++)
         {
-            marcusChen.RecordAttendance(10);
+            marcusChen.RecordAttendance(kickboxing.Id, 10);
         }
-        marcusChen.RecordAttendance(22);
+        marcusChen.RecordAttendance(kickboxing.Id, 22);
 
         // Kickboxing progression
         var kickboxingTests = new[]
@@ -205,9 +213,9 @@ public static class StudentSeeder
             "White Belt"
         );
 
-        // New student - 42 classes total, 14 in last 30 days
-        emmaRodriguez.RecordAttendance(28);
-        emmaRodriguez.RecordAttendance(14);
+        // New student - 42 classes total, 14 in last 30 days (BJJ only)
+        emmaRodriguez.RecordAttendance(americanJiuJitsu.Id, 28);
+        emmaRodriguez.RecordAttendance(americanJiuJitsu.Id, 14);
 
         // No tests yet - still building fundamentals
 
@@ -234,12 +242,19 @@ public static class StudentSeeder
             "Beginner"
         );
 
-        // High attendance - 428 total, 20 in last 30 days
-        for (int i = 0; i < 40; i++)
+        // High attendance - split between BJJ and Wrestling
+        // BJJ: 320 total
+        for (int i = 0; i < 32; i++)
         {
-            davidKim.RecordAttendance(10);
+            davidKim.RecordAttendance(americanJiuJitsu.Id, 10);
         }
-        davidKim.RecordAttendance(28);
+
+        // Wrestling: 108 total
+        for (int i = 0; i < 8; i++)
+        {
+            davidKim.RecordAttendance(submissionWrestling.Id, 10);
+        }
+        davidKim.RecordAttendance(submissionWrestling.Id, 28);
 
         // BJJ Journey to Purple Belt
         var davidBjjTests = new[]
@@ -313,9 +328,9 @@ public static class StudentSeeder
             "Beginner"
         );
 
-        // Just started - 16 classes, 8 in last 30 days
-        jessicaPatel.RecordAttendance(8);
-        jessicaPatel.RecordAttendance(8);
+        // Just started - 16 classes, 8 in last 30 days (Kickboxing only)
+        jessicaPatel.RecordAttendance(kickboxing.Id, 8);
+        jessicaPatel.RecordAttendance(kickboxing.Id, 8);
 
         // No test history yet
 
@@ -334,11 +349,12 @@ public static class StudentSeeder
         );
 
         // Moderate attendance - 98 total, 12 in last 30 days
+        // Moderate attendance - 98 total, 12 in last 30 days (BJJ only)
         for (int i = 0; i < 8; i++)
         {
-            michaelOBrien.RecordAttendance(10);
+            michaelOBrien.RecordAttendance(americanJiuJitsu.Id, 10);
         }
-        michaelOBrien.RecordAttendance(18);
+        michaelOBrien.RecordAttendance(americanJiuJitsu.Id, 18);
 
         // Progressive tests with one failure
         michaelOBrien.RecordTestResult(
@@ -387,12 +403,12 @@ public static class StudentSeeder
             "White Belt"
         );
 
-        // Good attendance - 164 total, 16 in last 30 days
+        // Good attendance - 164 total, 16 in last 30 days (Judo only)
         for (int i = 0; i < 14; i++)
         {
-            aishaWilliams.RecordAttendance(10);
+            aishaWilliams.RecordAttendance(judo.Id, 10);
         }
-        aishaWilliams.RecordAttendance(24);
+        aishaWilliams.RecordAttendance(judo.Id, 24);
 
         // Judo progression
         aishaWilliams.RecordTestResult(

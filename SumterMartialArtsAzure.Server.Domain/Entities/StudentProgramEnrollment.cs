@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SumterMartialArtsAzure.Server.Domain.ValueObjects;
 
 namespace SumterMartialArtsAzure.Server.Domain.Entities;
 
@@ -18,12 +14,18 @@ public class StudentProgramEnrollment
     public string? InstructorNotes { get; private set; }
     public bool IsActive { get; private set; }
 
+    // Value object
+    public StudentAttendance Attendance { get; private set; }
+
     // Navigation properties
     public Student Student { get; private set; } = null!;
     // Note: We store ProgramId but don't navigate to Program to maintain aggregate boundary
 
     // EF Core constructor
-    private StudentProgramEnrollment() { }
+    private StudentProgramEnrollment()
+    {
+        Attendance = StudentAttendance.Create(0, 0);
+    }
 
     // Factory method
     internal static StudentProgramEnrollment Create(
@@ -44,14 +46,19 @@ public class StudentProgramEnrollment
     }
 
     // Business methods
-    internal void PromoteToRank(string newRank, string notes, DateTime testDate)
+    public void RecordAttendance(int classesAttended)
+    {
+        Attendance = Attendance.RecordAttendance(classesAttended);
+    }
+
+    public void PromoteToRank(string newRank, string notes, DateTime testDate)
     {
         CurrentRank = newRank;
         InstructorNotes = notes;
         LastTestDate = testDate;
     }
 
-    internal void UpdateNotes(string notes)
+    public void UpdateNotes(string notes)
     {
         InstructorNotes = notes;
     }

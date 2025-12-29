@@ -6,5 +6,6 @@ public record ProgramEnrollmentDto(
     string Rank,
     DateTime EnrolledDate,
     DateTime? LastTest,
-    string? TestNotes
+    string? TestNotes,
+    AttendanceDto Attendance
 );

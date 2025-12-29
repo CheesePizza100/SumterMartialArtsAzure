@@ -69,8 +69,8 @@
           <th mat-header-cell *matHeaderCellDef>Attendance</th>
           <td mat-cell *matCellDef="let student">
             <div class="attendance-info">
-              <div>{{ student.attendance.last30Days }} / 30 days</div>
-              <small>{{ student.attendance.attendanceRate }}% rate</small>
+              <div>{{ getTotalAttendance(student).last30Days }} / 30 days</div>
+              <small>{{ getTotalAttendance(student).rate }}% rate</small>
             </div>
           </td>
         </ng-container>
@@ -119,12 +119,15 @@
           </div>
         </div>
         <div class="header-right">
-          <div class="stat-label">Total Classes Attended</div>
-          <div class="stat-value">{{ selectedStudent.attendance.total }}</div>
+          <div class="stat-label">Total Classes Attended (All Programs)</div>
+          <div class="stat-value">{{ getTotalAttendance(selectedStudent).total }}</div>
         </div>
         <div class="header-actions">
           <button mat-raised-button color="accent" (click)="openEnrollProgramDialog()">
             Enroll in Program
+          </button>
+          <button mat-raised-button (click)="openRecordAttendanceDialog()">
+            Record Attendance
           </button>
           <button mat-raised-button color="primary" (click)="openRecordTestDialog()">
             <mat-icon>assessment</mat-icon>
@@ -135,118 +138,136 @@
       </div>
 
       <!-- Tabs -->
-      <mat-tab-group [(selectedIndex)]="activeTab">
-        <!-- Programs & Ranks Tab -->
-        <mat-tab label="Programs & Ranks">
-          <div class="tab-content">
-            <div *ngFor="let program of selectedStudent.programs" class="program-card">
-              <div class="program-header">
+    <mat-tab-group [(selectedIndex)]="activeTab">
+      <!-- Programs & Ranks Tab -->
+      <!-- Programs & Ranks Tab -->
+      <mat-tab label="Programs & Ranks">
+        <div class="tab-content">
+          <div *ngFor="let program of selectedStudent.programs" class="program-card">
+            <div class="program-header">
+              <div>
+                <h3>{{ program.name }}</h3>
+                <p class="current-rank">
+                  Current Rank: <span class="rank-badge">{{ program.rank }}</span>
+                </p>
+              </div>
+              <div class="program-dates">
+                <div>Enrolled: {{ formatDate(program.enrolledDate) }}</div>
+                <div *ngIf="program.lastTest">
+                  Last Test: {{ formatDate(program.lastTest) }}
+                </div>
+              </div>
+            </div>
+
+            <!-- ADD THIS: Per-program attendance -->
+            <div class="attendance-section">
+              <h4>Attendance (This Program)</h4>
+              <div class="detail-row">
+                <span class="detail-label">Last 30 Days:</span>
+                <span class="detail-value">{{ program.attendance.last30Days }} classes</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Total:</span>
+                <span class="detail-value">{{ program.attendance.total }} classes</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Attendance Rate:</span>
+                <span class="detail-value">{{ program.attendance.attendanceRate }}%</span>
+              </div>
+            </div>
+
+            <div *ngIf="program.testNotes" class="instructor-notes">
+              <strong>Instructor Notes</strong>
+              <p>{{ program.testNotes }}</p>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- Test History Tab -->
+      <mat-tab label="Test History">
+        <div class="tab-content">
+          <div *ngIf="selectedStudent.testHistory.length > 0; else noTests">
+            <div *ngFor="let test of selectedStudent.testHistory" class="test-card">
+              <div class="test-header">
                 <div>
-                  <h3>{{ program.name }}</h3>
-                  <p class="current-rank">
-                    Current Rank: <span class="rank-badge">{{ program.rank }}</span>
-                  </p>
-                </div>
-                <div class="program-dates">
-                  <div>Enrolled: {{ formatDate(program.enrolledDate) }}</div>
-                  <div *ngIf="program.lastTest">
-                    Last Test: {{ formatDate(program.lastTest) }}
+                  <div class="test-title">
+                    <h4>{{ test.program }}</h4>
+                    <mat-chip [color]="getResultColor(test.result)" selected>
+                      {{ test.result }}
+                    </mat-chip>
                   </div>
+                  <p>Promoted to: <strong>{{ test.rank }}</strong></p>
+                </div>
+                <div class="test-date">
+                  {{ formatDate(test.date) }}
                 </div>
               </div>
-              <div *ngIf="program.testNotes" class="instructor-notes">
-                <strong>Instructor Notes</strong>
-                <p>{{ program.testNotes }}</p>
+              <div *ngIf="test.notes" class="test-notes">
+                {{ test.notes }}
               </div>
             </div>
           </div>
-        </mat-tab>
-
-        <!-- Test History Tab -->
-        <mat-tab label="Test History">
-          <div class="tab-content">
-            <div *ngIf="selectedStudent.testHistory.length > 0; else noTests">
-              <div *ngFor="let test of selectedStudent.testHistory" class="test-card">
-                <div class="test-header">
-                  <div>
-                    <div class="test-title">
-                      <h4>{{ test.program }}</h4>
-                      <mat-chip [color]="getResultColor(test.result)" selected>
-                        {{ test.result }}
-                      </mat-chip>
-                    </div>
-                    <p>Promoted to: <strong>{{ test.rank }}</strong></p>
-                  </div>
-                  <div class="test-date">
-                    {{ formatDate(test.date) }}
-                  </div>
-                </div>
-                <div *ngIf="test.notes" class="test-notes">
-                  {{ test.notes }}
-                </div>
-              </div>
+          <ng-template #noTests>
+            <div class="empty-state">
+              <mat-icon>description</mat-icon>
+              <p>No test history yet</p>
             </div>
-            <ng-template #noTests>
-              <div class="empty-state">
-                <mat-icon>description</mat-icon>
-                <p>No test history yet</p>
-              </div>
-            </ng-template>
-          </div>
-        </mat-tab>
+          </ng-template>
+        </div>
+      </mat-tab>
 
-        <!-- Attendance Tab -->
-        <mat-tab label="Attendance">
-          <div class="tab-content">
-            <div class="attendance-stats">
-              <div class="stat-card blue">
-                <div class="stat-number">{{ selectedStudent.attendance.last30Days }}</div>
-                <div class="stat-text">Last 30 Days</div>
-              </div>
-              <div class="stat-card green">
-                <div class="stat-number">{{ selectedStudent.attendance.attendanceRate }}%</div>
-                <div class="stat-text">Attendance Rate</div>
-              </div>
-              <div class="stat-card purple">
-                <div class="stat-number">{{ selectedStudent.attendance.total }}</div>
-                <div class="stat-text">Total Classes</div>
-              </div>
+      <!-- Attendance Tab -->
+      <mat-tab label="Attendance">
+        <div class="tab-content">
+          <div class="attendance-stats">
+            <div class="stat-card blue">
+              <div class="stat-number">{{ getTotalAttendance(selectedStudent).last30Days }}</div>              <div class="stat-text">Last 30 Days</div>
             </div>
-
-            <div class="attendance-pattern">
-              <h4>Attendance Pattern</h4>
-              <div class="pattern-row">
-                <div class="pattern-label">This Week</div>
-                <div class="pattern-bar">
-                  <div class="pattern-fill" [style.width.%]="80"></div>
-                </div>
-                <div class="pattern-value">4/5 days</div>
-              </div>
-              <div class="pattern-row">
-                <div class="pattern-label">Last Week</div>
-                <div class="pattern-bar">
-                  <div class="pattern-fill" [style.width.%]="100"></div>
-                </div>
-                <div class="pattern-value">5/5 days</div>
-              </div>
-              <div class="pattern-row">
-                <div class="pattern-label">2 Weeks Ago</div>
-                <div class="pattern-bar">
-                  <div class="pattern-fill" [style.width.%]="60"></div>
-                </div>
-                <div class="pattern-value">3/5 days</div>
-              </div>
+            <div class="stat-card green">
+              <div class="stat-number">{{ getTotalAttendance(selectedStudent).rate }}%</div>
+              <div class="stat-text">Attendance Rate</div>
             </div>
-
-            <div class="attendance-note">
-              <mat-icon>info</mat-icon>
-              <span>
-                <strong>Note:</strong> Student maintaining excellent attendance.
-                Eligible for upcoming belt test.
-              </span>
+            <div class="stat-card purple">
+              <div class="stat-number">{{ getTotalAttendance(selectedStudent).total }}</div>
+              <div class="stat-text">Total Classes</div>
             </div>
           </div>
-        </mat-tab>
-      </mat-tab-group>
+
+          <div class="attendance-pattern">
+            <h4>Attendance Pattern</h4>
+            <div class="pattern-row">
+              <div class="pattern-label">This Week</div>
+              <div class="pattern-bar">
+                <div class="pattern-fill" [style.width.%]="80"></div>
+              </div>
+              <div class="pattern-value">4/5 days</div>
+            </div>
+            <div class="pattern-row">
+              <div class="pattern-label">Last Week</div>
+              <div class="pattern-bar">
+                <div class="pattern-fill" [style.width.%]="100"></div>
+              </div>
+              <div class="pattern-value">5/5 days</div>
+            </div>
+            <div class="pattern-row">
+              <div class="pattern-label">2 Weeks Ago</div>
+              <div class="pattern-bar">
+                <div class="pattern-fill" [style.width.%]="60"></div>
+              </div>
+              <div class="pattern-value">3/5 days</div>
+            </div>
+          </div>
+
+          <div class="attendance-note">
+            <mat-icon>info</mat-icon>
+            <span>
+              <strong>Note:</strong> Student maintaining excellent attendance.
+              Eligible for upcoming belt test.
+            </span>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
     </div>
   </div>

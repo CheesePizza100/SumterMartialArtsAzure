@@ -37,7 +37,6 @@ public class CreateStudentHandler
             student.Email,
             student.Phone,
             new List<ProgramEnrollmentDto>(),
-            new AttendanceDto(0, 0, 0),
             new List<TestHistoryDto>()
         );
     }

@@ -17,6 +17,7 @@ import { RecordTestDialogComponent } from '../record-test-dialog/record-test-dia
 import { CreateStudentDialogComponent } from '../create-student-dialog/create-student-dialog.component';
 import { EnrollProgramDialogComponent } from '../enroll-program-dialog/enroll-program-dialog.component';
 import { ProgramsService } from '../../../programs/services/programs.service';
+import { RecordAttendanceDialogComponent } from '../record-attendance-dialog/record-attendance-dialog.component';
 
 @Component({
   selector: 'app-admin-students',
@@ -227,9 +228,6 @@ export class AdminStudentsComponent implements OnInit {
     // Get programs the student is NOT already enrolled in
     const enrolledProgramIds = this.selectedStudent.programs.map(p => p.programId);
 
-    // You'll need to fetch all available programs
-    // For now, hardcode or add a service method to get all programs
-    // Example:
     this.programsService.getPrograms().subscribe(allPrograms => {
       const availablePrograms = allPrograms.filter(
         p => !enrolledProgramIds.includes(p.id)
@@ -291,5 +289,71 @@ export class AdminStudentsComponent implements OnInit {
         });
       }
     });
+  }
+
+  openRecordAttendanceDialog(): void {
+    if (!this.selectedStudent) return;
+
+    const dialogRef = this.dialog.open(RecordAttendanceDialogComponent, {
+      width: '600px',
+      data: {
+        studentId: this.selectedStudent.id,
+        studentName: this.selectedStudent.name,
+        programs: this.selectedStudent.programs.map(p => ({
+          programId: p.programId,
+          programName: p.name,
+          currentTotal: p.attendance?.total || 0,
+          currentLast30Days: p.attendance?.last30Days || 0
+        }))
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.recordAttendance(result.programId, result.classesAttended);
+      }
+    });
+  }
+
+  recordAttendance(programId: number, classesAttended: number): void {
+    if (!this.selectedStudent) return;
+
+    this.adminStudentsService.recordAttendance(
+      this.selectedStudent.id,
+      programId,
+      classesAttended
+    ).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.snackBar.open(response.message, 'Close', {
+            duration: 3000,
+            panelClass: ['success-snackbar']
+          });
+          this.adminStudentsService.getStudentById(this.selectedStudent!.id).subscribe({
+            next: (student) => {
+              this.selectedStudent = student;
+            }
+          });
+        } else {
+          this.snackBar.open(response.message, 'Close', {
+            duration: 5000
+          });
+        }
+      },
+      error: (err) => {
+        console.error('Error recording attendance:', err);
+        this.snackBar.open('Error recording attendance', 'Close', {
+          duration: 3000
+        });
+      }
+    });
+  }
+  getTotalAttendance(student: Student): { total: number; last30Days: number; rate: number } {
+    const total = student.programs.reduce((sum, p) => sum + p.attendance.total, 0);
+    const last30Days = student.programs.reduce((sum, p) => sum + p.attendance.last30Days, 0);
+    const rate = student.programs.length > 0
+      ? Math.round(student.programs.reduce((sum, p) => sum + p.attendance.attendanceRate, 0) / student.programs.length)
+      : 0;
+    return { total, last30Days, rate };
   }
 }

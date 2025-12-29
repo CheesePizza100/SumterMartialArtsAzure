@@ -40,13 +40,12 @@ public class StudentSearchHandler
                         e.CurrentRank,
                         e.EnrolledDate,
                         e.LastTestDate,
-                        e.InstructorNotes
+                        e.InstructorNotes,
+                        new AttendanceDto(
+                            e.Attendance.Last30Days,
+                            e.Attendance.Total,
+                            e.Attendance.AttendanceRate)
                     )).ToList(),
-                new AttendanceDto(
-                    s.Attendance.Last30Days,
-                    s.Attendance.Total,
-                    s.Attendance.AttendanceRate
-                ),
                 s.TestHistory
                     .OrderByDescending(t => t.TestDate)
                     .Select(t => new TestHistoryDto(

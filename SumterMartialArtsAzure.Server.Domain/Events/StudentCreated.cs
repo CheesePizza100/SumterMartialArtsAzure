@@ -60,6 +60,7 @@ public record StudentTestRecorded : IDomainEvent
 public record StudentAttendanceRecorded : IDomainEvent
 {
     public int StudentId { get; set; }
+    public int ProgramId { get; set; }
     public string StudentName { get; set; } = string.Empty;
     public int ClassesAttended { get; set; }
     public int NewTotal { get; set; }

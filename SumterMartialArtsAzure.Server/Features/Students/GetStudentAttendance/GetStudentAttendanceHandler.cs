@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using SumterMartialArtsAzure.Server.DataAccess;
+using SumterMartialArtsAzure.Server.Domain.Entities;
 
 namespace SumterMartialArtsAzure.Server.Api.Features.Students.GetStudentAttendance;
 
@@ -18,15 +19,17 @@ public class GetStudentAttendanceHandler
         GetStudentAttendanceQuery request,
         CancellationToken cancellationToken)
     {
-        var student = await _dbContext.Students
-            .Where(s => s.Id == request.StudentId)
-            .Select(s => new GetStudentAttendanceResponse(
-                s.Attendance.Last30Days,
-                s.Attendance.Total,
-                s.Attendance.AttendanceRate
+        var enrollment = await _dbContext.Set<StudentProgramEnrollment>()
+            .Where(e => e.StudentId == request.StudentId
+                        && e.ProgramId == request.ProgramId
+                        && e.IsActive)
+            .Select(e => new GetStudentAttendanceResponse(
+                e.Attendance.Last30Days,
+                e.Attendance.Total,
+                e.Attendance.AttendanceRate
             ))
             .FirstOrDefaultAsync(cancellationToken);
 
-        return student;
+        return enrollment;
     }
 }

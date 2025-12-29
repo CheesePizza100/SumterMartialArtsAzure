@@ -5,6 +5,7 @@ export interface Program {
   enrolledDate: string;
   lastTest: string | null;
   testNotes: string | null;
+  attendance: Attendance;
 }
 
 export interface TestHistory {
@@ -27,6 +28,5 @@ export interface Student {
   email: string;
   phone: string;
   programs: Program[];
-  attendance: Attendance;
   testHistory: TestHistory[];
 }

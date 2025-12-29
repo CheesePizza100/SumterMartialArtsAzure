@@ -50,13 +50,12 @@ public class UpdateStudentHandler
                     e.CurrentRank,
                     e.EnrolledDate,
                     e.LastTestDate,
-                    e.InstructorNotes
+                    e.InstructorNotes,
+                    new AttendanceDto(
+                        e.Attendance.Last30Days,
+                        e.Attendance.Total,
+                        e.Attendance.AttendanceRate)
                 )).ToList(),
-            new AttendanceDto(
-                student.Attendance.Last30Days,
-                student.Attendance.Total,
-                student.Attendance.AttendanceRate
-            ),
             student.TestHistory
                 .OrderByDescending(t => t.TestDate)
                 .Select(t => new TestHistoryDto(

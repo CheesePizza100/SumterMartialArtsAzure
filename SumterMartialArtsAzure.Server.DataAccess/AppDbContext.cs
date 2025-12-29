@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using SumterMartialArtsAzure.Server.Domain;
 using SumterMartialArtsAzure.Server.Domain.Common;
+using SumterMartialArtsAzure.Server.Domain.Entities;
 using SumterMartialArtsAzure.Server.Domain.Events;
 using SumterMartialArtsAzure.Server.Domain.ValueObjects;
 
@@ -137,14 +138,6 @@ public class AppDbContext : DbContext
         {
             entity.HasKey(s => s.Id);
 
-            // Owned value object
-            entity.OwnsOne(s => s.Attendance, attendance =>
-            {
-                attendance.Property(a => a.Last30Days).HasColumnName("Attendance_Last30Days");
-                attendance.Property(a => a.Total).HasColumnName("Attendance_Total");
-                attendance.Property(a => a.AttendanceRate).HasColumnName("Attendance_Rate");
-            });
-
             // Enrollments collection
             entity.HasMany(s => s.ProgramEnrollments)
                 .WithOne(e => e.Student)
@@ -169,6 +162,18 @@ public class AppDbContext : DbContext
             .FindNavigation(nameof(Student.TestHistory))!
             .SetField("_testHistory");
 
+        modelBuilder.Entity<StudentProgramEnrollment>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            // Add StudentAttendance value object
+            entity.OwnsOne(e => e.Attendance, attendance =>
+            {
+                attendance.Property(a => a.Last30Days).HasColumnName("Last30Days");
+                attendance.Property(a => a.Total).HasColumnName("TotalClasses");
+                attendance.Property(a => a.AttendanceRate).HasColumnName("AttendanceRate");
+            });
+        });
         // Event Store configuration
         modelBuilder.Entity<StudentProgressionEventRecord>(entity =>
         {

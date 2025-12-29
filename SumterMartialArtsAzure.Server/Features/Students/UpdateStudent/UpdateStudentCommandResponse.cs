@@ -8,6 +8,5 @@ public record UpdateStudentCommandResponse(
     string Email,
     string Phone,
     List<ProgramEnrollmentDto> Programs,
-    AttendanceDto Attendance,
     List<TestHistoryDto> TestHistory
 );

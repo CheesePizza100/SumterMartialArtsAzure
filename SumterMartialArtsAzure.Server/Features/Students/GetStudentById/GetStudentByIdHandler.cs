@@ -15,7 +15,9 @@ public class GetStudentByIdHandler
         _dbContext = dbContext;
     }
 
-    public async Task<GetStudentByIdResponse> Handle(GetStudentByIdQuery request, CancellationToken cancellationToken)
+    public async Task<GetStudentByIdResponse> Handle(
+        GetStudentByIdQuery request,
+        CancellationToken cancellationToken)
     {
         var student = await _dbContext.Students
             .Include(s => s.ProgramEnrollments)
@@ -34,13 +36,13 @@ public class GetStudentByIdHandler
                         e.CurrentRank,
                         e.EnrolledDate,
                         e.LastTestDate,
-                        e.InstructorNotes
+                        e.InstructorNotes,
+                        new AttendanceDto(
+                            e.Attendance.Last30Days,
+                            e.Attendance.Total,
+                            e.Attendance.AttendanceRate
+                        )
                     )).ToList(),
-                new AttendanceDto(
-                    s.Attendance.Last30Days,
-                    s.Attendance.Total,
-                    s.Attendance.AttendanceRate
-                ),
                 s.TestHistory
                     .OrderByDescending(t => t.TestDate)
                     .Select(t => new TestHistoryDto(

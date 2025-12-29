@@ -1,0 +1,80 @@
+<h2 mat-dialog-title>Record Attendance</h2>
+
+<mat-dialog-content>
+  <div class="dialog-form">
+    <p class="student-info">
+      Recording attendance for: <strong>{{ data.studentName }}</strong>
+    </p>
+
+    <!-- ADD THIS: Program Selection -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Program</mat-label>
+      <mat-select [(ngModel)]="selectedProgramId" required>
+        <mat-option *ngFor="let program of data.programs" [value]="program.programId">
+          {{ program.programName }}
+        </mat-option>
+      </mat-select>
+      <mat-hint>Select which program to record attendance for</mat-hint>
+    </mat-form-field>
+
+    <!-- Classes Attended -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Number of Classes Attended</mat-label>
+      <input matInput
+             type="number"
+             [(ngModel)]="classesAttended"
+             min="1"
+             max="30"
+             required>
+      <mat-hint>Enter the number of classes attended (1-30)</mat-hint>
+    </mat-form-field>
+
+    <!-- Current Stats - ONLY SHOW IF PROGRAM SELECTED -->
+    <div class="stats-container" *ngIf="selectedProgram">
+      <div class="stat-item">
+        <span class="stat-label">Current Total ({{ selectedProgram.programName }}):</span>
+        <span class="stat-value">{{ currentTotal }} classes</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Current Last 30 Days:</span>
+        <span class="stat-value">{{ currentLast30Days }} classes</span>
+      </div>
+    </div>
+
+    <!-- New Stats Preview -->
+    <div class="preview-box" *ngIf="selectedProgram">
+      <h4>After Recording:</h4>
+      <div class="preview-stats">
+        <div class="preview-item">
+          <span class="preview-label">New Total:</span>
+          <span class="preview-value">{{ newTotal }} classes</span>
+        </div>
+        <div class="preview-item">
+          <span class="preview-label">New Last 30 Days:</span>
+          <span class="preview-value">{{ newLast30Days }} classes</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Info Box -->
+    <div class="info-box">
+      <span>
+        Recording attendance will create an event in the event store and update
+        the student's attendance statistics.
+      </span>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()" [disabled]="isSubmitting">
+    Cancel
+  </button>
+  <button mat-raised-button
+          color="primary"
+          (click)="onSubmit()"
+          [disabled]="!canSubmit">
+    <mat-spinner diameter="20" *ngIf="isSubmitting"></mat-spinner>
+    <span *ngIf="!isSubmitting">Record Attendance</span>
+  </button>
+</mat-dialog-actions>
