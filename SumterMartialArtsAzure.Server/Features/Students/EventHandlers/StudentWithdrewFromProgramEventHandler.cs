@@ -11,14 +11,9 @@ public class StudentWithdrewFromProgramEventHandler
 {
     private readonly IEmailService _emailService;
     private readonly AppDbContext _dbContext;
-    private readonly ILogger<StudentWithdrewFromProgramEventHandler> _logger;
 
-    public StudentWithdrewFromProgramEventHandler(
-        IEmailService emailService,
-        AppDbContext dbContext,
-        ILogger<StudentWithdrewFromProgramEventHandler> logger)
+    public StudentWithdrewFromProgramEventHandler(IEmailService emailService, AppDbContext dbContext)
     {
-        _logger = logger;
         _emailService = emailService;
         _dbContext = dbContext;
     }
@@ -27,22 +22,9 @@ public class StudentWithdrewFromProgramEventHandler
     {
         var domainEvent = notification.DomainEvent;
 
-        _logger.LogInformation(
-            "Student withdrawn from program. StudentId: {StudentId}, Student: {StudentName}, ProgramId: {ProgramId}, Program: {ProgramName}",
-            domainEvent.StudentId,
-            domainEvent.StudentName,
-            domainEvent.ProgramId,
-            domainEvent.ProgramName);
-
         var student = await _dbContext.Students
             .Include(s => s.ProgramEnrollments)
             .FirstOrDefaultAsync(s => s.Id == domainEvent.StudentId, cancellationToken);
-
-        if (student == null)
-        {
-            _logger.LogWarning("Student {StudentId} not found for withdrawal email", domainEvent.StudentId);
-            return;
-        }
 
         // Get remaining active programs
         var remainingPrograms = student.ProgramEnrollments
@@ -56,13 +38,5 @@ public class StudentWithdrewFromProgramEventHandler
             domainEvent.ProgramName,
             remainingPrograms
         );
-
-        _logger.LogInformation(
-            "Withdrawal email sent to {StudentName} ({Email}) for {ProgramName}",
-            student.Name,
-            student.Email,
-            domainEvent.ProgramName
-        );
-
     }
 }

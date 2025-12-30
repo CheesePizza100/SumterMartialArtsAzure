@@ -27,6 +27,7 @@ builder.Services.AddMediatR(cfg =>
     // 3. Exception Handling (catches exceptions from handlers)
     cfg.AddOpenBehavior(typeof(LoggingBehavior<,>));
     cfg.AddOpenBehavior(typeof(ExceptionHandlingBehavior<,>));
+    cfg.AddOpenBehavior(typeof(DomainEventLoggingBehavior<>));
 });
 
 builder.Services.AddDbContext<AppDbContext>(options =>
