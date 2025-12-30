@@ -8,6 +8,7 @@ using SumterMartialArtsAzure.Server.Api.Features.Programs.GetProgramById;
 using SumterMartialArtsAzure.Server.Api.Features.Programs.GetPrograms;
 using SumterMartialArtsAzure.Server.Api.Middleware;
 using SumterMartialArtsAzure.Server.DataAccess;
+using SumterMartialArtsAzure.Server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +32,18 @@ builder.Services.AddMediatR(cfg =>
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")));
+
+var emailSettings = builder.Configuration.GetSection("EmailSettings").Get<EmailSettings>()
+                    ?? throw new InvalidOperationException("EmailSettings not configured");
+
+builder.Services
+    .AddFluentEmail(emailSettings.FromEmail, emailSettings.FromName)
+    .AddSmtpSender(
+        emailSettings.SmtpServer,
+        emailSettings.SmtpPort
+    );
+
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 // in a traditional vertical slice / CQRS-style API, each handler (like GetProgramsHandler) is a small service that performs a single operation.
 // DbContext itself is a DI service. So, for ASP.NET Core to automatically inject it into your handler, the handler itself must also be managed by the DI container.
@@ -84,4 +97,14 @@ app.MapProgramEndpoints();
 app.MapHealthChecks("/health");
 
 app.Run();
- 
+
+public class EmailSettings
+{
+    public string SmtpServer { get; set; } = string.Empty;
+    public int SmtpPort { get; set; }
+    public string SmtpUsername { get; set; } = string.Empty;
+    public string SmtpPassword { get; set; } = string.Empty;
+    public string FromEmail { get; set; } = string.Empty;
+    public string FromName { get; set; } = string.Empty;
+    public bool EnableSsl { get; set; }
+}

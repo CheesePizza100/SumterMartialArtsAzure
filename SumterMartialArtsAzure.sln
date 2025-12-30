@@ -7,14 +7,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SumterMartialArtsAzure.Serv
 EndProject
 Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "sumtermartialartsazure.client", "sumtermartialartsazure.client\sumtermartialartsazure.client.esproj", "{6298B11F-9E03-4587-9EC0-FBF5A9AA5648}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SumterMartialArtsAzure.Server.Domain", "SumterMartialArtsAzure.Server.Domain\SumterMartialArtsAzure.Server.Domain.csproj", "{53EAA000-E98D-49FF-A9CD-82D3C3E9AAA5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SumterMartialArtsAzure.Server.Domain", "SumterMartialArtsAzure.Server.Domain\SumterMartialArtsAzure.Server.Domain.csproj", "{53EAA000-E98D-49FF-A9CD-82D3C3E9AAA5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SumterMartialArtsAzure.Server.DataAccess", "SumterMartialArtsAzure.Server.DataAccess\SumterMartialArtsAzure.Server.DataAccess.csproj", "{6C7739E6-37A0-4C4B-97F8-5F314CF70F79}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SumterMartialArtsAzure.Server.DataAccess", "SumterMartialArtsAzure.Server.DataAccess\SumterMartialArtsAzure.Server.DataAccess.csproj", "{6C7739E6-37A0-4C4B-97F8-5F314CF70F79}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{53A95625-5C4A-44E1-B422-8369A937A565}"
 	ProjectSection(SolutionItems) = preProject
 		global.json = global.json
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SumterMartialArtsAzure.Server.Services", "SumterMartialArtsAzure.Server.Services\SumterMartialArtsAzure.Server.Services.csproj", "{32F6DBD3-6DAC-487D-A419-CF2FEC6FD91E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -40,6 +42,10 @@ Global
 		{6C7739E6-37A0-4C4B-97F8-5F314CF70F79}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6C7739E6-37A0-4C4B-97F8-5F314CF70F79}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6C7739E6-37A0-4C4B-97F8-5F314CF70F79}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32F6DBD3-6DAC-487D-A419-CF2FEC6FD91E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32F6DBD3-6DAC-487D-A419-CF2FEC6FD91E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32F6DBD3-6DAC-487D-A419-CF2FEC6FD91E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32F6DBD3-6DAC-487D-A419-CF2FEC6FD91E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

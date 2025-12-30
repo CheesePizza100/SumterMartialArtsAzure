@@ -40,13 +40,23 @@ public class Student : Entity
         if (!IsValidEmail(email))
             throw new ArgumentException("Invalid email format", nameof(email));
 
-        return new Student
+        var student = new Student
         {
             Name = name,
             Email = email,
             Phone = phone,
-            //Attendance = StudentAttendance.Create(0, 0)
         };
+
+        student.AddDomainEvent(new StudentCreated
+        {
+            StudentId = student.Id,
+            Name = name,
+            Email = email,
+            Phone = phone,
+            CreatedAt = DateTime.UtcNow
+        });
+
+        return student;
     }
 
     /// <summary>
@@ -66,6 +76,16 @@ public class Student : Entity
         );
 
         _programEnrollments.Add(enrollment);
+
+        AddDomainEvent(new StudentEnrolledInProgram
+        {
+            StudentId = Id,
+            StudentName = Name,
+            ProgramId = programId,
+            ProgramName = programName,
+            InitialRank = initialRank,
+            EnrolledAt = DateTime.UtcNow
+        });
     }
 
     // <summary>
