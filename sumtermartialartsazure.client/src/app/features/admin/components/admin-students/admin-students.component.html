@@ -9,10 +9,8 @@
                [(ngModel)]="searchTerm"
                (ngModelChange)="onSearchChange()"
                placeholder="Name, email, or program">
-        <mat-icon matSuffix>search</mat-icon>
       </mat-form-field>
       <button mat-raised-button color="primary" (click)="openCreateStudentDialog()">
-        <mat-icon>person_add</mat-icon>
         Create Student
       </button>
     </div>
@@ -33,7 +31,6 @@
           <td mat-cell *matCellDef="let student">
             <div class="student-cell">
               <div class="avatar">
-                <mat-icon>person</mat-icon>
               </div>
               <strong>{{ student.name }}</strong>
             </div>
@@ -110,7 +107,6 @@
       <div class="student-header">
         <div class="header-left">
           <div class="avatar-large">
-            <mat-icon>person</mat-icon>
           </div>
           <div class="header-info">
             <h2>{{ selectedStudent.name }}</h2>
@@ -130,7 +126,6 @@
             Record Attendance
           </button>
           <button mat-raised-button color="primary" (click)="openRecordTestDialog()">
-            <mat-icon>assessment</mat-icon>
             Record Test Result
           </button>
           <button mat-button color="warn" (click)="openDeactivateStudentDialog()">
@@ -213,7 +208,6 @@
           </div>
           <ng-template #noTests>
             <div class="empty-state">
-              <mat-icon>description</mat-icon>
               <p>No test history yet</p>
             </div>
           </ng-template>
@@ -263,7 +257,6 @@
           </div>
 
           <div class="attendance-note">
-            <mat-icon>info</mat-icon>
             <span>
               <strong>Note:</strong> Student maintaining excellent attendance.
               Eligible for upcoming belt test.

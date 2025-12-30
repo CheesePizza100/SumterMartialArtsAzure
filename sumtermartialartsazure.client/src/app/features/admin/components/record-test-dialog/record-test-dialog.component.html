@@ -55,7 +55,6 @@
 
     <!-- Event Sourcing Info -->
     <div class="info-box" *ngIf="result === 'Pass'">
-      <mat-icon>info</mat-icon>
       <span>
         Recording this test will create events in the event store and automatically promote
         the student to <strong>{{ rankTested }}</strong> in {{ selectedProgram?.name }}.
@@ -63,7 +62,6 @@
     </div>
 
     <div class="warning-box" *ngIf="result === 'Fail'">
-      <mat-icon>warning</mat-icon>
       <span>
         This test result will be recorded in the event store, but the student will
         remain at their current rank ({{ selectedProgram?.currentRank }}).
