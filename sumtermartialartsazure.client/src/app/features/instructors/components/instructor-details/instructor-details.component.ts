@@ -80,7 +80,7 @@ export class InstructorDetailsComponent implements OnInit {
             duration: 5000, // 5 seconds
             horizontalPosition: 'center',
             verticalPosition: 'bottom',
-            panelClass: ['success-snackbar'] // optional custom styling
+            panelClass: ['success-snackbar']
           }
         );
       }

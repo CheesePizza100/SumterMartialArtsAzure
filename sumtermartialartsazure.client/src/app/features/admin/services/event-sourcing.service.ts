@@ -13,9 +13,6 @@ export class EventSourcingService {
 
   constructor(private http: HttpClient) { }
 
-  /**
-   * Get analytics across all programs or filtered by program
-   */
   getProgressionAnalytics(programId?: number): Observable<ProgressionAnalytics> {
     const url = programId
       ? `${this.baseUrl}/students/analytics/progression?programId=${programId}`
@@ -23,18 +20,12 @@ export class EventSourcingService {
     return this.http.get<ProgressionAnalytics>(url);
   }
 
-  /**
-   * Get complete event stream for a student in a program
-   */
   getStudentEventStream(studentId: number, programId: number): Observable<StudentEvent[]> {
     return this.http.get<StudentEvent[]>(
       `${this.baseUrl}/students/${studentId}/programs/${programId}/events`
     );
   }
 
-  /**
-   * Time-travel query - get student's rank at a specific date
-   */
   getStudentRankAtDate(
     studentId: number,
     programId: number,

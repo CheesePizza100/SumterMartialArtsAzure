@@ -33,8 +33,8 @@ import { MatSelectModule } from '@angular/material/select';
 })
 export class PrivateLessonDialogComponent implements OnInit {
   lessonForm!: FormGroup;
-  availableSlots: LessonTime[] = []; // Changed from dates to slots
-  filteredSlots: LessonTime[] = []; // Slots for selected date
+  availableSlots: LessonTime[] = [];
+  filteredSlots: LessonTime[] = [];
   availableDates: Date[] = [];
   isLoading = true;
   error?: string;

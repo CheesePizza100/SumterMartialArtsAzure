@@ -9,7 +9,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTabsModule } from '@angular/material/tabs';
 import { AdminPrivateLessonsService } from '../../services/admin-private-lessons.service';
-import { PrivateLessonRequest, UpdateStatus } from '../../models/private-lesson-request.model';
+import { PrivateLessonRequest } from '../../models/private-lesson-request.model';
 import { RejectionReasonDialogComponent } from '../rejection-reason-dialog/rejection-reason-dialog.component';
 
 @Component({
