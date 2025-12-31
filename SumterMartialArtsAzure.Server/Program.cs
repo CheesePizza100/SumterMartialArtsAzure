@@ -1,3 +1,4 @@
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using SumterMartialArtsAzure.Server.Api;
 using SumterMartialArtsAzure.Server.Api.Behaviors;
@@ -29,6 +30,8 @@ builder.Services.AddMediatR(cfg =>
     cfg.AddOpenBehavior(typeof(ExceptionHandlingBehavior<,>));
     cfg.AddOpenBehavior(typeof(DomainEventLoggingBehavior<>));
 });
+
+builder.Services.Decorate(typeof(INotificationHandler<>), typeof(LoggingNotificationHandlerDecorator<>));
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(
