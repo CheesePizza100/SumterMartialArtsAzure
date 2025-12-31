@@ -2,11 +2,6 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using SumterMartialArtsAzure.Server.Api;
 using SumterMartialArtsAzure.Server.Api.Behaviors;
-using SumterMartialArtsAzure.Server.Api.Features.Instructors.GetInstructorAvailability;
-using SumterMartialArtsAzure.Server.Api.Features.Instructors.GetInstructorById;
-using SumterMartialArtsAzure.Server.Api.Features.Instructors.GetInstructors;
-using SumterMartialArtsAzure.Server.Api.Features.Programs.GetProgramById;
-using SumterMartialArtsAzure.Server.Api.Features.Programs.GetPrograms;
 using SumterMartialArtsAzure.Server.Api.Middleware;
 using SumterMartialArtsAzure.Server.DataAccess;
 using SumterMartialArtsAzure.Server.Services;
@@ -28,9 +23,9 @@ builder.Services.AddMediatR(cfg =>
     // 3. Exception Handling (catches exceptions from handlers)
     cfg.AddOpenBehavior(typeof(LoggingBehavior<,>));
     cfg.AddOpenBehavior(typeof(ExceptionHandlingBehavior<,>));
-});
 
-builder.Services.Decorate(typeof(INotificationHandler<>), typeof(LoggingNotificationHandlerDecorator<>));
+    cfg.NotificationPublisherType = typeof(LoggingNotificationPublisher);
+});
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(
@@ -50,11 +45,11 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 
 // in a traditional vertical slice / CQRS-style API, each handler (like GetProgramsHandler) is a small service that performs a single operation.
 // DbContext itself is a DI service. So, for ASP.NET Core to automatically inject it into your handler, the handler itself must also be managed by the DI container.
-builder.Services.AddScoped<GetProgramsHandler>();
-builder.Services.AddScoped<GetProgramByIdHandler>();
-builder.Services.AddScoped<GetInstructorsHandler>();
-builder.Services.AddScoped<GetInstructorByIdHandler>();
-builder.Services.AddScoped<GetInstructorAvailabilityHandler>();
+//builder.Services.AddScoped<GetProgramsHandler>();
+//builder.Services.AddScoped<GetProgramByIdHandler>();
+//builder.Services.AddScoped<GetInstructorsHandler>();
+//builder.Services.AddScoped<GetInstructorByIdHandler>();
+//builder.Services.AddScoped<GetInstructorAvailabilityHandler>();
 
 builder.Services.AddHealthChecks();
 builder.Services.AddCors(options =>
@@ -72,7 +67,17 @@ builder.Services.AddCors(options =>
                 .AllowAnyMethod();
         });
 });
+var notificationHandlers = builder.Services
+    .Where(d => d.ServiceType.IsGenericType &&
+                d.ServiceType.GetGenericTypeDefinition() == typeof(INotificationHandler<>))
+    .ToList();
 
+Console.WriteLine($"=== Registered INotificationHandler implementations ({notificationHandlers.Count}): ===");
+foreach (var handler in notificationHandlers)
+{
+    Console.WriteLine($"Service: {handler.ServiceType}, Implementation: {handler.ImplementationType?.Name ?? "Factory"}");
+}
+Console.WriteLine("=== End ===");
 var app = builder.Build();
 app.UseGlobalExceptionHandling();
 using (var scope = app.Services.CreateScope())
