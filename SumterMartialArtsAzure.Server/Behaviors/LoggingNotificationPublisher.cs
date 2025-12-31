@@ -19,15 +19,45 @@ public class LoggingNotificationPublisher : INotificationPublisher
 
     public async Task Publish(IEnumerable<NotificationHandlerExecutor> handlerExecutors, INotification notification, CancellationToken cancellationToken)
     {
+        var eventName = notification.GetType().Name;
+
         foreach (var handler in handlerExecutors)
         {
+            var handlerName = handler.HandlerInstance.GetType().Name;
             var stopwatch = Stopwatch.StartNew();
 
-            _logger.LogInformation("Handling {Event}", notification);
+            _logger.LogInformation(
+                "{HandlerName} handling {EventName}: {@Event}",
+                handlerName,
+                eventName,
+                notification
+            );
 
-            await handler.HandlerCallback(notification, cancellationToken);
+            try
+            {
+                await handler.HandlerCallback(notification, cancellationToken);
 
-            _logger.LogInformation("Handled in {Ms}ms", stopwatch.ElapsedMilliseconds);
+                stopwatch.Stop();
+
+                _logger.LogInformation(
+                    "{HandlerName} successfully handled {EventName} in {ElapsedMs}ms",
+                    handlerName,
+                    eventName,
+                    stopwatch.ElapsedMilliseconds
+                );
+            }
+            catch (Exception ex)
+            {
+                stopwatch.Stop();
+
+                _logger.LogError(
+                    ex,
+                    "{HandlerName} failed handling {EventName} after {ElapsedMs}ms",
+                    handlerName,
+                    eventName,
+                    stopwatch.ElapsedMilliseconds
+                );
+            }
         }
     }
 }

@@ -21,8 +21,8 @@ public class GetStudentsHandler
         CancellationToken cancellationToken)
     {
         var students = await _dbContext.Students
-            .Include(s => s.ProgramEnrollments)
-            .Include(s => s.TestHistory)
+            .AsNoTracking()
+            .AsSplitQuery()
             .Select(s => new GetStudentsResponse(
                 s.Id,
                 s.Name,
@@ -40,8 +40,10 @@ public class GetStudentsHandler
                         new AttendanceDto(
                             e.Attendance.Last30Days,
                             e.Attendance.Total,
-                            e.Attendance.AttendanceRate)
-                    )).ToList(),
+                            e.Attendance.AttendanceRate
+                        )
+                    ))
+                    .ToList(),
                 s.TestHistory
                     .OrderByDescending(t => t.TestDate)
                     .Select(t => new TestHistoryDto(
@@ -50,9 +52,9 @@ public class GetStudentsHandler
                         t.RankAchieved,
                         t.Result,
                         t.Notes
-                    )).ToList()
-            ))
-            .ToListAsync(cancellationToken);
+                    ))
+                    .ToList()
+            )).ToListAsync(cancellationToken);
 
         return students;
     }

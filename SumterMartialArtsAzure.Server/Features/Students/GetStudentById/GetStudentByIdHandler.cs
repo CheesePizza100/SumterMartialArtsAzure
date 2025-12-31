@@ -20,8 +20,8 @@ public class GetStudentByIdHandler
         CancellationToken cancellationToken)
     {
         var student = await _dbContext.Students
-            .Include(s => s.ProgramEnrollments)
-            .Include(s => s.TestHistory)
+            .AsNoTracking()
+            .AsSplitQuery()
             .Where(s => s.Id == request.Id)
             .Select(s => new GetStudentByIdResponse(
                 s.Id,
@@ -42,7 +42,8 @@ public class GetStudentByIdHandler
                             e.Attendance.Total,
                             e.Attendance.AttendanceRate
                         )
-                    )).ToList(),
+                    ))
+                    .ToList(),
                 s.TestHistory
                     .OrderByDescending(t => t.TestDate)
                     .Select(t => new TestHistoryDto(
@@ -51,9 +52,9 @@ public class GetStudentByIdHandler
                         t.RankAchieved,
                         t.Result,
                         t.Notes
-                    )).ToList()
-            ))
-            .FirstOrDefaultAsync(cancellationToken);
+                    ))
+                    .ToList()
+            )).FirstOrDefaultAsync(cancellationToken);
 
         return student;
     }
