@@ -1,84 +1,50 @@
 ﻿using MediatR;
+using Microsoft.EntityFrameworkCore;
 using SumterMartialArtsAzure.Server.DataAccess;
 using SumterMartialArtsAzure.Server.Domain.Events;
+using SumterMartialArtsAzure.Server.Services;
 
 namespace SumterMartialArtsAzure.Server.Api.Features.PrivateLessons.EventHandlers;
 
 public class PrivateLessonRequestCreatedHandler
     : INotificationHandler<DomainEventNotification<PrivateLessonRequestCreated>>
 {
-    private readonly ILogger<PrivateLessonRequestCreatedHandler> _logger;
+    private readonly IEmailService _emailService;
+    private readonly AppDbContext _dbContext;
 
-    public PrivateLessonRequestCreatedHandler(
-        ILogger<PrivateLessonRequestCreatedHandler> logger)
+    public PrivateLessonRequestCreatedHandler(IEmailService emailService, AppDbContext dbContext)
     {
-        _logger = logger;
+        _emailService = emailService;
+        _dbContext = dbContext;
     }
 
-    public Task Handle(DomainEventNotification<PrivateLessonRequestCreated> notification, CancellationToken cancellationToken)
+    public async Task Handle(DomainEventNotification<PrivateLessonRequestCreated> notification, CancellationToken cancellationToken)
     {
         var domainEvent = notification.DomainEvent;
 
-        _logger.LogInformation(
-            "New private lesson request created. RequestId: {RequestId}, Student: {StudentName}, Instructor: {InstructorId}",
-            domainEvent.RequestId,
+        var instructor = await _dbContext.Instructors
+            .FirstOrDefaultAsync(i => i.Id == domainEvent.InstructorId, cancellationToken);
+
+        if (instructor == null)
+        {
+            return;
+        }
+
+        await _emailService.SendPrivateLessonRequestConfirmationAsync(
+            domainEvent.StudentEmail,
             domainEvent.StudentName,
-            domainEvent.InstructorId);
+            instructor.Name,
+            domainEvent.RequestedStart
+        );
 
-        // TODO: Send email notification to admin
-        // TODO: Send confirmation email to student
-
-        return Task.CompletedTask;
-    }
-}
-public class PrivateLessonRequestApprovedHandler
-    : INotificationHandler<DomainEventNotification<PrivateLessonRequestApproved>>
-{
-    private readonly ILogger<PrivateLessonRequestApprovedHandler> _logger;
-
-    public PrivateLessonRequestApprovedHandler(ILogger<PrivateLessonRequestApprovedHandler> logger)
-    {
-        _logger = logger;
-    }
-
-    public Task Handle(DomainEventNotification<PrivateLessonRequestApproved> notification, CancellationToken cancellationToken)
-    {
-        var domainEvent = notification.DomainEvent;
-        _logger.LogInformation(
-            "Private lesson request approved. RequestId: {RequestId}, Student: {StudentName}",
-            domainEvent.RequestId,
-            domainEvent.StudentName);
-
-        // TODO: Send approval email to student with calendar invite
-        // TODO: Notify instructor
-        // TODO: Create calendar event
-
-        return Task.CompletedTask;
-    }
-}
-
-public class PrivateLessonRequestRejectedHandler
-    : INotificationHandler<DomainEventNotification<PrivateLessonRequestRejected>>
-{
-    private readonly ILogger<PrivateLessonRequestRejectedHandler> _logger;
-
-    public PrivateLessonRequestRejectedHandler(ILogger<PrivateLessonRequestRejectedHandler> logger)
-    {
-        _logger = logger;
-    }
-
-    public Task Handle(DomainEventNotification<PrivateLessonRequestRejected> notification, CancellationToken cancellationToken)
-    {
-        var domainEvent = notification.DomainEvent;
-        _logger.LogInformation(
-            "Private lesson request rejected. RequestId: {RequestId}, Student: {StudentName}, Reason: {Reason}",
-            domainEvent.RequestId,
+        // Send notification to admin (you'd configure admin email in settings)
+        // For now, you could use a hardcoded admin email or configuration setting
+        var adminEmail = "admin@sumtermartialarts.com"; // TODO: Get from configuration
+        await _emailService.SendPrivateLessonAdminNotificationAsync(
+            adminEmail,
             domainEvent.StudentName,
-            domainEvent.Reason ?? "Not specified");
-
-        // TODO: Send rejection email to student with reason
-        // TODO: Log to audit trail
-
-        return Task.CompletedTask;
+            instructor.Name,
+            domainEvent.RequestedStart
+        );
     }
 }

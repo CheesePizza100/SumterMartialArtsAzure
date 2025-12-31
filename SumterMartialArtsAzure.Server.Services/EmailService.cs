@@ -29,6 +29,31 @@ public interface IEmailService
         string studentName,
         string programName,
         string initialRank);
+
+    Task SendPrivateLessonRequestConfirmationAsync(
+        string studentEmail,
+        string studentName,
+        string instructorName,
+        DateTime requestedDate);
+
+    Task SendPrivateLessonApprovedAsync(
+        string studentEmail,
+        string studentName,
+        string instructorName,
+        DateTime scheduledDate);
+
+    Task SendPrivateLessonRejectedAsync(
+        string studentEmail,
+        string studentName,
+        string instructorName,
+        DateTime requestedDate,
+        string reason);
+
+    Task SendPrivateLessonAdminNotificationAsync(
+        string adminEmail,
+        string studentName,
+        string instructorName,
+        DateTime requestedDate);
 }
 
 public class EmailService : IEmailService
@@ -457,6 +482,303 @@ public class EmailService : IEmailService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Exception sending withdrawal email to {Email}", studentEmail);
+        }
+    }
+
+    // Add these implementations to your EmailService class:
+
+    public async Task SendPrivateLessonRequestConfirmationAsync(
+        string studentEmail,
+        string studentName,
+        string instructorName,
+        DateTime requestedDate)
+    {
+        try
+        {
+            var subject = "Private Lesson Request Received 📅";
+
+            var body = $@"
+            <html>
+            <head>
+                <style>
+                    body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+                    .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+                    .header {{ background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                              color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }}
+                    .content {{ background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }}
+                    .info-box {{ background: white; padding: 20px; margin: 20px 0; 
+                                border-left: 4px solid #667eea; border-radius: 5px; }}
+                </style>
+            </head>
+            <body>
+                <div class='container'>
+                    <div class='header'>
+                        <h1>Request Received!</h1>
+                    </div>
+                    <div class='content'>
+                        <p>Hi {studentName},</p>
+                        
+                        <p>We've received your private lesson request. Here are the details:</p>
+
+                        <div class='info-box'>
+                            <p><strong>Instructor:</strong> {instructorName}</p>
+                            <p><strong>Requested Date:</strong> {requestedDate:MMMM dd, yyyy 'at' h:mm tt}</p>
+                        </div>
+
+                        <p><strong>What's Next?</strong></p>
+                        <ul>
+                            <li>Your instructor will review the request</li>
+                            <li>You'll receive a confirmation email once approved</li>
+                            <li>If the requested time doesn't work, we'll suggest alternatives</li>
+                        </ul>
+
+                        <p>We'll get back to you within 24 hours!</p>
+
+                        <div style='text-align: center; margin-top: 30px; color: #666; font-size: 14px;'>
+                            <p>Sumter Martial Arts<br>
+                            Personalized Training Excellence 🥋</p>
+                        </div>
+                    </div>
+                </div>
+            </body>
+            </html>
+        ";
+
+            var result = await _fluentEmail
+                .To(studentEmail, studentName)
+                .Subject(subject)
+                .Body(body, isHtml: true)
+                .SendAsync();
+
+            if (result.Successful)
+            {
+                _logger.LogInformation("Private lesson request confirmation sent to {Email}", studentEmail);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Exception sending private lesson confirmation to {Email}", studentEmail);
+        }
+    }
+
+    public async Task SendPrivateLessonApprovedAsync(
+        string studentEmail,
+        string studentName,
+        string instructorName,
+        DateTime scheduledDate)
+    {
+        try
+        {
+            var subject = "✅ Your Private Lesson is Confirmed!";
+
+            var body = $@"
+            <html>
+            <head>
+                <style>
+                    body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+                    .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+                    .header {{ background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); 
+                              color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }}
+                    .content {{ background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }}
+                    .confirmed-box {{ background: #d4edda; padding: 20px; margin: 20px 0; 
+                                     border-left: 4px solid #28a745; border-radius: 5px; }}
+                </style>
+            </head>
+            <body>
+                <div class='container'>
+                    <div class='header'>
+                        <h1>🎉 Your Lesson is Confirmed!</h1>
+                    </div>
+                    <div class='content'>
+                        <p>Great news, {studentName}!</p>
+                        
+                        <p>Your private lesson has been approved and scheduled.</p>
+
+                        <div class='confirmed-box'>
+                            <p><strong>Instructor:</strong> {instructorName}</p>
+                            <p><strong>Date & Time:</strong> {scheduledDate:MMMM dd, yyyy 'at' h:mm tt}</p>
+                        </div>
+
+                        <p><strong>Before Your Lesson:</strong></p>
+                        <ul>
+                            <li>Arrive 10 minutes early to warm up</li>
+                            <li>Bring water and any necessary equipment</li>
+                            <li>Come prepared with questions or areas you want to focus on</li>
+                            <li>Add this to your calendar so you don't forget!</li>
+                        </ul>
+
+                        <p>This is a great opportunity for one-on-one instruction. Make the most of it!</p>
+
+                        <p><strong>Need to reschedule?</strong> Please contact us at least 24 hours in advance.</p>
+
+                        <div style='text-align: center; margin-top: 30px; color: #666; font-size: 14px;'>
+                            <p>Sumter Martial Arts<br>
+                            See you on the mat! 🥋</p>
+                        </div>
+                    </div>
+                </div>
+            </body>
+            </html>
+        ";
+
+            var result = await _fluentEmail
+                .To(studentEmail, studentName)
+                .Subject(subject)
+                .Body(body, isHtml: true)
+                .SendAsync();
+
+            if (result.Successful)
+            {
+                _logger.LogInformation("Private lesson approved email sent to {Email}", studentEmail);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Exception sending private lesson approval to {Email}", studentEmail);
+        }
+    }
+
+    public async Task SendPrivateLessonRejectedAsync(
+        string studentEmail,
+        string studentName,
+        string instructorName,
+        DateTime requestedDate,
+        string reason)
+    {
+        try
+        {
+            var subject = "Private Lesson Request - Alternative Times Available";
+
+            var body = $@"
+            <html>
+            <head>
+                <style>
+                    body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+                    .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+                    .header {{ background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); 
+                              color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }}
+                    .content {{ background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }}
+                    .reason-box {{ background: #fff3cd; padding: 15px; margin: 20px 0; 
+                                  border-left: 4px solid #ffc107; border-radius: 5px; }}
+                </style>
+            </head>
+            <body>
+                <div class='container'>
+                    <div class='header'>
+                        <h1>About Your Private Lesson Request</h1>
+                    </div>
+                    <div class='content'>
+                        <p>Hi {studentName},</p>
+                        
+                        <p>Thank you for your interest in a private lesson with {instructorName}.</p>
+
+                        <p>Unfortunately, the time you requested ({requestedDate:MMMM dd, yyyy 'at' h:mm tt}) is not available.</p>
+
+                        <div class='reason-box'>
+                            <strong>Reason:</strong> {reason}
+                        </div>
+
+                        <p><strong>We'd still love to schedule you!</strong></p>
+                        <ul>
+                            <li>Contact us to discuss alternative times</li>
+                            <li>Check with other available instructors</li>
+                            <li>Submit a new request with different dates</li>
+                        </ul>
+
+                        <p>Private lessons are a great investment in your training, and we want to make sure 
+                           you get the personalized attention you deserve.</p>
+
+                        <p>Please reach out and we'll find a time that works!</p>
+
+                        <div style='text-align: center; margin-top: 30px; color: #666; font-size: 14px;'>
+                            <p>Sumter Martial Arts<br>
+                            We're here to help! 🥋</p>
+                        </div>
+                    </div>
+                </div>
+            </body>
+            </html>
+        ";
+
+            var result = await _fluentEmail
+                .To(studentEmail, studentName)
+                .Subject(subject)
+                .Body(body, isHtml: true)
+                .SendAsync();
+
+            if (result.Successful)
+            {
+                _logger.LogInformation("Private lesson rejection email sent to {Email}", studentEmail);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Exception sending private lesson rejection to {Email}", studentEmail);
+        }
+    }
+
+    public async Task SendPrivateLessonAdminNotificationAsync(
+        string adminEmail,
+        string studentName,
+        string instructorName,
+        DateTime requestedDate)
+    {
+        try
+        {
+            var subject = $"🔔 New Private Lesson Request - {studentName}";
+
+            var body = $@"
+            <html>
+            <head>
+                <style>
+                    body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+                    .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+                    .header {{ background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                              color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }}
+                    .content {{ background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }}
+                    .request-box {{ background: white; padding: 20px; margin: 20px 0; 
+                                   border: 2px solid #667eea; border-radius: 5px; }}
+                </style>
+            </head>
+            <body>
+                <div class='container'>
+                    <div class='header'>
+                        <h1>New Private Lesson Request</h1>
+                    </div>
+                    <div class='content'>
+                        <p>A new private lesson request has been submitted.</p>
+
+                        <div class='request-box'>
+                            <p><strong>Student:</strong> {studentName}</p>
+                            <p><strong>Requested Instructor:</strong> {instructorName}</p>
+                            <p><strong>Requested Date:</strong> {requestedDate:MMMM dd, yyyy 'at' h:mm tt}</p>
+                        </div>
+
+                        <p><strong>Action Required:</strong> Review and approve/reject this request in the admin panel.</p>
+
+                        <div style='text-align: center; margin-top: 30px; color: #666; font-size: 14px;'>
+                            <p>Sumter Martial Arts Admin Portal</p>
+                        </div>
+                    </div>
+                </div>
+            </body>
+            </html>
+        ";
+
+            var result = await _fluentEmail
+                .To(adminEmail, "Admin")
+                .Subject(subject)
+                .Body(body, isHtml: true)
+                .SendAsync();
+
+            if (result.Successful)
+            {
+                _logger.LogInformation("Admin notification sent for private lesson request");
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Exception sending admin notification");
         }
     }
 }
