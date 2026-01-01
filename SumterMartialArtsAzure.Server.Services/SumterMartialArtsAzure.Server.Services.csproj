@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SumterMartialArtsAzure.Server.DataAccess\SumterMartialArtsAzure.Server.DataAccess.csproj" />
     <ProjectReference Include="..\SumterMartialArtsAzure.Server.Domain\SumterMartialArtsAzure.Server.Domain.csproj" />
   </ItemGroup>
 
