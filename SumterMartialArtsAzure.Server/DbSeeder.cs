@@ -16,6 +16,10 @@ public static class DbSeeder
                 StudentSeeder.SeedStudents(context);
                 EventStoreSeeder.SeedEventStore(context);
             }
+            if (!context.Users.Any())
+            {
+                UserSeeder.SeedAdminUser(context);
+            }
             return;
         }
 
