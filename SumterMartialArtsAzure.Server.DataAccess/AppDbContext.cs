@@ -24,6 +24,8 @@ public class AppDbContext : DbContext
     public DbSet<PrivateLessonRequest> PrivateLessonRequests => Set<PrivateLessonRequest>();
     public DbSet<Student> Students => Set<Student>();
     public DbSet<StudentProgressionEventRecord> StudentProgressionEvents => Set<StudentProgressionEventRecord>();
+    public DbSet<User> Users { get; set; }
+    public DbSet<AuditLog> AuditLogs { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -188,6 +190,87 @@ public class AppDbContext : DbContext
             entity.Property(e => e.EventType).HasMaxLength(100).IsRequired();
             entity.Property(e => e.EventData).IsRequired();
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+        });
+
+        modelBuilder.Entity<User>(entity =>
+        {
+            entity.HasKey(u => u.Id);
+
+            entity.Property(u => u.Username)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            entity.Property(u => u.Email)
+                .HasMaxLength(255)
+                .IsRequired();
+
+            entity.Property(u => u.Role)
+                .HasConversion<int>();
+
+            entity.HasIndex(u => u.Username).IsUnique();
+            entity.HasIndex(u => u.Email).IsUnique();
+            entity.HasIndex(u => u.StudentId);
+            entity.HasIndex(u => u.InstructorId);
+
+            // Relationship to Student (optional)
+            entity.HasOne(u => u.Student)
+                .WithOne()  // Student doesn't need to know about User
+                .HasForeignKey<User>(u => u.StudentId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .IsRequired(false);
+
+            // Relationship to Instructor (optional)
+            entity.HasOne(u => u.Instructor)
+                .WithOne()  // Instructor doesn't need to know about User
+                .HasForeignKey<User>(u => u.InstructorId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .IsRequired(false);
+        });
+
+        modelBuilder.Entity<AuditLog>(entity =>
+        {
+            entity.HasKey(a => a.Id);
+
+            entity.Property(a => a.UserId)
+                .IsRequired();
+
+            entity.Property(a => a.Username)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            entity.Property(a => a.Action)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            entity.Property(a => a.EntityType)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            entity.Property(a => a.EntityId)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            entity.Property(a => a.IpAddress)
+                .HasMaxLength(50)
+                .IsRequired();
+
+            entity.Property(a => a.Timestamp)
+                .IsRequired();
+
+            entity.Property(a => a.Details)
+                .HasColumnType("nvarchar(max)")
+                .IsRequired(false);
+
+            // Indexes
+            entity.HasIndex(a => a.UserId);
+            entity.HasIndex(a => a.Timestamp);
+            entity.HasIndex(a => new { a.EntityType, a.EntityId });
+
+            // Relationship
+            entity.HasOne(a => a.User)
+                .WithMany()
+                .HasForeignKey(a => a.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
     }
 
