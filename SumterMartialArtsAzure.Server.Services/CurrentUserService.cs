@@ -13,8 +13,8 @@ public interface ICurrentUserService
     bool IsAdmin();
     bool IsStudent();
     bool IsInstructor();
-    Guid GetStudentId();
-    Guid GetInstructorId();
+    int? GetStudentId();
+    int? GetInstructorId();
 }
 public class CurrentUserService : ICurrentUserService
 {
@@ -62,15 +62,15 @@ public class CurrentUserService : ICurrentUserService
         return GetRole() == UserRole.Instructor;
     }
 
-    public Guid GetStudentId()
+    public int? GetStudentId()
     {
         var claim = _httpContextAccessor.HttpContext?.User?.FindFirst("StudentId")?.Value;
-        return Guid.TryParse(claim, out var id) ? id : Guid.Empty;
+        return int.TryParse(claim, out var id) ? id : 0;
     }
 
-    public Guid GetInstructorId()
+    public int? GetInstructorId()
     {
         var claim = _httpContextAccessor.HttpContext?.User?.FindFirst("InstructorId")?.Value;
-        return Guid.TryParse(claim, out var id) ? id : Guid.Empty;
+        return int.TryParse(claim, out var id) ? id : 0;
     }
 }

@@ -13,8 +13,8 @@ public class User
     public DateTime CreatedAt { get; private set; }
     public DateTime? LastLoginAt { get; private set; }
 
-    public Guid? StudentId { get; private set; }
-    public Guid? InstructorId { get; private set; }
+    public int? StudentId { get; private set; }
+    public int? InstructorId { get; private set; }
 
     public Student? Student { get; private set; }
     public Instructor? Instructor { get; private set; }
@@ -36,7 +36,7 @@ public class User
         };
     }
 
-    public static User CreateForStudent(string username, string email, string passwordHash, Guid studentId)
+    public static User CreateForStudent(string username, string email, string passwordHash, int studentId)
     {
         return new User
         {
