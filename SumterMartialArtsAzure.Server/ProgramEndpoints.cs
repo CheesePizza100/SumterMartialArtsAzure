@@ -1,4 +1,4 @@
-using SumterMartialArtsAzure.Server.Api.Features.Auth;
+using SumterMartialArtsAzure.Server.Api.Features.Auth.Login;
 using SumterMartialArtsAzure.Server.Api.Features.Instructors.GetInstructorAvailability;
 using SumterMartialArtsAzure.Server.Api.Features.Instructors.GetInstructorById;
 using SumterMartialArtsAzure.Server.Api.Features.Instructors.GetInstructors;
