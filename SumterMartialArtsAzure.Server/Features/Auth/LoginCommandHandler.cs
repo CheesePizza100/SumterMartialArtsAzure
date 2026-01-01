@@ -12,14 +12,14 @@ public class LoginCommandHandler
 {
     private readonly IPasswordHasher _passwordHasher;
     private readonly ITokenGeneratorService _tokenGeneratorService;
-    private readonly HttpContext _httpContext;
+    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly AppDbContext _dbContext;
 
-    public LoginCommandHandler(IPasswordHasher passwordHasher, ITokenGeneratorService tokenGeneratorService, HttpContext httpContext, IConfiguration configuration, AppDbContext dbContext)
+    public LoginCommandHandler(IPasswordHasher passwordHasher, ITokenGeneratorService tokenGeneratorService, IHttpContextAccessor httpContextAccessor, AppDbContext dbContext)
     {
         _passwordHasher = passwordHasher;
         _tokenGeneratorService = tokenGeneratorService;
-        _httpContext = httpContext;
+        _httpContextAccessor = httpContextAccessor;
         _dbContext = dbContext;
     }
 
@@ -44,7 +44,7 @@ public class LoginCommandHandler
             AuditActions.UserLoggedIn,
             "User",
             user.Id.ToString(),
-            _httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown"
+            _httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString() ?? "unknown"
         );
 
         _dbContext.AuditLogs.Add(auditLog);
