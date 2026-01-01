@@ -4,6 +4,7 @@ using SumterMartialArtsAzure.Server.Api;
 using SumterMartialArtsAzure.Server.Api.Behaviors;
 using SumterMartialArtsAzure.Server.Api.Middleware;
 using SumterMartialArtsAzure.Server.DataAccess;
+using SumterMartialArtsAzure.Server.Domain.Services;
 using SumterMartialArtsAzure.Server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -42,6 +43,9 @@ builder.Services
     );
 
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<ITokenGeneratorService, TokenGeneratorService>();
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+builder.Services.AddScoped<IPasswordHasher, BcryptPasswordHasher>();
 
 // in a traditional vertical slice / CQRS-style API, each handler (like GetProgramsHandler) is a small service that performs a single operation.
 // DbContext itself is a DI service. So, for ASP.NET Core to automatically inject it into your handler, the handler itself must also be managed by the DI container.
