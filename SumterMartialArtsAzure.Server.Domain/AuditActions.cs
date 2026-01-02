@@ -12,7 +12,7 @@ public static class AuditActions
     // Student actions
     public const string StudentCreated = "Student.Created";
     public const string StudentUpdated = "Student.Updated";
-    public const string StudentDeleted = "Student.Deleted";
+    public const string StudentDeactivated = "Student.Deactivated";
     public const string StudentEnrolled = "Student.Enrolled";
     public const string StudentUnenrolled = "Student.Unenrolled";
 
