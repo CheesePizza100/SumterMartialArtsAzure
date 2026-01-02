@@ -5,6 +5,7 @@ namespace SumterMartialArtsAzure.Server.Domain;
 public class AuditLog
 {
     public Guid Id { get; private set; }
+    public Guid SessionId { get; private set; }
     public Guid UserId { get; private set; }
     public string Username { get; private set; } = string.Empty;
     public string Action { get; private set; } = string.Empty;
@@ -23,6 +24,7 @@ public class AuditLog
     // Factory method
     public static AuditLog Create(
         Guid userId,
+        Guid sessionId,
         string username,
         string action,
         string entityType,
@@ -33,6 +35,7 @@ public class AuditLog
         return new AuditLog
         {
             Id = Guid.NewGuid(),
+            SessionId = sessionId,
             UserId = userId,
             Username = username,
             Action = action,

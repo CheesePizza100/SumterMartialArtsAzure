@@ -231,6 +231,9 @@ public class AppDbContext : DbContext
         {
             entity.HasKey(a => a.Id);
 
+            entity.Property(a => a.SessionId)
+                .IsRequired();
+
             entity.Property(a => a.UserId)
                 .IsRequired();
 
