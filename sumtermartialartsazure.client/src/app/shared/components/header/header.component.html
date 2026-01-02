@@ -48,7 +48,7 @@
     <!-- User Actions (when logged in) -->
     <div *ngIf="auth.isLoggedIn()" class="user-actions">
       <span class="username">
-        {{ (auth.currentUser$ | async)?.firstName || (auth.currentUser$ | async)?.email }}
+        {{ (auth.currentUser$ | async)?.username }}
       </span>
       <button class="btn-logout" (click)="logout()">Logout</button>
     </div>
@@ -101,7 +101,7 @@
 
   <!-- User Actions (when logged in) -->
   <div *ngIf="auth.isLoggedIn()" class="mobile-user">
-    <div>{{ (auth.currentUser$ | async)?.firstName || (auth.currentUser$ | async)?.email }}</div>
+    <div>{{ (auth.currentUser$ | async)?.username }}</div>
     <button class="btn-logout" (click)="logout()">Logout</button>
   </div>
 </div>
