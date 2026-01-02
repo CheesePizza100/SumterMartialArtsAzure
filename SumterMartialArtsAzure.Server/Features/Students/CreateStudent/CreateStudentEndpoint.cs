@@ -18,6 +18,7 @@ public static class CreateStudentEndpoint
                     var result = await mediator.Send(command);
                     return Results.Created($"/api/students/{result.Id}", result);
                 })
+            .RequireAuthorization()
             .WithName("CreateStudent")
             .WithTags("Students");
     }
