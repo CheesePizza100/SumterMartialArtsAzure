@@ -24,27 +24,23 @@ public class AddTestResultHandler
             .FirstOrDefaultAsync(s => s.Id == request.StudentId, cancellationToken);
 
         if (student == null)
-            return new AddTestResultResponse(false, "Student not found");
+            return new AddTestResultResponse(false, "Student not found", null);
 
-        try
-        {
-            // Use aggregate business method
-            student.RecordTestResult(
-                programId: request.ProgramId,
-                programName: request.ProgramName,
-                rankAchieved: request.Rank,
-                passed: request.Result.Equals("Pass", StringComparison.OrdinalIgnoreCase),
-                notes: request.Notes,
-                testDate: request.TestDate
-            );
+        var testResult = student.RecordTestResult(
+            programId: request.ProgramId,
+            programName: request.ProgramName,
+            rankAchieved: request.Rank,
+            passed: request.Result.Equals("Pass", StringComparison.OrdinalIgnoreCase),
+            notes: request.Notes,
+            testDate: request.TestDate
+        );
 
-            await _dbContext.SaveChangesAsync(cancellationToken);
+        await _dbContext.SaveChangesAsync(cancellationToken);
 
-            return new AddTestResultResponse(true, "Test result recorded successfully");
-        }
-        catch (InvalidOperationException ex)
-        {
-            return new AddTestResultResponse(false, ex.Message);
-        }
+        return new AddTestResultResponse(
+            true,
+            "Test result recorded successfully",
+            testResult.Id
+        );
     }
 }
