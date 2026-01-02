@@ -147,7 +147,7 @@ public class Student : Entity
     /// <summary>
     /// Update instructor notes for a program enrollment
     /// </summary>
-    public void UpdateProgramNotes(int programId, string notes)
+    public StudentProgramEnrollment UpdateProgramNotes(int programId, string notes)
     {
         var enrollment = _programEnrollments
             .FirstOrDefault(e => e.ProgramId == programId && e.IsActive);
@@ -156,6 +156,7 @@ public class Student : Entity
             throw new InvalidOperationException("Student is not enrolled in this program");
 
         enrollment.UpdateNotes(notes);
+        return enrollment;
     }
 
     /// <summary>

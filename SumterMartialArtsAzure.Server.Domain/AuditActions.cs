@@ -28,4 +28,5 @@ public static class AuditActions
     public const string InstructorDeleted = "Instructor.Deleted";
 
     public const string TestResultAdded = "TestResult.Added";
+    public const string ProgramNotesUpdated = "ProgramNotes.Updated";
 }
