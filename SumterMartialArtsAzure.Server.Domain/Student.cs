@@ -105,7 +105,7 @@ public class Student : Entity
     /// <summary>
     /// Record a test result
     /// </summary>
-    public void RecordTestResult(
+    public TestResult RecordTestResult(
         int programId,
         string programName,
         string rankAchieved,
@@ -138,6 +138,8 @@ public class Student : Entity
         {
             enrollment.PromoteToRank(rankAchieved, notes, testDate ?? DateTime.UtcNow);
         }
+
+        return testResult;
     }
 
     /// <summary>
