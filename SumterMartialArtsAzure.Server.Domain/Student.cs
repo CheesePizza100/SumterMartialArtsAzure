@@ -62,7 +62,7 @@ public class Student : Entity
     /// <summary>
     /// Enroll student in a program
     /// </summary>
-    public void EnrollInProgram(int programId, string programName, string initialRank = "Beginner")
+    public StudentProgramEnrollment EnrollInProgram(int programId, string programName, string initialRank = "Beginner")
     {
         // Business rule: Can't enroll in same program twice
         if (_programEnrollments.Any(e => e.ProgramId == programId && e.IsActive))
@@ -86,6 +86,8 @@ public class Student : Entity
             InitialRank = initialRank,
             EnrolledAt = DateTime.UtcNow
         });
+
+        return enrollment;
     }
 
     // <summary>

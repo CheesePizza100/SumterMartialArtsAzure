@@ -21,6 +21,7 @@ public static class EnrollInProgramEndpoint
                         ? Results.Ok(new { success = true, message = result.Message })
                         : Results.BadRequest(new { success = false, message = result.Message });
                 })
+            .RequireAuthorization()
             .WithName("EnrollInProgram")
             .WithTags("Students");
     }

@@ -1,4 +1,6 @@
 ﻿using MediatR;
+using SumterMartialArtsAzure.Server.Api.Auditing;
+using SumterMartialArtsAzure.Server.Domain;
 
 namespace SumterMartialArtsAzure.Server.Api.Features.Students.EnrollInProgram;
 
@@ -9,4 +11,8 @@ public record EnrollInProgramCommand(
     int ProgramId,
     string ProgramName,
     string InitialRank
-) : IRequest<EnrollInProgramCommandResponse>;
+) : IRequest<EnrollInProgramCommandResponse>, IAuditableCommand
+{
+    public string Action => AuditActions.StudentEnrolled;
+    public string EntityType => "Enrollment";
+}
