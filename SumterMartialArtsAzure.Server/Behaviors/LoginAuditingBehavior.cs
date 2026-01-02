@@ -2,11 +2,7 @@
 using SumterMartialArtsAzure.Server.Api.Features.Auth.Login;
 using SumterMartialArtsAzure.Server.DataAccess;
 using SumterMartialArtsAzure.Server.Domain;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace SumterMartialArtsAzure.Server.Api.Behaviors;
 
@@ -28,17 +24,25 @@ public class LoginAuditingBehavior : IPipelineBehavior<LoginCommand, LoginComman
     {
         var response = await next();
 
-        var auditLog = AuditLog.Create(
-            response.UserId,
-            response.Username,
-            AuditActions.UserLoggedIn,
-            "User",
-            response.UserId.ToString(),
-            _httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString() ?? "unknown"
-        );
+        var handler = new JwtSecurityTokenHandler();
+        var token = handler.ReadJwtToken(response.Token);
+        var sessionIdClaim = token.Claims.FirstOrDefault(c => c.Type == "SessionId")?.Value;
 
-        _dbContext.AuditLogs.Add(auditLog);
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        if (Guid.TryParse(sessionIdClaim, out var sessionId))
+        {
+            var auditLog = AuditLog.Create(
+                response.UserId,
+                sessionId,
+                response.Username,
+                AuditActions.UserLoggedIn,
+                "User",
+                response.UserId.ToString(),
+                _httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString() ?? "unknown"
+            );
+
+            _dbContext.AuditLogs.Add(auditLog);
+            await _dbContext.SaveChangesAsync(cancellationToken);
+        }
 
         return response;
     }

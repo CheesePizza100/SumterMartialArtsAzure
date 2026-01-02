@@ -31,6 +31,7 @@ public class AuditService : IAuditService
 
         var auditLog = AuditLog.Create(
             _currentUserService.GetUserId(),
+            _currentUserService.GetSessionId(),
             _currentUserService.GetUsername() ?? "unknown",
             action,
             entityType,

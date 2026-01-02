@@ -1,12 +1,14 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using SumterMartialArtsAzure.Server.Domain;
+using Guid = System.Guid;
 
 namespace SumterMartialArtsAzure.Server.Services;
 
 public interface ICurrentUserService
 {
     Guid GetUserId();
+    Guid GetSessionId();
     string? GetUsername();
     UserRole? GetRole();
     bool IsAuthenticated();
@@ -28,6 +30,12 @@ public class CurrentUserService : ICurrentUserService
     public Guid GetUserId()
     {
         var claim = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        return Guid.TryParse(claim, out var id) ? id : Guid.Empty;
+    }
+
+    public Guid GetSessionId()
+    {
+        var claim = _httpContextAccessor.HttpContext?.User?.FindFirst("SessionId")?.Value;
         return Guid.TryParse(claim, out var id) ? id : Guid.Empty;
     }
 
