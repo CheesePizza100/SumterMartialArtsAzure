@@ -55,14 +55,6 @@ builder.Services.AddScoped<IAuditService, AuditService>();
 builder.Services.AddScoped<IPasswordHasher, BcryptPasswordHasher>();
 builder.Services.AddHttpContextAccessor();
 
-// in a traditional vertical slice / CQRS-style API, each handler (like GetProgramsHandler) is a small service that performs a single operation.
-// DbContext itself is a DI service. So, for ASP.NET Core to automatically inject it into your handler, the handler itself must also be managed by the DI container.
-//builder.Services.AddScoped<GetProgramsHandler>();
-//builder.Services.AddScoped<GetProgramByIdHandler>();
-//builder.Services.AddScoped<GetInstructorsHandler>();
-//builder.Services.AddScoped<GetInstructorByIdHandler>();
-//builder.Services.AddScoped<GetInstructorAvailabilityHandler>();
-
 builder.Services.AddHealthChecks();
 builder.Services.AddCors(options =>
 {
@@ -79,17 +71,6 @@ builder.Services.AddCors(options =>
                 .AllowAnyMethod();
         });
 });
-var notificationHandlers = builder.Services
-    .Where(d => d.ServiceType.IsGenericType &&
-                d.ServiceType.GetGenericTypeDefinition() == typeof(INotificationHandler<>))
-    .ToList();
-
-Console.WriteLine($"=== Registered INotificationHandler implementations ({notificationHandlers.Count}): ===");
-foreach (var handler in notificationHandlers)
-{
-    Console.WriteLine($"Service: {handler.ServiceType}, Implementation: {handler.ImplementationType?.Name ?? "Factory"}");
-}
-Console.WriteLine("=== End ===");
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
