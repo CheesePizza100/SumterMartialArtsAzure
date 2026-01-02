@@ -20,6 +20,7 @@ public static class RecordAttendanceEndpoint
                         ? Results.Ok(new { success = true, message = result.Message })
                         : Results.BadRequest(new { success = false, message = result.Message });
                 })
+            .RequireAuthorization()
             .WithName("RecordAttendance")
             .WithTags("Students");
     }
