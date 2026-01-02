@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using SumterMartialArtsAzure.Server.Api;
 using SumterMartialArtsAzure.Server.Api.Behaviors;
+using SumterMartialArtsAzure.Server.Api.Features.Auth.Login;
 using SumterMartialArtsAzure.Server.Api.Middleware;
 using SumterMartialArtsAzure.Server.DataAccess;
 using SumterMartialArtsAzure.Server.Domain.Services;
@@ -26,6 +27,8 @@ builder.Services.AddMediatR(cfg =>
     // 2. Validation (validates before executing)
     // 3. Exception Handling (catches exceptions from handlers)
     cfg.AddOpenBehavior(typeof(LoggingBehavior<,>));
+    cfg.AddBehavior<IPipelineBehavior<LoginCommand, LoginCommandResponse>, LoginAuditingBehavior>();
+    cfg.AddOpenBehavior(typeof(AuditingBehavior<,>));
     cfg.AddOpenBehavior(typeof(ExceptionHandlingBehavior<,>));
 
     cfg.NotificationPublisherType = typeof(LoggingNotificationPublisher);
