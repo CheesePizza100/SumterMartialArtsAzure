@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using SumterMartialArtsAzure.Server.DataAccess;
-using SumterMartialArtsAzure.Server.Domain;
 using SumterMartialArtsAzure.Server.Domain.Services;
 using SumterMartialArtsAzure.Server.Services;
 
@@ -37,18 +36,6 @@ public class LoginCommandHandler
         await _dbContext.SaveChangesAsync();
 
         var token = _tokenGeneratorService.GenerateToken(user);
-
-        var auditLog = AuditLog.Create(
-            user.Id,
-            user.Username,
-            AuditActions.UserLoggedIn,
-            "User",
-            user.Id.ToString(),
-            _httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString() ?? "unknown"
-        );
-
-        _dbContext.AuditLogs.Add(auditLog);
-        await _dbContext.SaveChangesAsync();
 
         return new LoginCommandResponse(
             token,
