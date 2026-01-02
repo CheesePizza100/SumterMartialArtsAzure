@@ -24,6 +24,7 @@ public static class AddTestResultEndpoint
                         ? Results.Ok(new { success = true, message = result.Message })
                         : Results.NotFound(new { success = false, message = result.Message });
                 })
+            .RequireAuthorization()
             .WithName("AddTestResult")
             .WithTags("Students");
     }
