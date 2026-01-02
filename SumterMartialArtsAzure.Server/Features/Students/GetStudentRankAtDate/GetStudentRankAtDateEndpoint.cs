@@ -17,6 +17,7 @@ public class GetStudentRankAtDateEndpoint
                         ? Results.Ok(result) 
                         : Results.NotFound();
                 })
+            .RequireAuthorization()
             .WithName("GetStudentRankAtDate")
             .WithTags("Students - Event Sourcing");
     }

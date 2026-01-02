@@ -12,6 +12,7 @@ public class GetStudentsEndpoint
                     var result = await mediator.Send(new GetStudentsQuery());
                     return Results.Ok(result);
                 })
+            .RequireAuthorization()
             .WithName("GetStudents")
             .WithTags("Students");
     }

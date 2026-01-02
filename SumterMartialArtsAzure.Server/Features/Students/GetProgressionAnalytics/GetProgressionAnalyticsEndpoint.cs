@@ -12,6 +12,7 @@ public static class GetProgressionAnalyticsEndpoint
                     var result = await mediator.Send(new GetProgressionAnalyticsQuery(programId));
                     return Results.Ok(result);
                 })
+            .RequireAuthorization()
             .WithName("GetProgressionAnalytics")
             .WithTags("Students - Event Sourcing");
     }

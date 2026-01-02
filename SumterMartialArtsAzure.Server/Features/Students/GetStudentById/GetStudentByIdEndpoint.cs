@@ -14,6 +14,7 @@ public static class GetStudentByIdEndpoint
                         ? Results.Ok(result)
                         : Results.NotFound();
                 })
+            .RequireAuthorization()
             .WithName("GetStudentById")
             .WithTags("Students");
     }

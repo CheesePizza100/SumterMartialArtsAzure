@@ -14,6 +14,7 @@ public class GetStudentAttendanceEndpoint
                         ? Results.Ok(result) 
                         : Results.NotFound();
                 })
+            .RequireAuthorization()
             .WithName("GetStudentAttendance")
             .WithTags("Students");
     }
