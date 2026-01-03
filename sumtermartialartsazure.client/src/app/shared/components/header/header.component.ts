@@ -24,7 +24,7 @@ export class HeaderComponent {
   // Auth links (shown when not logged in)
   authLinks = [
     { path: '/login', label: 'Login' },
-    { path: '/register', label: 'Register' },
+    //{ path: '/register', label: 'Register' },
   ];
 
   // Admin dropdown links
