@@ -21,6 +21,7 @@ public static class UpdateStudentEndpoint
                         ? Results.Ok(result) 
                         : Results.NotFound();
                 })
+            .RequireAuthorization()
             .WithName("UpdateStudent")
             .WithTags("Students");
     }

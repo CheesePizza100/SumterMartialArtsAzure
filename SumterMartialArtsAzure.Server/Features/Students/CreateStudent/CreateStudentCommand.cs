@@ -1,5 +1,7 @@
 ﻿using MediatR;
+using SumterMartialArtsAzure.Server.Api.Auditing;
 using SumterMartialArtsAzure.Server.Api.Features.Students.GetStudentById;
+using SumterMartialArtsAzure.Server.Domain;
 
 namespace SumterMartialArtsAzure.Server.Api.Features.Students.CreateStudent;
 
@@ -10,4 +12,8 @@ public record CreateStudentRequest(
 );
 
 public record CreateStudentCommand(string Name, string Email, string Phone)
-    : IRequest<GetStudentByIdResponse>;
+    : IRequest<GetStudentByIdResponse>, IAuditableCommand
+{
+    public string Action => AuditActions.StudentCreated;
+    public string EntityType => "Student";
+}

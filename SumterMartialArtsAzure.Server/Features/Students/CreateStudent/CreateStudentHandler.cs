@@ -20,7 +20,6 @@ public class CreateStudentHandler
         CreateStudentCommand request,
         CancellationToken cancellationToken)
     {
-        // Use aggregate factory method
         var student = Student.Create(
             name: request.Name,
             email: request.Email,
@@ -30,7 +29,6 @@ public class CreateStudentHandler
         _dbContext.Students.Add(student);
         await _dbContext.SaveChangesAsync(cancellationToken);
 
-        // Return created student
         return new GetStudentByIdResponse(
             student.Id,
             student.Name,

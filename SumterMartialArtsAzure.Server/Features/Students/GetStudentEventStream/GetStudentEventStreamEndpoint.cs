@@ -12,6 +12,7 @@ public class GetStudentEventStreamEndpoint
                     var result = await mediator.Send(new GetStudentEventStreamQuery(studentId, programId));
                     return Results.Ok(result);
                 })
+            .RequireAuthorization()
             .WithName("GetStudentEventStream")
             .WithTags("Students - Event Sourcing");
     }

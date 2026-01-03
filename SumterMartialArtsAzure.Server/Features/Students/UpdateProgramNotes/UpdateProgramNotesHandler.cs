@@ -5,7 +5,7 @@ using SumterMartialArtsAzure.Server.DataAccess;
 namespace SumterMartialArtsAzure.Server.Api.Features.Students.UpdateProgramNotes;
 
 public class UpdateProgramNotesHandler
-    : IRequestHandler<UpdateProgramNotesCommand, bool>
+    : IRequestHandler<UpdateProgramNotesCommand, UpdateProgramNotesResponse>
 {
     private readonly AppDbContext _dbContext;
 
@@ -14,29 +14,26 @@ public class UpdateProgramNotesHandler
         _dbContext = dbContext;
     }
 
-    public async Task<bool> Handle(UpdateProgramNotesCommand request, CancellationToken cancellationToken)
+    public async Task<UpdateProgramNotesResponse> Handle(UpdateProgramNotesCommand request, CancellationToken cancellationToken)
     {
         var student = await _dbContext.Students
             .Include(s => s.ProgramEnrollments)
             .FirstOrDefaultAsync(s => s.Id == request.StudentId, cancellationToken);
 
         if (student == null)
-            return false;
+            return new UpdateProgramNotesResponse(false, "Student not found", null);
 
-        try
-        {
-            // Use aggregate business method
-            student.UpdateProgramNotes(
-                programId: request.ProgramId,
-                notes: request.Notes
-            );
+        var enrollment = student.UpdateProgramNotes(
+            programId: request.ProgramId,
+            notes: request.Notes
+        );
 
-            await _dbContext.SaveChangesAsync(cancellationToken);
-            return true;
-        }
-        catch (InvalidOperationException)
-        {
-            return false;
-        }
+        await _dbContext.SaveChangesAsync(cancellationToken);
+
+        return new UpdateProgramNotesResponse(
+            true,
+            "Program notes updated successfully",
+            enrollment.Id
+        );
     }
 }

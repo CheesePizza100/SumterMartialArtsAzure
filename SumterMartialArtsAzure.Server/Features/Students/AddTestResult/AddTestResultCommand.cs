@@ -1,4 +1,6 @@
 ﻿using MediatR;
+using SumterMartialArtsAzure.Server.Api.Auditing;
+using SumterMartialArtsAzure.Server.Domain;
 
 namespace SumterMartialArtsAzure.Server.Api.Features.Students.AddTestResult;
 
@@ -19,4 +21,8 @@ public record AddTestResultCommand(
     string Result,
     string Notes,
     DateTime TestDate
-) : IRequest<AddTestResultResponse>;
+) : IRequest<AddTestResultResponse>, IAuditableCommand
+{
+    public string Action => AuditActions.TestResultAdded;
+    public string EntityType => "TestResult";
+}

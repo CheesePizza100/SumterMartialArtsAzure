@@ -25,9 +25,8 @@ public class UpdateStudentHandler
             .FirstOrDefaultAsync(s => s.Id == request.Id, cancellationToken);
 
         if (student == null)
-            return null;
+            throw new InvalidOperationException("Student not found");
 
-        // Use aggregate method to maintain business rules
         student.UpdateContactInfo(
             name: request.Name,
             email: request.Email,
@@ -36,7 +35,6 @@ public class UpdateStudentHandler
 
         await _dbContext.SaveChangesAsync(cancellationToken);
 
-        // Return updated student
         return new UpdateStudentCommandResponse(
             student.Id,
             student.Name,

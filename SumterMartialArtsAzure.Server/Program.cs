@@ -1,9 +1,15 @@
+using System.Text;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using SumterMartialArtsAzure.Server.Api;
 using SumterMartialArtsAzure.Server.Api.Behaviors;
+using SumterMartialArtsAzure.Server.Api.Features.Auth.Login;
 using SumterMartialArtsAzure.Server.Api.Middleware;
 using SumterMartialArtsAzure.Server.DataAccess;
+using SumterMartialArtsAzure.Server.Domain.Services;
 using SumterMartialArtsAzure.Server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,6 +28,8 @@ builder.Services.AddMediatR(cfg =>
     // 2. Validation (validates before executing)
     // 3. Exception Handling (catches exceptions from handlers)
     cfg.AddOpenBehavior(typeof(LoggingBehavior<,>));
+    cfg.AddBehavior<IPipelineBehavior<LoginCommand, LoginCommandResponse>, LoginAuditingBehavior>();
+    cfg.AddOpenBehavior(typeof(AuditingBehavior<,>));
     cfg.AddOpenBehavior(typeof(ExceptionHandlingBehavior<,>));
 
     cfg.NotificationPublisherType = typeof(LoggingNotificationPublisher);
@@ -42,14 +50,11 @@ builder.Services
     );
 
 builder.Services.AddScoped<IEmailService, EmailService>();
-
-// in a traditional vertical slice / CQRS-style API, each handler (like GetProgramsHandler) is a small service that performs a single operation.
-// DbContext itself is a DI service. So, for ASP.NET Core to automatically inject it into your handler, the handler itself must also be managed by the DI container.
-//builder.Services.AddScoped<GetProgramsHandler>();
-//builder.Services.AddScoped<GetProgramByIdHandler>();
-//builder.Services.AddScoped<GetInstructorsHandler>();
-//builder.Services.AddScoped<GetInstructorByIdHandler>();
-//builder.Services.AddScoped<GetInstructorAvailabilityHandler>();
+builder.Services.AddScoped<ITokenGeneratorService, TokenGeneratorService>();
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+builder.Services.AddScoped<IAuditService, AuditService>();
+builder.Services.AddScoped<IPasswordHasher, BcryptPasswordHasher>();
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddHealthChecks();
 builder.Services.AddCors(options =>
@@ -67,19 +72,58 @@ builder.Services.AddCors(options =>
                 .AllowAnyMethod();
         });
 });
-var notificationHandlers = builder.Services
-    .Where(d => d.ServiceType.IsGenericType &&
-                d.ServiceType.GetGenericTypeDefinition() == typeof(INotificationHandler<>))
-    .ToList();
 
-Console.WriteLine($"=== Registered INotificationHandler implementations ({notificationHandlers.Count}): ===");
-foreach (var handler in notificationHandlers)
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
+        };
+    });
+
+builder.Services.AddAuthorization();
+
+builder.Services.AddSwaggerGen(options =>
 {
-    Console.WriteLine($"Service: {handler.ServiceType}, Implementation: {handler.ImplementationType?.Name ?? "Factory"}");
-}
-Console.WriteLine("=== End ===");
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Enter your JWT token"
+    });
+
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+});
+
 var app = builder.Build();
 app.UseGlobalExceptionHandling();
+app.UseAuthentication();
+app.UseAuthorization();
+
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();

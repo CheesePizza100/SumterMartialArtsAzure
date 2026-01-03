@@ -1,3 +1,5 @@
+using SumterMartialArtsAzure.Server.Api.Features.Auth.Login;
+using SumterMartialArtsAzure.Server.Api.Features.Auth.Logout;
 using SumterMartialArtsAzure.Server.Api.Features.Instructors.GetInstructorAvailability;
 using SumterMartialArtsAzure.Server.Api.Features.Instructors.GetInstructorById;
 using SumterMartialArtsAzure.Server.Api.Features.Instructors.GetInstructors;
@@ -45,5 +47,7 @@ public static class ProgramEndpoints
         GetStudentRankAtDateEndpoint.MapEndpoint(app);
         CreateStudentEndpoint.MapEndpoint(app);
         EnrollInProgramEndpoint.MapEndpoint(app);
+        LoginEndpoint.MapEndpoint(app);
+        LogoutEndpoint.MapEndpoint(app);
     }
 }

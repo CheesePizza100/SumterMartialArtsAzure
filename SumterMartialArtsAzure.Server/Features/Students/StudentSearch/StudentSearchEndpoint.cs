@@ -12,6 +12,7 @@ public class StudentSearchEndpoint
                     var result = await mediator.Send(new StudentSearchQuery(q));
                     return Results.Ok(result);
                 })
+            .RequireAuthorization()
             .WithName("StudentSearch")
             .WithTags("Students");
     }

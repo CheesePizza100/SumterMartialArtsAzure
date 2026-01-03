@@ -62,7 +62,7 @@ public class Student : Entity
     /// <summary>
     /// Enroll student in a program
     /// </summary>
-    public void EnrollInProgram(int programId, string programName, string initialRank = "Beginner")
+    public StudentProgramEnrollment EnrollInProgram(int programId, string programName, string initialRank = "Beginner")
     {
         // Business rule: Can't enroll in same program twice
         if (_programEnrollments.Any(e => e.ProgramId == programId && e.IsActive))
@@ -86,6 +86,8 @@ public class Student : Entity
             InitialRank = initialRank,
             EnrolledAt = DateTime.UtcNow
         });
+
+        return enrollment;
     }
 
     // <summary>
@@ -105,7 +107,7 @@ public class Student : Entity
     /// <summary>
     /// Record a test result
     /// </summary>
-    public void RecordTestResult(
+    public TestResult RecordTestResult(
         int programId,
         string programName,
         string rankAchieved,
@@ -138,12 +140,14 @@ public class Student : Entity
         {
             enrollment.PromoteToRank(rankAchieved, notes, testDate ?? DateTime.UtcNow);
         }
+
+        return testResult;
     }
 
     /// <summary>
     /// Update instructor notes for a program enrollment
     /// </summary>
-    public void UpdateProgramNotes(int programId, string notes)
+    public StudentProgramEnrollment UpdateProgramNotes(int programId, string notes)
     {
         var enrollment = _programEnrollments
             .FirstOrDefault(e => e.ProgramId == programId && e.IsActive);
@@ -152,6 +156,7 @@ public class Student : Entity
             throw new InvalidOperationException("Student is not enrolled in this program");
 
         enrollment.UpdateNotes(notes);
+        return enrollment;
     }
 
     /// <summary>

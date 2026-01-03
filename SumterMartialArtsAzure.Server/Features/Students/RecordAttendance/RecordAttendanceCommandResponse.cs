@@ -1,3 +1,18 @@
-﻿namespace SumterMartialArtsAzure.Server.Api.Features.Students.RecordAttendance;
+﻿using SumterMartialArtsAzure.Server.Api.Auditing;
 
-public record RecordAttendanceCommandResponse(bool Success, string Message);
+namespace SumterMartialArtsAzure.Server.Api.Features.Students.RecordAttendance;
+
+public record RecordAttendanceCommandResponse(
+    bool Success,
+    string Message,
+    int? StudentId
+) : IAuditableResponse
+{
+    public string EntityId => StudentId?.ToString() ?? "unknown";
+
+    public object GetAuditDetails() => new
+    {
+        Success,
+        Message
+    };
+}

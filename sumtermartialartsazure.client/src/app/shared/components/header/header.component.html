@@ -24,31 +24,32 @@
     </ng-container>
 
     <!-- Admin Dropdown (when admin) -->
-    <!--<div *ngIf="isAdmin" class="admin-dropdown-container">-->
-    <div class="admin-dropdown-container">
-      <a class="admin-link"
-         routerLinkActive="active"
-         [routerLinkActiveOptions]="{ exact: false }"
-         [routerLink]="['/admin']"
-         (mouseenter)="adminDropdownOpen = true">
-        Admin
-      </a>
-      <div class="admin-dropdown"
-           [class.open]="adminDropdownOpen"
-           (mouseleave)="adminDropdownOpen = false">
-        <a *ngFor="let link of adminLinks"
-           [routerLink]="link.path"
+    <div *ngIf="auth.currentUser$ | async as user" class="admin-dropdown-container">
+      <ng-container *ngIf="user.role === 'Admin'">
+        <a class="admin-link"
            routerLinkActive="active"
-           (click)="closeAdminDropdown()">
-          {{ link.label }}
+           [routerLinkActiveOptions]="{ exact: false }"
+           [routerLink]="['/admin']"
+           (mouseenter)="adminDropdownOpen = true">
+          Admin
         </a>
-      </div>
+        <div class="admin-dropdown"
+             [class.open]="adminDropdownOpen"
+             (mouseleave)="adminDropdownOpen = false">
+          <a *ngFor="let link of adminLinks"
+             [routerLink]="link.path"
+             routerLinkActive="active"
+             (click)="closeAdminDropdown()">
+            {{ link.label }}
+          </a>
+        </div>
+      </ng-container>
     </div>
 
     <!-- User Actions (when logged in) -->
     <div *ngIf="auth.isLoggedIn()" class="user-actions">
       <span class="username">
-        {{ (auth.currentUser$ | async)?.firstName || (auth.currentUser$ | async)?.email }}
+        {{ (auth.currentUser$ | async)?.username }}
       </span>
       <button class="btn-logout" (click)="logout()">Logout</button>
     </div>
@@ -88,20 +89,22 @@
 
   <!-- Admin Links (when admin) - Expanded in mobile -->
   <!--<ng-container *ngIf="isAdmin">-->
-  <ng-container>
-    <div class="mobile-section-label">Admin</div>
-    <a *ngFor="let link of adminLinks"
-       (click)="closeMobileMenu()"
-       [routerLink]="link.path"
-       routerLinkActive="active"
-       class="mobile-indent">
-      {{ link.label }}
-    </a>
+  <ng-container *ngIf="(auth.currentUser$ | async) as user">
+    <ng-container *ngIf="user.role === 'Admin'">
+      <div class="mobile-section-label">Admin</div>
+      <a *ngFor="let link of adminLinks"
+         (click)="closeMobileMenu()"
+         [routerLink]="link.path"
+         routerLinkActive="active"
+         class="mobile-indent">
+        {{ link.label }}
+      </a>
+    </ng-container>
   </ng-container>
 
   <!-- User Actions (when logged in) -->
   <div *ngIf="auth.isLoggedIn()" class="mobile-user">
-    <div>{{ (auth.currentUser$ | async)?.firstName || (auth.currentUser$ | async)?.email }}</div>
+    <div>{{ (auth.currentUser$ | async)?.username }}</div>
     <button class="btn-logout" (click)="logout()">Logout</button>
   </div>
 </div>

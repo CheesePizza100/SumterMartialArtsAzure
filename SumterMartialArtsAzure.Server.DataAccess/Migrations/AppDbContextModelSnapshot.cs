@@ -37,6 +37,60 @@ namespace SumterMartialArtsAzure.Server.DataAccess.Migrations
                     b.ToTable("ProgramInstructors", (string)null);
                 });
 
+            modelBuilder.Entity("SumterMartialArtsAzure.Server.Domain.AuditLog", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Details")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EntityId")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("EntityType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("IpAddress")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<Guid>("SessionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Timestamp");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("EntityType", "EntityId");
+
+                    b.ToTable("AuditLogs");
+                });
+
             modelBuilder.Entity("SumterMartialArtsAzure.Server.Domain.Entities.StudentProgramEnrollment", b =>
                 {
                     b.Property<int>("Id")
@@ -314,6 +368,63 @@ namespace SumterMartialArtsAzure.Server.DataAccess.Migrations
                     b.ToTable("Students");
                 });
 
+            modelBuilder.Entity("SumterMartialArtsAzure.Server.Domain.User", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int?>("InstructorId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastLoginAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Role")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("StudentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("InstructorId")
+                        .IsUnique()
+                        .HasFilter("[InstructorId] IS NOT NULL");
+
+                    b.HasIndex("StudentId")
+                        .IsUnique()
+                        .HasFilter("[StudentId] IS NOT NULL");
+
+                    b.HasIndex("Username")
+                        .IsUnique();
+
+                    b.ToTable("Users");
+                });
+
             modelBuilder.Entity("InstructorProgram", b =>
                 {
                     b.HasOne("SumterMartialArtsAzure.Server.Domain.Instructor", null)
@@ -327,6 +438,17 @@ namespace SumterMartialArtsAzure.Server.DataAccess.Migrations
                         .HasForeignKey("ProgramsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("SumterMartialArtsAzure.Server.Domain.AuditLog", b =>
+                {
+                    b.HasOne("SumterMartialArtsAzure.Server.Domain.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("SumterMartialArtsAzure.Server.Domain.Entities.StudentProgramEnrollment", b =>
@@ -412,6 +534,23 @@ namespace SumterMartialArtsAzure.Server.DataAccess.Migrations
 
                     b.Navigation("RequestedLessonTime")
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("SumterMartialArtsAzure.Server.Domain.User", b =>
+                {
+                    b.HasOne("SumterMartialArtsAzure.Server.Domain.Instructor", "Instructor")
+                        .WithOne()
+                        .HasForeignKey("SumterMartialArtsAzure.Server.Domain.User", "InstructorId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("SumterMartialArtsAzure.Server.Domain.Student", "Student")
+                        .WithOne()
+                        .HasForeignKey("SumterMartialArtsAzure.Server.Domain.User", "StudentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Instructor");
+
+                    b.Navigation("Student");
                 });
 
             modelBuilder.Entity("SumterMartialArtsAzure.Server.Domain.Instructor", b =>

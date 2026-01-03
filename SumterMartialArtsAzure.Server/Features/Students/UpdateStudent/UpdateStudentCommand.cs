@@ -1,4 +1,6 @@
 ﻿using MediatR;
+using SumterMartialArtsAzure.Server.Api.Auditing;
+using SumterMartialArtsAzure.Server.Domain;
 
 namespace SumterMartialArtsAzure.Server.Api.Features.Students.UpdateStudent;
 
@@ -13,4 +15,8 @@ public record UpdateStudentCommand(
     string? Name,
     string? Email,
     string? Phone
-) : IRequest<UpdateStudentCommandResponse>;
+) : IRequest<UpdateStudentCommandResponse>, IAuditableCommand
+{
+    public string Action => AuditActions.StudentUpdated;
+    public string EntityType => "Student";
+}

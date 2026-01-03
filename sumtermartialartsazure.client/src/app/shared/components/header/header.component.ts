@@ -24,7 +24,7 @@ export class HeaderComponent {
   // Auth links (shown when not logged in)
   authLinks = [
     { path: '/login', label: 'Login' },
-    { path: '/register', label: 'Register' },
+    //{ path: '/register', label: 'Register' },
   ];
 
   // Admin dropdown links
@@ -65,9 +65,16 @@ export class HeaderComponent {
   }
 
   logout(): void {
-    this.auth.logout();
-    this.closeMobileMenu();
-    this.router.navigate(['/']);
+    this.auth.logout().subscribe({
+      next: () => {
+        // Logout successful - auth service handles redirect
+      },
+      error: (err) => {
+        console.error('Logout error:', err);
+        // Even if API call fails, force logout locally
+        this.auth.forceLogout();
+      }
+    });
   }
 
   get isAdmin(): boolean {
