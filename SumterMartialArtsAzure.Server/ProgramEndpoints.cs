@@ -10,6 +10,7 @@ using SumterMartialArtsAzure.Server.Api.Features.Programs.GetProgramById;
 using SumterMartialArtsAzure.Server.Api.Features.Programs.GetPrograms;
 using SumterMartialArtsAzure.Server.Api.Features.Students.AddTestResult;
 using SumterMartialArtsAzure.Server.Api.Features.Students.CreateStudent;
+using SumterMartialArtsAzure.Server.Api.Features.Students.CreateStudentLogin;
 using SumterMartialArtsAzure.Server.Api.Features.Students.EnrollInProgram;
 using SumterMartialArtsAzure.Server.Api.Features.Students.GetProgressionAnalytics;
 using SumterMartialArtsAzure.Server.Api.Features.Students.GetStudentAttendance;
@@ -46,6 +47,7 @@ public static class ProgramEndpoints
         GetStudentEventStreamEndpoint.MapEndpoint(app);
         GetStudentRankAtDateEndpoint.MapEndpoint(app);
         CreateStudentEndpoint.MapEndpoint(app);
+        CreateStudentLoginEndpoint.MapEndpoint(app);
         EnrollInProgramEndpoint.MapEndpoint(app);
         LoginEndpoint.MapEndpoint(app);
         LogoutEndpoint.MapEndpoint(app);
