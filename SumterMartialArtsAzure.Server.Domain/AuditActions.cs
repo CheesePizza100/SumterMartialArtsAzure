@@ -8,6 +8,7 @@ public static class AuditActions
     public const string UserCreated = "User.Created";
     public const string UserUpdated = "User.Updated";
     public const string UserDeactivated = "User.Deactivated";
+    public const string PasswordChanged = "Password.Changed";
 
     // Student actions
     public const string StudentCreated = "Student.Created";
