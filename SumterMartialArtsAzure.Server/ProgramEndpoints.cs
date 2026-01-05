@@ -12,6 +12,7 @@ using SumterMartialArtsAzure.Server.Api.Features.Students.AddTestResult;
 using SumterMartialArtsAzure.Server.Api.Features.Students.CreateStudent;
 using SumterMartialArtsAzure.Server.Api.Features.Students.CreateStudentLogin;
 using SumterMartialArtsAzure.Server.Api.Features.Students.EnrollInProgram;
+using SumterMartialArtsAzure.Server.Api.Features.Students.GetMyProfile;
 using SumterMartialArtsAzure.Server.Api.Features.Students.GetProgressionAnalytics;
 using SumterMartialArtsAzure.Server.Api.Features.Students.GetStudentAttendance;
 using SumterMartialArtsAzure.Server.Api.Features.Students.GetStudentById;
@@ -19,6 +20,7 @@ using SumterMartialArtsAzure.Server.Api.Features.Students.GetStudentEventStream;
 using SumterMartialArtsAzure.Server.Api.Features.Students.GetStudentRankAtDate;
 using SumterMartialArtsAzure.Server.Api.Features.Students.GetStudents;
 using SumterMartialArtsAzure.Server.Api.Features.Students.StudentSearch;
+using SumterMartialArtsAzure.Server.Api.Features.Students.UpdateMyContactInfo;
 using SumterMartialArtsAzure.Server.Api.Features.Students.UpdateProgramNotes;
 using SumterMartialArtsAzure.Server.Api.Features.Students.UpdateStudent;
 
@@ -51,5 +53,7 @@ public static class ProgramEndpoints
         EnrollInProgramEndpoint.MapEndpoint(app);
         LoginEndpoint.MapEndpoint(app);
         LogoutEndpoint.MapEndpoint(app);
+        GetMyProfileEndpoint.MapEndpoint(app);
+        UpdateMyContactInfoEndpoint.MapEndpoint(app);
     }
 }
