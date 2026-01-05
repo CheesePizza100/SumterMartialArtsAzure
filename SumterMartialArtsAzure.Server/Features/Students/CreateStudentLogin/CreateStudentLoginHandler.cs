@@ -53,7 +53,9 @@ public class CreateStudentLoginHandler
             request.Username,
             student.Email,
             passwordHash,
-            student.Id
+            student.Id,
+            student.Name,
+            tempPassword
         );
 
         _dbContext.Users.Add(user);
