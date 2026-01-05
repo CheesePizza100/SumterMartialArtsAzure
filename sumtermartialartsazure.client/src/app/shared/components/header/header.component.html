@@ -46,6 +46,13 @@
       </ng-container>
     </div>
 
+    <ng-container *ngIf="auth.currentUser$ | async as user">
+      <ng-container *ngIf="user.role === 'Student'">
+        <a routerLink="/student/dashboard" routerLinkActive="active">Dashboard</a>
+        <a routerLink="/student/profile" routerLinkActive="active">My Profile</a>
+      </ng-container>
+    </ng-container>
+
     <!-- User Actions (when logged in) -->
     <div *ngIf="auth.isLoggedIn()" class="user-actions">
       <span class="username">
@@ -98,6 +105,25 @@
          routerLinkActive="active"
          class="mobile-indent">
         {{ link.label }}
+      </a>
+    </ng-container>
+  </ng-container>
+
+  <!-- Student Links (when student) - Expanded in mobile -->
+  <ng-container *ngIf="(auth.currentUser$ | async) as user">
+    <ng-container *ngIf="user.role === 'Student'">
+      <div class="mobile-section-label">Student Portal</div>
+      <a (click)="closeMobileMenu()"
+         routerLink="/student/dashboard"
+         routerLinkActive="active"
+         class="mobile-indent">
+        Dashboard
+      </a>
+      <a (click)="closeMobileMenu()"
+         routerLink="/student/profile"
+         routerLinkActive="active"
+         class="mobile-indent">
+        My Profile
       </a>
     </ng-container>
   </ng-container>

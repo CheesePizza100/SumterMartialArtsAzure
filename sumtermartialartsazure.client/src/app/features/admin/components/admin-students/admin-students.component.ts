@@ -53,7 +53,8 @@ export class AdminStudentsComponent implements OnInit {
     'contact',
     'programs',
     'attendance',
-    'lastTest'
+    'lastTest',
+    'actions'
   ];
 
   constructor(private adminStudentsService: AdminStudentsService,
@@ -219,6 +220,39 @@ export class AdminStudentsComponent implements OnInit {
         this.snackBar.open('Error creating student', 'Close', {
           duration: 3000
         });
+      }
+    });
+  }
+
+  createLoginForStudent(student: Student, event: Event): void {
+    event.stopPropagation(); // Prevent row click from firing
+
+    const username = prompt(`Enter username for ${student.name}:`, student.email);
+    if (!username) return;
+
+    this.adminStudentsService.createStudentLogin(student.id, {
+      username,
+      password: null
+    }).subscribe({
+      next: (result) => {
+        this.snackBar.open(
+          `Login created for ${student.name}!\nUsername: ${result.username}\nTemporary Password: ${result.temporaryPassword}\n\nAn email has been sent to the student.`,
+          'Close',
+          {
+            duration: 10000,
+            panelClass: ['success-snackbar']
+          }
+        );
+        // Optionally reload the student list to update any UI
+        this.loadStudents();
+      },
+      error: (err) => {
+        const errorMessage = err.error?.message || 'Failed to create login';
+        this.snackBar.open(errorMessage, 'Close', {
+          duration: 5000,
+          panelClass: ['error-snackbar']
+        });
+        console.error('Error creating login:', err);
       }
     });
   }
