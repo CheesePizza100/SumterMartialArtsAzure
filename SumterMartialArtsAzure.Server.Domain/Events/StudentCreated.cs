@@ -12,6 +12,7 @@ public record StudentCreated : IDomainEvent
 
     public DateTime OccurredOn { get; init; } = DateTime.UtcNow;
 }
+
 public record StudentEnrolledInProgram : IDomainEvent
 {
     public int StudentId { get; set; }
