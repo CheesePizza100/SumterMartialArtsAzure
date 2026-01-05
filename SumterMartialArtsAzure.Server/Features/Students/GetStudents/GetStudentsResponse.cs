@@ -7,6 +7,7 @@ public record GetStudentsResponse(
     string Name,
     string Email,
     string Phone,
+    bool HasLogin,
     List<ProgramEnrollmentDto> Programs,
     List<TestHistoryDto> TestHistory
 );
