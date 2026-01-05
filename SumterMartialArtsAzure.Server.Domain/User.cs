@@ -1,8 +1,10 @@
-﻿using SumterMartialArtsAzure.Server.Domain.Services;
+﻿using SumterMartialArtsAzure.Server.Domain.Common;
+using SumterMartialArtsAzure.Server.Domain.Events;
+using SumterMartialArtsAzure.Server.Domain.Services;
 
 namespace SumterMartialArtsAzure.Server.Domain;
 
-public class User
+public class User : Entity
 {
     public Guid Id { get; private set; }
     public string Username { get; private set; } = string.Empty;
@@ -12,6 +14,7 @@ public class User
     public bool IsActive { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public DateTime? LastLoginAt { get; private set; }
+    public bool MustChangePassword { get; private set; }
 
     public int? StudentId { get; private set; }
     public int? InstructorId { get; private set; }
@@ -30,13 +33,46 @@ public class User
             Username = username,
             Email = email,
             PasswordHash = passwordHash,
+            MustChangePassword = false,
             Role = UserRole.Admin,
             IsActive = true,
             CreatedAt = DateTime.UtcNow
         };
     }
 
-    public static User CreateForStudent(string username, string email, string passwordHash, int studentId)
+    public static User CreateForStudent(string username, string email, string passwordHash, int studentId, string studentName, string temporaryPassword)
+    {
+        var user = new User
+        {
+            Id = Guid.NewGuid(),
+            Username = username,
+            Email = email,
+            PasswordHash = passwordHash,
+            MustChangePassword = true,
+            Role = UserRole.Student,
+            StudentId = studentId,
+            IsActive = true,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        user.AddDomainEvent(new StudentLoginCreated
+        {
+            StudentId = studentId,
+            StudentName = studentName,
+            StudentEmail = email,
+            Username = username,
+            TemporaryPassword = temporaryPassword,
+            CreatedAt = DateTime.UtcNow
+        });
+
+        return user;
+    }
+
+    public static User CreateForInstructor(
+        string username,
+        string email,
+        string passwordHash,
+        int instructorId)
     {
         return new User
         {
@@ -44,9 +80,10 @@ public class User
             Username = username,
             Email = email,
             PasswordHash = passwordHash,
-            Role = UserRole.Student,
-            StudentId = studentId,
+            Role = UserRole.Instructor,
+            InstructorId = instructorId,
             IsActive = true,
+            MustChangePassword = true,
             CreatedAt = DateTime.UtcNow
         };
     }
@@ -65,6 +102,7 @@ public class User
     public void ChangePassword(string newPasswordHash)
     {
         PasswordHash = newPasswordHash;
+        MustChangePassword = false;
     }
 }
 
