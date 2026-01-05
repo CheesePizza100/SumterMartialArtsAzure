@@ -41,7 +41,8 @@ public class LoginCommandHandler
             token,
             user.Username,
             user.Id,
-            user.Role.ToString()
+            user.Role.ToString(),
+            user.MustChangePassword
         );
     }
 }
