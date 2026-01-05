@@ -17,6 +17,7 @@ public static class AuditActions
     public const string StudentEnrolled = "Student.Enrolled";
     public const string StudentUnenrolled = "Student.Unenrolled";
     public const string AttendanceRecorded = "Student.Attendance.Recorded";
+    public const string StudentUpdatedOwnProfile = "Student.Updated.Own.Profile";
 
     // Program actions
     public const string ProgramCreated = "Program.Created";
