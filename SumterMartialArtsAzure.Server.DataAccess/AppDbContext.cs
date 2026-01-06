@@ -58,6 +58,9 @@ public class AppDbContext : DbContext
             b.HasKey(i => i.Id);
 
             b.Property(i => i.Name).IsRequired();
+            b.Property(i => i.Email)
+                .HasMaxLength(255)
+                .IsRequired();
             b.Property(i => i.Rank);
             b.Property(i => i.Bio);
             b.Property(i => i.PhotoUrl);

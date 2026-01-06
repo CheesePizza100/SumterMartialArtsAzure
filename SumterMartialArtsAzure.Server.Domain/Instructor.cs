@@ -12,6 +12,7 @@ public class Instructor
 
     public int Id { get; set; }
     public required string Name { get; set; }
+    public string Email { get; set; } = string.Empty;
     public string Rank { get; set; }
     public string Bio { get; set; }
     public string PhotoUrl { get; set; }
