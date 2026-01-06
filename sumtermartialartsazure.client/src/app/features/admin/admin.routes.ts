@@ -1,4 +1,8 @@
 import { Routes } from '@angular/router';
+import { AdminPrivateLessonsComponent } from './components/admin-private-lessons/admin-private-lessons.component';
+import { AdminStudentsComponent } from './components/admin-students/admin-students.component';
+import { AdminInstructorsComponent } from './components/admin-instructors/admin-instructors.component';
+import { AnalyticsDashboardComponent } from './components/analytics-dashboard/analytics-dashboard.component';
 
 export const ADMIN_ROUTES: Routes = [
   {
@@ -8,17 +12,18 @@ export const ADMIN_ROUTES: Routes = [
   },
   {
     path: 'private-lessons',
-    loadComponent: () => import('./components/admin-private-lessons/admin-private-lessons.component')
-      .then(m => m.AdminPrivateLessonsComponent)
+    component: AdminPrivateLessonsComponent
   },
   {
     path: 'students',
-    loadComponent: () => import('./components/admin-students/admin-students.component')
-      .then(m => m.AdminStudentsComponent)
+    component: AdminStudentsComponent
+  },
+  {
+    path: 'instructors',
+    component: AdminInstructorsComponent
   },
   {
     path: 'analytics',
-    loadComponent: () => import('./components/analytics-dashboard/analytics-dashboard.component')
-      .then(m => m.AnalyticsDashboardComponent)
+    component: AnalyticsDashboardComponent
   }
 ];
