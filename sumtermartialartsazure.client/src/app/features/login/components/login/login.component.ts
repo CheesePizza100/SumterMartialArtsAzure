@@ -31,6 +31,11 @@ export class LoginComponent {
         next: (user) => {
           this.loading = false;
 
+          if (user.mustChangePassword) {
+            this.router.navigate(['/change-password']);
+            return;
+          }
+
           if (user.role === 'Admin') {
             this.router.navigate(['/admin']);
           } else if (user.role === 'Student') {
