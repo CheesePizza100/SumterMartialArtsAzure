@@ -1,0 +1,70 @@
+<div class="admin-container">
+  <div class="header-section">
+    <h1>Instructor Management</h1>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading instructors...</p>
+  </div>
+
+  <!-- Instructors Table -->
+  <div *ngIf="!isLoading" class="table-container mat-elevation-z8">
+    <table mat-table [dataSource]="instructors">
+
+      <!-- Name Column -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Instructor</th>
+        <td mat-cell *matCellDef="let instructor">
+          <div class="instructor-cell">
+            <div class="avatar"></div>
+            <strong>{{ instructor.name }}</strong>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Email Column -->
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef>Email</th>
+        <td mat-cell *matCellDef="let instructor">
+          {{ instructor.email }}
+        </td>
+      </ng-container>
+
+      <!-- Rank Column -->
+      <ng-container matColumnDef="rank">
+        <th mat-header-cell *matHeaderCellDef>Rank</th>
+        <td mat-cell *matCellDef="let instructor">
+          <span class="rank-badge">{{ instructor.rank }}</span>
+        </td>
+      </ng-container>
+
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let instructor">
+          <button *ngIf="!instructor.hasLogin"
+                  mat-raised-button 
+                  color="accent"
+                  (click)="createLoginForInstructor(instructor, $event)"
+                  class="create-login-btn">
+            <mat-icon>person_add</mat-icon>
+            Create Login
+          </button>
+          <span *ngIf="instructor.hasLogin" class="login-status">
+            <mat-icon class="check-icon">check_circle</mat-icon>
+            Login Active
+          </span>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+    <div *ngIf="instructors.length === 0" class="no-data">
+      <p>No instructors found.</p>
+    </div>
+  </div>
+</div>
