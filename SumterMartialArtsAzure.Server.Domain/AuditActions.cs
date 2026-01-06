@@ -27,6 +27,7 @@ public static class AuditActions
 
     // Instructor actions
     public const string InstructorCreated = "Instructor.Created";
+    public const string InstructorLoginCreated = "Instructor.Login.Created";
     public const string InstructorUpdated = "Instructor.Updated";
     public const string InstructorDeleted = "Instructor.Deleted";
 

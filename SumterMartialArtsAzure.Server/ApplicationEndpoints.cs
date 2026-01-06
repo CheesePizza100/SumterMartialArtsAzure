@@ -1,6 +1,7 @@
 using SumterMartialArtsAzure.Server.Api.Features.Auth.ChangePassword;
 using SumterMartialArtsAzure.Server.Api.Features.Auth.Login;
 using SumterMartialArtsAzure.Server.Api.Features.Auth.Logout;
+using SumterMartialArtsAzure.Server.Api.Features.Instructors.CreateInstructorLogin;
 using SumterMartialArtsAzure.Server.Api.Features.Instructors.GetInstructorAvailability;
 using SumterMartialArtsAzure.Server.Api.Features.Instructors.GetInstructorById;
 using SumterMartialArtsAzure.Server.Api.Features.Instructors.GetInstructors;
@@ -57,5 +58,6 @@ public static class ApplicationEndpoints
         GetMyProfileEndpoint.MapEndpoint(app);
         UpdateMyContactInfoEndpoint.MapEndpoint(app);
         ChangePasswordEndpoint.MapEndpoint(app);
+        CreateInstructorLoginEndpoint.MapEndpoint(app);
     }
 }

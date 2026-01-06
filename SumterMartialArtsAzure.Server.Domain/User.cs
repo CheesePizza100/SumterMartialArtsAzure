@@ -72,9 +72,11 @@ public class User : Entity
         string username,
         string email,
         string passwordHash,
-        int instructorId)
+        int instructorId,
+        string instructorName,
+        string temporaryPassword)
     {
-        return new User
+        var user = new User
         {
             Id = Guid.NewGuid(),
             Username = username,
@@ -86,6 +88,17 @@ public class User : Entity
             MustChangePassword = true,
             CreatedAt = DateTime.UtcNow
         };
+
+        user.AddDomainEvent(new InstructorLoginCreated
+        {
+            InstructorId = instructorId,
+            InstructorName = instructorName,
+            InstructorEmail = email,
+            Username = username,
+            TemporaryPassword = temporaryPassword,
+        });
+
+        return user;
     }
 
     public void UpdateLastLogin()
