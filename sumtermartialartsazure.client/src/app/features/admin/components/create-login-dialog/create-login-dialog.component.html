@@ -1,0 +1,30 @@
+<h2 mat-dialog-title>Create Student Login</h2>
+
+<mat-dialog-content>
+  <p>Creating login for: <strong>{{ data.studentName }}</strong></p>
+  
+  <mat-form-field appearance="outline" style="width: 100%;">
+    <mat-label>Username</mat-label>
+    <input matInput
+           [(ngModel)]="username"
+           placeholder="Enter username"
+           required
+           autocomplete="off">
+    <mat-hint>Student will use this to log in</mat-hint>
+  </mat-form-field>
+  
+  <div class="info-box">
+    <strong>📧 Automatic Email</strong>
+    <p>The student will receive an email with their username and temporary password.</p>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button mat-raised-button 
+          color="primary" 
+          (click)="onCreate()"
+          [disabled]="!username.trim()">
+    Create Login
+  </button>
+</mat-dialog-actions>

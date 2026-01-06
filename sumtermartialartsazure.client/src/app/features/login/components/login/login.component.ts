@@ -40,6 +40,8 @@ export class LoginComponent {
             this.router.navigate(['/admin']);
           } else if (user.role === 'Student') {
             this.router.navigate(['/student']);
+          } else if (user.role === 'Instructor') {
+            this.router.navigate(['/instructors']);
           } else {
             this.router.navigate(['/home']);
           }

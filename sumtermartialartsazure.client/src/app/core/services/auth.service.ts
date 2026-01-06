@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap, map } from 'rxjs';
 import { Router } from '@angular/router';
+import { environment } from '../../../environments/environment.development';
 
 export interface User {
   userId: string;
@@ -27,6 +28,7 @@ export interface LoginResponse {
   providedIn: 'root'
 })
 export class AuthService {
+  private baseUrl = `${environment.apiUrl}/api`;
   private readonly TOKEN_KEY = 'auth_token';
   private readonly USER_KEY = 'current_user';
 
@@ -66,7 +68,7 @@ export class AuthService {
   login(username: string, password: string): Observable<User> {
     const request: LoginRequest = { username, password };
 
-    return this.http.post<LoginResponse>('/api/auth/login', request)
+    return this.http.post<LoginResponse>(`${this.baseUrl}/auth/login`, request)
       .pipe(
         tap(response => {
           // Store token

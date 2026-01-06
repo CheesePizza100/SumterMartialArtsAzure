@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, forkJoin, map } from 'rxjs';
-import { Instructor, InstructorWithPrograms, ProgramSummary } from '../models/instructor.model';
+import { Instructor, InstructorWithPrograms, InstructorProfile, InstructorStudent } from '../models/instructor.model';
 import { environment } from '../../../../environments/environment.development';
 
 @Injectable({
@@ -13,15 +13,10 @@ export class InstructorsService {
   constructor(private http: HttpClient) { }
 
   getInstructors(): Observable<Instructor[]> {
-    return this.http.get<{ instructor: Instructor }[]>(`${this.baseUrl}/instructors`).pipe(
-      map(response => response.map(item => item.instructor)) // Unwrap each 'instructor' object
-    );
-  }
+    return this.http.get<Instructor[]>(`${this.baseUrl}/instructors`);  }
 
   getInstructorById(id: number): Observable<Instructor> {
-    return this.http.get<{ instructor: Instructor }>(`${this.baseUrl}/instructors/${id}`).pipe(
-      map(response => response.instructor) // Extract from wrapper
-    );
+    return this.http.get<Instructor>(`${this.baseUrl}/instructors/${id}`);
   }
 
 
@@ -45,5 +40,42 @@ export class InstructorsService {
 
   getInstructorAvailability(instructorId: number): Observable<string[]> {
     return this.http.get<string[]>(`${this.baseUrl}/instructors/${instructorId}/availability`);
+  }
+
+  getMyProfile(): Observable<InstructorProfile> {
+    return this.http.get<InstructorProfile>(`${this.baseUrl}/instructors/me`);
+  }
+
+  getMyStudents(): Observable<InstructorStudent[]> {
+    return this.http.get<InstructorStudent[]>(`${this.baseUrl}/instructors/me/students`);
+  }
+
+  getStudentDetail(studentId: number): Observable<InstructorStudent> {
+    return this.http.get<InstructorStudent>(`${this.baseUrl}/instructors/me/students/${studentId}`);
+  }
+
+  recordTestResult(studentId: number, request: {
+    programId: number;
+    programName: string;
+    rank: string;
+    result: string;
+    notes: string;
+    testDate: Date;
+  }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/instructors/me/students/${studentId}/test-results`, request);
+  }
+
+  recordAttendance(studentId: number, request: {
+    programId: number;
+    classesAttended: number;
+  }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/instructors/me/students/${studentId}/attendance`, request);
+  }
+
+  updateProgramNotes(studentId: number, programId: number, notes: string): Observable<any> {
+    return this.http.put(
+      `${this.baseUrl}/instructors/me/students/${studentId}/programs/${programId}/notes`,
+      { notes }
+    );
   }
 }

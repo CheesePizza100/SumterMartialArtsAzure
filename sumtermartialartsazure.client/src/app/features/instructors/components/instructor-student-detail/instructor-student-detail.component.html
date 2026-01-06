@@ -1,0 +1,128 @@
+<div class="student-detail-container">
+  <div *ngIf="loading" class="loading">Loading...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <div *ngIf="student && !loading">
+    <div class="back-button-container">
+      <button mat-button (click)="backToStudents()">
+        <mat-icon>arrow_back</mat-icon>
+        Back to My Students
+      </button>
+    </div>
+
+    <div class="detail-card">
+      <!-- Student Header -->
+      <div class="student-header">
+        <div class="header-left">
+          <div class="avatar-large"></div>
+          <div class="header-info">
+            <h2>{{ student.name }}</h2>
+            <p>{{ student.email }}</p>
+            <p>{{ student.phone }}</p>
+          </div>
+        </div>
+        <div class="header-right">
+          <div class="stat-label">Total Classes Attended</div>
+          <div class="stat-value">{{ getTotalAttendance().total }}</div>
+        </div>
+        <div class="header-actions">
+          <button mat-raised-button (click)="openRecordAttendanceDialog()">
+            Record Attendance
+          </button>
+          <button mat-raised-button color="primary" (click)="openRecordTestDialog()">
+            Record Test Result
+          </button>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <mat-tab-group [(selectedIndex)]="activeTab">
+        <!-- Programs & Ranks Tab -->
+        <mat-tab label="Programs & Ranks">
+          <div class="tab-content">
+            <div *ngFor="let program of student.programs" class="program-card">
+              <div class="program-header">
+                <div>
+                  <h3>{{ program.programName }}</h3>
+                  <p class="current-rank">
+                    Current Rank: <span class="rank-badge">{{ program.currentRank }}</span>
+                  </p>
+                </div>
+                <div class="program-dates">
+                  <div>Enrolled: {{ formatDate(program.enrolledDate) }}</div>
+                  <div *ngIf="program.lastTestDate">
+                    Last Test: {{ formatDate(program.lastTestDate) }}
+                  </div>
+                </div>
+              </div>
+
+              <!-- Attendance Section -->
+              <div class="attendance-section">
+                <h4>Attendance (This Program)</h4>
+                <div class="attendance-stats-row">
+                  <div class="detail-row">
+                    <span class="detail-label">Last 30 Days</span>
+                    <span class="detail-value">{{ program.attendance.last30Days }}</span>
+                  </div>
+                  <div class="detail-row">
+                    <span class="detail-label">Total Classes</span>
+                    <span class="detail-value">{{ program.attendance.total }}</span>
+                  </div>
+                  <div class="detail-row">
+                    <span class="detail-label">Attendance Rate</span>
+                    <span class="detail-value">{{ program.attendance.attendanceRate }}%</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Instructor Notes -->
+              <div class="instructor-notes">
+                <div class="notes-header">
+                  <strong>Instructor Notes</strong>
+                  <button mat-button color="primary" (click)="openUpdateNotesDialog(program)">
+                    <mat-icon>edit</mat-icon>
+                    {{ program.instructorNotes ? 'Edit Notes' : 'Add Notes' }}
+                  </button>
+                </div>
+                <p *ngIf="program.instructorNotes">{{ program.instructorNotes }}</p>
+                <p *ngIf="!program.instructorNotes" class="no-notes">No notes yet</p>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- Test History Tab -->
+        <mat-tab label="Test History">
+          <div class="tab-content">
+            <div *ngIf="student.testHistory.length > 0; else noTests">
+              <div *ngFor="let test of student.testHistory" class="test-card">
+                <div class="test-header">
+                  <div>
+                    <div class="test-title">
+                      <h4>{{ test.program }}</h4>
+                      <span class="result-badge" [class.pass]="test.result === 'Pass'" [class.fail]="test.result !== 'Pass'">
+                        {{ test.result }}
+                      </span>
+                    </div>
+                    <p>Promoted to: <strong>{{ test.rank }}</strong></p>
+                  </div>
+                  <div class="test-date">
+                    {{ formatDate(test.date) }}
+                  </div>
+                </div>
+                <div *ngIf="test.notes" class="test-notes">
+                  {{ test.notes }}
+                </div>
+              </div>
+            </div>
+            <ng-template #noTests>
+              <div class="empty-state">
+                <p>No test history yet</p>
+              </div>
+            </ng-template>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  </div>
+</div>

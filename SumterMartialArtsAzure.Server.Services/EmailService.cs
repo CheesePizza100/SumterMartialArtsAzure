@@ -60,6 +60,12 @@ public interface IEmailService
         string studentName,
         string username,
         string temporaryPassword);
+
+    Task SendInstructorLoginCredentialsAsync(
+        string instructorEmail,
+        string instructorName,
+        string username,
+        string temporaryPassword);
 }
 
 public class EmailService : IEmailService
@@ -889,6 +895,109 @@ public class EmailService : IEmailService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Exception sending login credentials to {Email}", studentEmail);
+        }
+    }
+
+    public async Task SendInstructorLoginCredentialsAsync(
+    string instructorEmail,
+    string instructorName,
+    string username,
+    string temporaryPassword)
+    {
+        try
+        {
+            var subject = "Your Instructor Portal Login Credentials 🔐";
+
+            var body = $@"
+            <html>
+            <head>
+                <style>
+                    body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+                    .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+                    .header {{ background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                              color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }}
+                    .content {{ background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }}
+                    .credentials-box {{ background: white; padding: 20px; margin: 20px 0; 
+                                       border: 2px solid #667eea; border-radius: 5px; }}
+                    .password {{ font-family: monospace; font-size: 18px; color: #667eea; font-weight: bold; }}
+                    .warning {{ background: #fff3cd; padding: 15px; margin: 20px 0; 
+                               border-left: 4px solid #ffc107; border-radius: 5px; }}
+                </style>
+            </head>
+            <body>
+                <div class='container'>
+                    <div class='header'>
+                        <h1>Welcome to Your Instructor Portal!</h1>
+                    </div>
+                    <div class='content'>
+                        <p>Hi {instructorName},</p>
+                        
+                        <p>Your instructor portal account has been created! You can now log in to manage your students, 
+                           record test results, track attendance, and more.</p>
+
+                        <div class='credentials-box'>
+                            <p><strong>Username:</strong> {username}</p>
+                            <p><strong>Temporary Password:</strong> <span class='password'>{temporaryPassword}</span></p>
+                        </div>
+
+                        <div class='warning'>
+                            <strong>⚠️ Important Security Notice:</strong><br>
+                            This is a temporary password. For your security, you will be required to change it 
+                            after your first login.
+                        </div>
+
+                        <h3>What You Can Do in the Portal:</h3>
+                        <ul>
+                            <li>View students in programs you teach</li>
+                            <li>Record test results and promotions</li>
+                            <li>Track student attendance</li>
+                            <li>Add instructor notes and feedback</li>
+                            <li>Manage your teaching schedule</li>
+                            <li>View and respond to private lesson requests</li>
+                        </ul>
+
+                        <h3>Getting Started:</h3>
+                        <ol>
+                            <li>Visit the instructor portal login page</li>
+                            <li>Enter your username and temporary password</li>
+                            <li>Follow the prompts to create your new password</li>
+                            <li>Start managing your students!</li>
+                        </ol>
+
+                        <p><strong>Having trouble logging in?</strong> Contact us and we'll be happy to help!</p>
+
+                        <div style='text-align: center; margin-top: 30px; color: #666; font-size: 14px;'>
+                            <p>Sumter Martial Arts<br>
+                            Empowering Instructors 🥋</p>
+                        </div>
+                    </div>
+                </div>
+            </body>
+            </html>
+        ";
+
+            var result = await _fluentEmail
+                .To(instructorEmail, instructorName)
+                .Subject(subject)
+                .Body(body, isHtml: true)
+                .SendAsync();
+
+            if (result.Successful)
+            {
+                _logger.LogInformation("Instructor login credentials sent to {Email}", instructorEmail);
+            }
+            else
+            {
+                _logger.LogError(
+                    "Failed to send login credentials to {Email}: {Errors}",
+                    instructorEmail,
+                    string.Join(", ", result.ErrorMessages)
+                );
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Exception sending login credentials to {Email}", instructorEmail);
         }
     }
 }

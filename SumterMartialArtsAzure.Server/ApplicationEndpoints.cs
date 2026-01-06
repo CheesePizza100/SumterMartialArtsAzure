@@ -1,9 +1,16 @@
 using SumterMartialArtsAzure.Server.Api.Features.Auth.ChangePassword;
 using SumterMartialArtsAzure.Server.Api.Features.Auth.Login;
 using SumterMartialArtsAzure.Server.Api.Features.Auth.Logout;
+using SumterMartialArtsAzure.Server.Api.Features.Instructors.CreateInstructorLogin;
 using SumterMartialArtsAzure.Server.Api.Features.Instructors.GetInstructorAvailability;
 using SumterMartialArtsAzure.Server.Api.Features.Instructors.GetInstructorById;
 using SumterMartialArtsAzure.Server.Api.Features.Instructors.GetInstructors;
+using SumterMartialArtsAzure.Server.Api.Features.Instructors.GetMyProfile;
+using SumterMartialArtsAzure.Server.Api.Features.Instructors.GetMyStudents;
+using SumterMartialArtsAzure.Server.Api.Features.Instructors.GetStudentDetail;
+using SumterMartialArtsAzure.Server.Api.Features.Instructors.RecordAttendance;
+using SumterMartialArtsAzure.Server.Api.Features.Instructors.RecordTestResult;
+using SumterMartialArtsAzure.Server.Api.Features.Instructors.UpdateProgramNotes;
 using SumterMartialArtsAzure.Server.Api.Features.PrivateLessons.GetPrivateLessons;
 using SumterMartialArtsAzure.Server.Api.Features.PrivateLessons.SubmitPrivateLesson;
 using SumterMartialArtsAzure.Server.Api.Features.PrivateLessons.UpdatePrivateLesson;
@@ -57,5 +64,12 @@ public static class ApplicationEndpoints
         GetMyProfileEndpoint.MapEndpoint(app);
         UpdateMyContactInfoEndpoint.MapEndpoint(app);
         ChangePasswordEndpoint.MapEndpoint(app);
+        CreateInstructorLoginEndpoint.MapEndpoint(app);
+        GetInstructorProfileEndpoint.MapEndpoint(app);
+        GetMyStudentsEndpoint.MapEndpoint(app);
+        GetStudentDetailEndpoint.MapEndpoint(app);
+        InstructorRecordTestEndpoint.MapEndpoint(app);
+        InstructorRecordAttendanceEndpoint.MapEndpoint(app);
+        InstructorUpdateNotesEndpoint.MapEndpoint(app);
     }
 }
