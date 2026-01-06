@@ -1,0 +1,47 @@
+<div class="profile-container">
+  <h1>My Profile</h1>
+  
+  <div *ngIf="loading">Loading...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+  
+  <div *ngIf="profile && !loading" class="profile-content">
+    <div class="profile-card">
+      <div class="profile-header">
+        <div class="avatar">
+          <img *ngIf="profile.photoUrl" [src]="profile.photoUrl" [alt]="profile.name">
+          <div *ngIf="!profile.photoUrl" class="avatar-placeholder">
+            {{ getInitials(profile.name) }}
+          </div>
+        </div>
+        <div class="profile-info">
+          <h2>{{ profile.name }}</h2>
+          <div class="rank-badge">{{ profile.rank }}</div>
+          <p>{{ profile.email }}</p>
+        </div>
+      </div>
+
+      <div class="bio-section" *ngIf="profile.bio">
+        <h3>Bio</h3>
+        <p>{{ profile.bio }}</p>
+      </div>
+    </div>
+
+    <div class="programs-card">
+      <h3>Programs I Teach</h3>
+      <div *ngIf="profile.programs.length === 0">
+        <p>Not assigned to any programs yet.</p>
+      </div>
+      <div *ngFor="let program of profile.programs" class="program-item">
+        {{ program.name }}
+      </div>
+    </div>
+
+    <div class="schedule-card" *ngIf="profile.classSchedule.length > 0">
+      <h3>My Class Schedule</h3>
+      <div *ngFor="let schedule of profile.classSchedule" class="schedule-item">
+        <strong>{{ schedule.daysOfWeek }}</strong>
+        <span>{{ schedule.startTime }} ({{ schedule.duration }})</span>
+      </div>
+    </div>
+  </div>
+</div>
