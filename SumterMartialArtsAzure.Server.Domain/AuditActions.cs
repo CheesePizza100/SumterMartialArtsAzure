@@ -30,6 +30,9 @@ public static class AuditActions
     public const string InstructorLoginCreated = "Instructor.Login.Created";
     public const string InstructorUpdated = "Instructor.Updated";
     public const string InstructorDeleted = "Instructor.Deleted";
+    public const string InstructorRecordedTest = "Instructor.Recorded.Test";
+    public const string InstructorRecordedAttendance = "Instructor.Recorded.Attendance";
+    public const string InstructorUpdatedNotes = "Instructor.Updated.Notes";
 
     public const string TestResultAdded = "TestResult.Added";
     public const string ProgramNotesUpdated = "ProgramNotes.Updated";
