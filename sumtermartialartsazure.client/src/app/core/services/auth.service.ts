@@ -7,6 +7,7 @@ export interface User {
   userId: string;
   username: string;
   role: 'Admin' | 'Student' | 'Instructor';
+  mustChangePassword: boolean;
 }
 
 export interface LoginRequest {
@@ -19,6 +20,7 @@ export interface LoginResponse {
   username: string;
   userId: string;
   role: string;
+  mustChangePassword: boolean;
 }
 
 @Injectable({
@@ -70,11 +72,12 @@ export class AuthService {
           // Store token
           localStorage.setItem(this.TOKEN_KEY, response.token);
 
-          // Store user info
+          // Store user info including mustChangePassword
           const user: User = {
             userId: response.userId,
             username: response.username,
-            role: response.role as 'Admin' | 'Student' | 'Instructor'
+            role: response.role as 'Admin' | 'Student' | 'Instructor',
+            mustChangePassword: response.mustChangePassword  // <-- Add this
           };
           localStorage.setItem(this.USER_KEY, JSON.stringify(user));
 
@@ -84,9 +87,27 @@ export class AuthService {
         map(response => ({
           userId: response.userId,
           username: response.username,
-          role: response.role as 'Admin' | 'Student' | 'Instructor'
+          role: response.role as 'Admin' | 'Student' | 'Instructor',
+          mustChangePassword: response.mustChangePassword
         }))
       );
+  }
+
+  changePassword(currentPassword: string, newPassword: string): Observable<any> {
+    return this.http.post('/api/auth/change-password', {
+      currentPassword,
+      newPassword
+    }).pipe(
+      tap(() => {
+        // Update the user object to clear the mustChangePassword flag
+        const user = this.currentUserSubject.value;
+        if (user) {
+          user.mustChangePassword = false;
+          localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+          this.currentUserSubject.next(user);
+        }
+      })
+    );
   }
 
   logout(): Observable<void> {
