@@ -19,6 +19,7 @@ import { EnrollProgramDialogComponent } from '../enroll-program-dialog/enroll-pr
 import { ProgramsService } from '../../../programs/services/programs.service';
 import { RecordAttendanceDialogComponent } from '../record-attendance-dialog/record-attendance-dialog.component';
 import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { CreateLoginDialogComponent } from '../create-login-dialog/create-login-dialog.component';
 
 @Component({
   selector: 'app-admin-students',
@@ -227,32 +228,40 @@ export class AdminStudentsComponent implements OnInit {
   createLoginForStudent(student: Student, event: Event): void {
     event.stopPropagation(); // Prevent row click from firing
 
-    const username = prompt(`Enter username for ${student.name}:`, student.email);
-    if (!username) return;
+    const dialogRef = this.dialog.open(CreateLoginDialogComponent, {
+      width: '500px',
+      data: {
+        studentName: student.name,
+        suggestedUsername: student.email
+      }
+    });
 
-    this.adminStudentsService.createStudentLogin(student.id, {
-      username,
-      password: null
-    }).subscribe({
-      next: (result) => {
-        this.snackBar.open(
-          `Login created for ${student.name}!\nUsername: ${result.username}\nTemporary Password: ${result.temporaryPassword}\n\nAn email has been sent to the student.`,
-          'Close',
-          {
-            duration: 10000,
-            panelClass: ['success-snackbar']
+    dialogRef.afterClosed().subscribe(username => {
+      if (username) {
+        this.adminStudentsService.createStudentLogin(student.id, {
+          username,
+          password: null
+        }).subscribe({
+          next: (result) => {
+            this.snackBar.open(
+              `Login created for ${student.name}!\nUsername: ${result.username}\nTemporary Password: ${result.temporaryPassword}\n\nAn email has been sent to the student.`,
+              'Close',
+              {
+                duration: 10000,
+                panelClass: ['success-snackbar']
+              }
+            );
+            this.loadStudents();
+          },
+          error: (err) => {
+            const errorMessage = err.error?.message || 'Failed to create login';
+            this.snackBar.open(errorMessage, 'Close', {
+              duration: 5000,
+              panelClass: ['error-snackbar']
+            });
+            console.error('Error creating login:', err);
           }
-        );
-        // Optionally reload the student list to update any UI
-        this.loadStudents();
-      },
-      error: (err) => {
-        const errorMessage = err.error?.message || 'Failed to create login';
-        this.snackBar.open(errorMessage, 'Close', {
-          duration: 5000,
-          panelClass: ['error-snackbar']
         });
-        console.error('Error creating login:', err);
       }
     });
   }
