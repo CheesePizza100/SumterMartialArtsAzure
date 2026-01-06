@@ -1,0 +1,69 @@
+<div class="dashboard-container">
+  <h1>My Dashboard</h1>
+
+  <div *ngIf="loading">Loading...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <div *ngIf="profile && !loading" class="dashboard-content">
+    <!-- Profile Summary -->
+    <div class="profile-card">
+      <h2>{{ profile.name }}</h2>
+      <p>{{ profile.email }}</p>
+      <p>{{ profile.phone }}</p>
+    </div>
+
+    <!-- Programs -->
+    <div class="programs-section">
+      <h2>My Programs</h2>
+      <div *ngIf="profile.programs.length === 0">
+        <p>You are not enrolled in any programs yet.</p>
+      </div>
+      <div *ngFor="let program of profile.programs" class="program-card">
+        <h3>{{ program.name }}</h3>
+        <div class="program-details">
+          <div><strong>Program:</strong> {{ program.name }}</div>
+          <div><strong>Current Rank:</strong> {{ program.rank }}</div>
+          <div><strong>Enrolled:</strong> {{ program.enrolledDate | date }}</div>
+          <div><strong>Last Test:</strong> {{ program.lastTest ? (program.lastTest | date) : 'N/A' }}</div>
+          <div><strong>Attendance (Last 30 Days):</strong> {{ program.attendance.last30Days }}</div>
+          <div><strong>Total Classes:</strong> {{ program.attendance.total }}</div>
+          <div><strong>Attendance Rate:</strong> {{ program.attendance.attendanceRate | number:'1.0-0' }}%</div>
+        </div>
+        <div *ngIf="program.testNotes" class="instructor-notes">
+          <strong>Instructor Notes:</strong>
+          <p>{{ program.testNotes }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Test History -->
+    <div class="test-history-section">
+      <h2>Recent Test History</h2>
+      <div *ngIf="profile.testHistory.length === 0">
+        <p>No test history yet.</p>
+      </div>
+      <table *ngIf="profile.testHistory.length > 0">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Program</th>
+            <th>Rank</th>
+            <th>Result</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let test of profile.testHistory.slice(0, 5)">
+            <td>{{ test.date | date }}</td>
+            <td>{{ test.program }}</td>
+            <td>{{ test.rank }}</td>
+            <td [class.pass]="test.result === 'Pass'" [class.fail]="test.result !== 'Pass'">
+              {{ test.result }}
+            </td>
+            <td>{{ test.notes || '-' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

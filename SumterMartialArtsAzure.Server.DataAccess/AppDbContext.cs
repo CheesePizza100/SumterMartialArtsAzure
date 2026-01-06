@@ -207,6 +207,9 @@ public class AppDbContext : DbContext
             entity.Property(u => u.Role)
                 .HasConversion<int>();
 
+            entity.Property(u => u.MustChangePassword)
+                .IsRequired();
+
             entity.HasIndex(u => u.Username).IsUnique();
             entity.HasIndex(u => u.Email).IsUnique();
             entity.HasIndex(u => u.StudentId);

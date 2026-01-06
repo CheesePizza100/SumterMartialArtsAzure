@@ -28,9 +28,21 @@ export class LoginComponent {
 
     this.authService.login(this.username, this.password)
       .subscribe({
-        next: () => {
+        next: (user) => {
           this.loading = false;
-          this.router.navigate(['/admin']);
+
+          if (user.mustChangePassword) {
+            this.router.navigate(['/change-password']);
+            return;
+          }
+
+          if (user.role === 'Admin') {
+            this.router.navigate(['/admin']);
+          } else if (user.role === 'Student') {
+            this.router.navigate(['/student']);
+          } else {
+            this.router.navigate(['/home']);
+          }
         },
         error: (err) => {
           this.loading = false;

@@ -8,6 +8,7 @@
     <PublishAssetsDirectory>$(MSBuildProjectDirectory)\dist\sumtermartialartsazure.client\</PublishAssetsDirectory>
   </PropertyGroup>
   <ItemGroup>
+    <Folder Include="src\app\core\guards\" />
     <Folder Include="src\app\features\instructors\models\" />
     <Folder Include="src\app\features\instructors\utils\" />
     <Folder Include="src\app\features\instructors\services\" />
@@ -17,5 +18,6 @@
     <Folder Include="src\app\features\programs\models\" />
     <Folder Include="src\app\features\programs\utils\" />
     <Folder Include="src\app\features\programs\services\" />
+    <Folder Include="src\app\features\students\services\" />
   </ItemGroup>
 </Project>

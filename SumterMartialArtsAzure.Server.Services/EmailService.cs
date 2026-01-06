@@ -54,6 +54,12 @@ public interface IEmailService
         string studentName,
         string instructorName,
         DateTime requestedDate);
+
+    Task SendStudentLoginCredentialsAsync(
+        string studentEmail,
+        string studentName,
+        string username,
+        string temporaryPassword);
 }
 
 public class EmailService : IEmailService
@@ -779,6 +785,110 @@ public class EmailService : IEmailService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Exception sending admin notification");
+        }
+    }
+
+    public async Task SendStudentLoginCredentialsAsync(
+        string studentEmail,
+        string studentName,
+        string username,
+        string temporaryPassword)
+    {
+        try
+        {
+            var subject = "Your Student Portal Login Credentials 🔐";
+
+            var body = $@"
+            <html>
+            <head>
+                <style>
+                    body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+                    .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+                    .header {{ background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                              color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }}
+                    .content {{ background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }}
+                    .credentials-box {{ background: white; padding: 20px; margin: 20px 0; 
+                                       border: 2px solid #667eea; border-radius: 5px; }}
+                    .password {{ font-family: monospace; font-size: 18px; color: #667eea; font-weight: bold; }}
+                    .warning {{ background: #fff3cd; padding: 15px; margin: 20px 0; 
+                               border-left: 4px solid #ffc107; border-radius: 5px; }}
+                </style>
+            </head>
+            <body>
+                <div class='container'>
+                    <div class='header'>
+                        <h1>Welcome to Your Student Portal!</h1>
+                    </div>
+                    <div class='content'>
+                        <p>Hi {studentName},</p>
+                        
+                        <p>Your student portal account has been created! You can now log in to view your progress, 
+                           test history, program enrollments, and more.</p>
+
+                        <div class='credentials-box'>
+                            <p><strong>Username:</strong> {username}</p>
+                            <p><strong>Temporary Password:</strong> <span class='password'>{temporaryPassword}</span></p>
+                        </div>
+
+                        <div class='warning'>
+                            <strong>⚠️ Important Security Notice:</strong><br>
+                            This is a temporary password. For your security, you will be required to change it 
+                            after your first login.
+                        </div>
+
+                        <h3>What You Can Do in the Portal:</h3>
+                        <ul>
+                            <li>View your current rank and program enrollments</li>
+                            <li>Check your attendance records</li>
+                            <li>See your complete test history</li>
+                            <li>Update your contact information</li>
+                            <li>Read instructor notes and feedback</li>
+                        </ul>
+
+                        <h3>Getting Started:</h3>
+                        <ol>
+                            <li>Visit the student portal login page</li>
+                            <li>Enter your username and temporary password</li>
+                            <li>Follow the prompts to create your new password</li>
+                            <li>Explore your dashboard!</li>
+                        </ol>
+
+                        <p><strong>Having trouble logging in?</strong> Contact us and we'll be happy to help!</p>
+
+                        <p>We're excited to have you use the portal to track your martial arts journey!</p>
+
+                        <div style='text-align: center; margin-top: 30px; color: #666; font-size: 14px;'>
+                            <p>Sumter Martial Arts<br>
+                            Train Smart, Track Progress 🥋</p>
+                        </div>
+                    </div>
+                </div>
+            </body>
+            </html>
+        ";
+
+            var result = await _fluentEmail
+                .To(studentEmail, studentName)
+                .Subject(subject)
+                .Body(body, isHtml: true)
+                .SendAsync();
+
+            if (result.Successful)
+            {
+                _logger.LogInformation("Student login credentials sent to {Email}", studentEmail);
+            }
+            else
+            {
+                _logger.LogError(
+                    "Failed to send login credentials to {Email}: {Errors}",
+                    studentEmail,
+                    string.Join(", ", result.ErrorMessages)
+                );
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Exception sending login credentials to {Email}", studentEmail);
         }
     }
 }

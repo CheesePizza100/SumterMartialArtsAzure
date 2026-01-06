@@ -71,6 +71,25 @@ export class AdminStudentsService {
     return this.http.post<Student>(`${this.baseUrl}/students`, student);
   }
 
+  createStudentLogin(studentId: number, request: {
+    username: string;
+    password?: string | null;
+  }): Observable<{
+    success: boolean;
+    message: string;
+    username: string;
+    temporaryPassword: string;
+    userId: string;
+  }> {
+    return this.http.post<{
+      success: boolean;
+      message: string;
+      username: string;
+      temporaryPassword: string;
+      userId: string;
+    }>(`${this.baseUrl}/students/${studentId}/create-login`, request);
+  }
+
   enrollInProgram(studentId: number, enrollment: {
     programId: number;
     programName: string;

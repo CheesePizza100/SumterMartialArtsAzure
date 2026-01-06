@@ -1,5 +1,8 @@
 import { Routes } from '@angular/router';
-import { authGuard, adminGuard } from '../../src/app/core/services/auth.guard';
+import { authGuard } from '../../src/app/core/guards/auth.guard';
+import { adminGuard } from '../../src/app/core/guards/admin.guard';
+import { passwordChangeGuard } from '../../src/app/core/guards/password-change.guard';
+import { AUTH_ROUTES } from './features/auth/auth.routes';
 
 export const routes: Routes = [
   {
@@ -20,6 +23,11 @@ export const routes: Routes = [
     loadChildren: () => import('./features/programs/programs.routes').then(m => m.PROGRAM_ROUTES)
   },
   {
+    path: 'student',
+    loadChildren: () => import('./features/students/student.routes').then(m => m.STUDENT_ROUTES),
+    canActivate: [authGuard, passwordChangeGuard]
+  },
+  {
     path: 'instructors',
     loadChildren: () => import('./features/instructors/instructors.routes').then(m => m.INSTRUCTOR_ROUTES)
   },
@@ -28,8 +36,13 @@ export const routes: Routes = [
     loadChildren: () => import('./features/login/login.routes').then(m => m.LOGIN_ROUTES)
   },
   {
+    path: 'change-password',
+    loadChildren: () => import('./features/auth/auth.routes').then(m => AUTH_ROUTES),
+    canActivate: [authGuard]
+  },
+  {
     path: 'admin',
     loadChildren: () => import('./features/admin/admin.routes').then(m => m.ADMIN_ROUTES),
-    canActivate: [authGuard, adminGuard]
+    canActivate: [authGuard, adminGuard, passwordChangeGuard]
   },
 ];

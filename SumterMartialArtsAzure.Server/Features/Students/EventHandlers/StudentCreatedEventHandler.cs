@@ -15,11 +15,11 @@ public class StudentCreatedEventHandler
         _emailService = emailService;
     }
 
-    public async Task Handle(DomainEventNotification<StudentCreated> notification, CancellationToken cancellationToken)
+    public Task Handle(DomainEventNotification<StudentCreated> notification, CancellationToken cancellationToken)
     {
         var domainEvent = notification.DomainEvent;
 
-        await _emailService.SendSchoolWelcomeEmailAsync(
+        return _emailService.SendSchoolWelcomeEmailAsync(
             domainEvent.Email,
             domainEvent.Name
         );

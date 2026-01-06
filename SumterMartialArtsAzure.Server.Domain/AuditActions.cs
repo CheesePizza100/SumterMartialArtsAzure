@@ -8,14 +8,17 @@ public static class AuditActions
     public const string UserCreated = "User.Created";
     public const string UserUpdated = "User.Updated";
     public const string UserDeactivated = "User.Deactivated";
+    public const string PasswordChanged = "Password.Changed";
 
     // Student actions
     public const string StudentCreated = "Student.Created";
+    public const string StudentLoginCreated = "Student.Login.Created";
     public const string StudentUpdated = "Student.Updated";
     public const string StudentDeactivated = "Student.Deactivated";
     public const string StudentEnrolled = "Student.Enrolled";
     public const string StudentUnenrolled = "Student.Unenrolled";
     public const string AttendanceRecorded = "Student.Attendance.Recorded";
+    public const string StudentUpdatedOwnProfile = "Student.Updated.Own.Profile";
 
     // Program actions
     public const string ProgramCreated = "Program.Created";
