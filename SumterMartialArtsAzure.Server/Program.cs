@@ -145,7 +145,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseAuthorization();
-app.MapProgramEndpoints();
+app.MapEndpoints();
 app.MapHealthChecks("/health");
 
 app.Run();
