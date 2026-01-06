@@ -22,8 +22,8 @@ export interface CreateLoginDialogData {
     MatFormFieldModule,
     MatInputModule
   ],
-  template: './create-login-dialog.component.html',
-  styles: ['./create-login-dialog.component.css']
+  templateUrl: './create-login-dialog.component.html',
+  styleUrls: ['./create-login-dialog.component.css']
 })
 export class CreateLoginDialogComponent {
   username: string;
