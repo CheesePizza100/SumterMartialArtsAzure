@@ -3,28 +3,30 @@ import { InstructorDetailsComponent } from './components/instructor-details/inst
 import { InstructorDashboardComponent } from './components/instructor-dashboard/instructor-dashboard.component';
 import { InstructorProfileComponent } from './components/instructor-profile/instructor-profile.component';
 import { InstructorStudentDetailComponent } from './components/instructor-student-detail/instructor-student-detail.component';
+import { authGuard } from '../../core/guards/auth.guard';
+import { passwordChangeGuard } from '../../core/guards/password-change.guard';
 
- 
 export const INSTRUCTOR_ROUTES: Routes = [
-  {
-    path: '',
-    redirectTo: 'dashboard',
-    pathMatch: 'full'
-  },
+  // Public route - no guards
   {
     path: ':id',
     component: InstructorDetailsComponent
   },
+
+  // Protected routes - with guards
   {
     path: 'dashboard',
-    component: InstructorDashboardComponent
+    component: InstructorDashboardComponent,
+    canActivate: [authGuard, passwordChangeGuard]
   },
   {
     path: 'profile',
-    component: InstructorProfileComponent
+    component: InstructorProfileComponent,
+    canActivate: [authGuard, passwordChangeGuard]
   },
   {
     path: 'students/:id',
-    component: InstructorStudentDetailComponent
+    component: InstructorStudentDetailComponent,
+    canActivate: [authGuard, passwordChangeGuard]
   }
 ];
