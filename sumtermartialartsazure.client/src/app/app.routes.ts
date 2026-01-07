@@ -30,7 +30,6 @@ export const routes: Routes = [
   {
     path: 'instructors',
     loadChildren: () => import('./features/instructors/instructors.routes').then(m => m.INSTRUCTOR_ROUTES),
-    canActivate: [authGuard, passwordChangeGuard]
   },
   {
     path: 'login',
