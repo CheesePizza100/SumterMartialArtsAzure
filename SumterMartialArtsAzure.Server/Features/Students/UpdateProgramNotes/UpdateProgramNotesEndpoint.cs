@@ -7,7 +7,7 @@ public static class UpdateProgramNotesEndpoint
 {
     public static void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapPatch("/api/students/{id}/programs/{programId}/notes",
+        app.MapPatch("{id}/programs/{programId}/notes",
                 async (int id, int programId, [FromBody] UpdateProgramNotesRequest request, IMediator mediator) =>
                 {
                     var command = new UpdateProgramNotesCommand(

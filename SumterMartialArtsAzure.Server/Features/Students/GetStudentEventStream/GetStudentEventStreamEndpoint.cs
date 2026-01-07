@@ -6,7 +6,7 @@ public class GetStudentEventStreamEndpoint
 {
     public static void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapGet("/api/students/{studentId}/programs/{programId}/events",
+        app.MapGet("{studentId}/programs/{programId}/events",
                 async (int studentId, int programId, IMediator mediator) =>
                 {
                     var result = await mediator.Send(new GetStudentEventStreamQuery(studentId, programId));

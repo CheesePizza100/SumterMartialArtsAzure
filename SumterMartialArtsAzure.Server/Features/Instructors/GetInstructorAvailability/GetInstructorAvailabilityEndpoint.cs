@@ -6,7 +6,7 @@ public class GetInstructorAvailabilityEndpoint
 {
     public static void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapGet("/api/instructors/{id:int}/availability",
+        app.MapGet("{id:int}/availability",
                 async (int id, IMediator mediator) =>
                 {
                     var result = await mediator.Send(

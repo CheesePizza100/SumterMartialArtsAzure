@@ -6,7 +6,7 @@ public class GetProgramByIdEndpoint
 {
     public static void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapGet("/api/programs/{id:int}",
+        app.MapGet("{id:int}",
                 async (int id, IMediator mediator) =>
                 {
                     var result = await mediator.Send(

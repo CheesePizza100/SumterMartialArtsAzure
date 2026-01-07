@@ -6,7 +6,7 @@ public static class GetProgressionAnalyticsEndpoint
 {
     public static void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapGet("/api/students/analytics/progression",
+        app.MapGet("analytics/progression",
                 async (IMediator mediator, int? programId = null) =>
                 {
                     var result = await mediator.Send(new GetProgressionAnalyticsQuery(programId));

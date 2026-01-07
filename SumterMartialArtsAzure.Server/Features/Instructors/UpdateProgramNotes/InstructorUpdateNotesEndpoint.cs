@@ -7,7 +7,7 @@ public static class InstructorUpdateNotesEndpoint
 {
     public static void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapPut("/api/instructors/me/students/{studentId}/programs/{programId}/notes",
+        app.MapPut("me/students/{studentId}/programs/{programId}/notes",
                 async (int studentId, int programId, [FromBody] InstructorUpdateNotesRequest request, IMediator mediator) =>
                 {
                     var command = new InstructorUpdateNotesCommand(studentId, programId, request.Notes);

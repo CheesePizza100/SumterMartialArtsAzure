@@ -6,7 +6,7 @@ public static class EnrollInProgramEndpoint
 {
     public static void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapPost("/api/students/{id}/enroll",
+        app.MapPost("{id}/enroll",
                 async (int id, EnrollInProgramRequest request, IMediator mediator) =>
                 {
                     var command = new EnrollInProgramCommand(

@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SumterMartialArtsAzure.Server.Api.Features.Programs.GetPrograms;
 
 namespace SumterMartialArtsAzure.Server.Api.Features.Instructors.GetInstructors;
 
@@ -7,7 +6,7 @@ public class GetInstructorsEndpoint
 {
     public static void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapGet("/api/instructors",
+        app.MapGet("",
                 async (IMediator mediator) =>
                 {
                     var result = await mediator.Send(

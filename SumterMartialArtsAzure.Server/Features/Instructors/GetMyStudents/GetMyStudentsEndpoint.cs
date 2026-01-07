@@ -6,7 +6,7 @@ public static class GetMyStudentsEndpoint
 {
     public static void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapGet("/api/instructors/me/students",
+        app.MapGet("me/students",
                 async (IMediator mediator) =>
                 {
                     var query = new GetMyStudentsQuery();

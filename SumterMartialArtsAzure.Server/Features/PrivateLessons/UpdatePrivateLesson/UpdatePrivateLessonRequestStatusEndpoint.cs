@@ -7,7 +7,7 @@ public static class UpdatePrivateLessonRequestStatusEndpoint
 {
     public static void MapEndpoint(this IEndpointRouteBuilder app)
     {
-        app.MapPatch("/api/private-lessons/{id}/status", async (
+        app.MapPatch("{id}/status", async (
                 int id,
                 [FromBody] UpdateStatusRequest request,
                 IMediator mediator,

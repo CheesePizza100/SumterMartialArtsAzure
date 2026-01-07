@@ -7,7 +7,7 @@ public static class CreateInstructorLoginEndpoint
 {
     public static void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapPost("/api/instructors/{instructorId}/create-login",
+        app.MapPost("{instructorId}/create-login",
                 async (int instructorId, [FromBody] CreateInstructorLoginRequest request, IMediator mediator) =>
                 {
                     var command = new CreateInstructorLoginCommand(

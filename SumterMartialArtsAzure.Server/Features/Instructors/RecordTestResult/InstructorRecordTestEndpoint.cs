@@ -7,7 +7,7 @@ public static class InstructorRecordTestEndpoint
 {
     public static void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapPost("/api/instructors/me/students/{studentId}/test-results",
+        app.MapPost("me/students/{studentId}/test-results",
                 async (int studentId, [FromBody] InstructorRecordTestRequest request, IMediator mediator) =>
                 {
                     var command = new InstructorRecordTestCommand(

@@ -38,38 +38,70 @@ public static class ApplicationEndpoints
 {
     public static void MapEndpoints(this IEndpointRouteBuilder app)
     {
-        GetProgramsEndpoint.MapEndpoint(app);
-        GetProgramByIdEndpoint.MapEndpoint(app);
-        GetInstructorsEndpoint.MapEndpoint(app);
-        GetInstructorByIdEndpoint.MapEndpoint(app);
-        GetInstructorAvailabilityEndpoint.MapEndpoint(app);
-        GetPrivateLessonsEndpoint.MapEndpoint(app);
-        SubmitPrivateLessonRequestEndpoint.MapEndpoint(app);
-        UpdatePrivateLessonRequestStatusEndpoint.MapEndpoint(app);
-        AddTestResultEndpoint.MapEndpoint(app);
-        GetStudentAttendanceEndpoint.MapEndpoint(app);
-        GetStudentByIdEndpoint.MapEndpoint(app);
-        GetStudentsEndpoint.MapEndpoint(app);
-        StudentSearchEndpoint.MapEndpoint(app);
-        UpdateProgramNotesEndpoint.MapEndpoint(app);
-        UpdateStudentEndpoint.MapEndpoint(app);
-        GetProgressionAnalyticsEndpoint.MapEndpoint(app);
-        GetStudentEventStreamEndpoint.MapEndpoint(app);
-        GetStudentRankAtDateEndpoint.MapEndpoint(app);
-        CreateStudentEndpoint.MapEndpoint(app);
-        CreateStudentLoginEndpoint.MapEndpoint(app);
-        EnrollInProgramEndpoint.MapEndpoint(app);
-        LoginEndpoint.MapEndpoint(app);
-        LogoutEndpoint.MapEndpoint(app);
-        GetMyProfileEndpoint.MapEndpoint(app);
-        UpdateMyContactInfoEndpoint.MapEndpoint(app);
-        ChangePasswordEndpoint.MapEndpoint(app);
-        CreateInstructorLoginEndpoint.MapEndpoint(app);
-        GetInstructorProfileEndpoint.MapEndpoint(app);
-        GetMyStudentsEndpoint.MapEndpoint(app);
-        GetStudentDetailEndpoint.MapEndpoint(app);
-        InstructorRecordTestEndpoint.MapEndpoint(app);
-        InstructorRecordAttendanceEndpoint.MapEndpoint(app);
-        InstructorUpdateNotesEndpoint.MapEndpoint(app);
+        var api = app.MapGroup("/api");
+
+        MapProgramEndpoints(api);
+        MapInstructorEndpoints(api);
+        MapStudentEndpoints(api);
+        MapPrivateLessonEndpoints(api);
+        MapAuthorizationEndpoints(api);
+    }
+
+    private static void MapProgramEndpoints(RouteGroupBuilder api)
+    {
+        var programs = api.MapGroup("/programs");
+        GetProgramsEndpoint.MapEndpoint(programs);
+        GetProgramByIdEndpoint.MapEndpoint(programs);
+    }
+
+    private static void MapInstructorEndpoints(RouteGroupBuilder api)
+    {
+        var instructors = api.MapGroup("/instructors");
+        GetInstructorsEndpoint.MapEndpoint(instructors);
+        GetInstructorByIdEndpoint.MapEndpoint(instructors);
+        GetInstructorAvailabilityEndpoint.MapEndpoint(instructors);
+        GetInstructorProfileEndpoint.MapEndpoint(instructors);
+        InstructorRecordTestEndpoint.MapEndpoint(instructors);
+        InstructorRecordAttendanceEndpoint.MapEndpoint(instructors);
+        InstructorUpdateNotesEndpoint.MapEndpoint(instructors);
+        GetMyStudentsEndpoint.MapEndpoint(instructors);
+        GetStudentDetailEndpoint.MapEndpoint(instructors);
+        CreateInstructorLoginEndpoint.MapEndpoint(instructors);
+    }
+
+    private static void MapStudentEndpoints(RouteGroupBuilder api)
+    {
+        var students = api.MapGroup("/students");
+        GetStudentsEndpoint.MapEndpoint(students);
+        GetStudentByIdEndpoint.MapEndpoint(students);
+        StudentSearchEndpoint.MapEndpoint(students);
+        UpdateStudentEndpoint.MapEndpoint(students);
+        CreateStudentEndpoint.MapEndpoint(students);
+        GetStudentAttendanceEndpoint.MapEndpoint(students);
+        AddTestResultEndpoint.MapEndpoint(students);
+        GetStudentEventStreamEndpoint.MapEndpoint(students);
+        GetStudentRankAtDateEndpoint.MapEndpoint(students);
+        EnrollInProgramEndpoint.MapEndpoint(students);
+        CreateStudentLoginEndpoint.MapEndpoint(students);
+        GetProgressionAnalyticsEndpoint.MapEndpoint(students);
+        UpdateProgramNotesEndpoint.MapEndpoint(students);
+    }
+
+    private static void MapPrivateLessonEndpoints(RouteGroupBuilder api)
+    {
+        var privateLessons = api.MapGroup("/private-lessons");
+        GetPrivateLessonsEndpoint.MapEndpoint(privateLessons);
+        SubmitPrivateLessonRequestEndpoint.MapEndpoint(privateLessons);
+        UpdatePrivateLessonRequestStatusEndpoint.MapEndpoint(privateLessons);
+    }
+
+    private static void MapAuthorizationEndpoints(RouteGroupBuilder api)
+    {
+        var auth = api.MapGroup("/auth");
+        LoginEndpoint.MapEndpoint(auth);
+        LogoutEndpoint.MapEndpoint(auth);
+        GetMyProfileEndpoint.MapEndpoint(auth);
+        UpdateMyContactInfoEndpoint.MapEndpoint(auth);
+        ChangePasswordEndpoint.MapEndpoint(auth);
     }
 }

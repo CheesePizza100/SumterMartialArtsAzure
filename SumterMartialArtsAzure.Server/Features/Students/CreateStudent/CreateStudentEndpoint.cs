@@ -6,7 +6,7 @@ public static class CreateStudentEndpoint
 {
     public static void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapPost("/api/students",
+        app.MapPost("",
                 async (CreateStudentRequest request, IMediator mediator) =>
                 {
                     var command = new CreateStudentCommand(

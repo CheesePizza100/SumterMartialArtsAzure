@@ -7,7 +7,7 @@ public static class InstructorRecordAttendanceEndpoint
 {
     public static void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapPost("/api/instructors/me/students/{studentId}/attendance",
+        app.MapPost("me/students/{studentId}/attendance",
                 async (int studentId, [FromBody] InstructorRecordAttendanceRequest request, IMediator mediator) =>
                 {
                     var command = new InstructorRecordAttendanceCommand(
