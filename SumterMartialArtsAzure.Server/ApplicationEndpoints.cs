@@ -27,6 +27,7 @@ using SumterMartialArtsAzure.Server.Api.Features.PrivateLessons.SubmitPrivateLes
 using SumterMartialArtsAzure.Server.Api.Features.PrivateLessons.UpdatePrivateLesson;
 using SumterMartialArtsAzure.Server.Api.Features.Programs.GetProgramById;
 using SumterMartialArtsAzure.Server.Api.Features.Programs.GetPrograms;
+using SumterMartialArtsAzure.Server.Api.Features.Students.GetMyPrivateLessonRequests;
 using SumterMartialArtsAzure.Server.Api.Features.Students.GetMyProfile;
 using SumterMartialArtsAzure.Server.Api.Features.Students.GetStudentById;
 using SumterMartialArtsAzure.Server.Api.Features.Students.UpdateMyContactInfo;
@@ -80,6 +81,7 @@ public static class ApplicationEndpoints
     {
         // Students - Student Portal (viewing own data)
         var studentsAuth = api.MapGroup("/students").RequireAuthorization("StudentOrAdmin");
+        GetMyPrivateLessonRequestsEndpoint.MapEndpoint(studentsAuth);
         //GetMyStudentProfileEndpoint.MapEndpoint(studentsAuth); // /api/students/me
         // Add other student portal endpoints here later
     }

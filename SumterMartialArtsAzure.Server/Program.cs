@@ -96,6 +96,9 @@ builder.Services.AddAuthorization(options =>
 
     options.AddPolicy("InstructorOrAdmin", policy =>
         policy.RequireRole("Instructor", "Admin"));
+
+    options.AddPolicy("StudentOnly", policy =>
+        policy.RequireRole("Student"));
 });
 
 builder.Services.AddSwaggerGen(options =>
