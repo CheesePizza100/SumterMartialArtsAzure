@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Internal;
 using SumterMartialArtsAzure.Server.Domain;
 using SumterMartialArtsAzure.Server.Domain.Common;
 using SumterMartialArtsAzure.Server.Domain.Entities;
@@ -24,8 +25,9 @@ public class AppDbContext : DbContext
     public DbSet<PrivateLessonRequest> PrivateLessonRequests => Set<PrivateLessonRequest>();
     public DbSet<Student> Students => Set<Student>();
     public DbSet<StudentProgressionEventRecord> StudentProgressionEvents => Set<StudentProgressionEventRecord>();
-    public DbSet<User> Users { get; set; }
-    public DbSet<AuditLog> AuditLogs { get; set; }
+    public DbSet<User> Users => Set<User>();
+    public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
+    public DbSet<EmailTemplate> EmailTemplates => Set<EmailTemplate>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
