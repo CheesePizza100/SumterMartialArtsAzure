@@ -1,5 +1,4 @@
-﻿using SumterMartialArtsAzure.Server.Api.Features.Instructors.GetMyProfile;
-using SumterMartialArtsAzure.Server.Domain;
+﻿using SumterMartialArtsAzure.Server.Domain;
 
 namespace SumterMartialArtsAzure.Server.Api.Features.Instructors.GetInstructorById;
 

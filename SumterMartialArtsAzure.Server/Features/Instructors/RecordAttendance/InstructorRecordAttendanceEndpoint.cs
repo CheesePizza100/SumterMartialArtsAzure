@@ -20,7 +20,6 @@ public static class InstructorRecordAttendanceEndpoint
                         ? Results.Ok(new { success = true, message = result.Message })
                         : Results.NotFound(new { success = false, message = result.Message });
                 })
-            .RequireAuthorization()
             .WithName("InstructorRecordAttendance")
             .WithTags("Instructors");
     }

@@ -16,7 +16,6 @@ public static class InstructorUpdateNotesEndpoint
                         ? Results.Ok(new { success = true, message = result.Message })
                         : Results.NotFound(new { success = false, message = result.Message });
                 })
-            .RequireAuthorization()
             .WithName("InstructorUpdateNotes")
             .WithTags("Instructors");
     }

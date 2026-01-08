@@ -24,7 +24,6 @@ public static class InstructorRecordTestEndpoint
                         ? Results.Ok(new { success = true, message = result.Message })
                         : Results.NotFound(new { success = false, message = result.Message });
                 })
-            .RequireAuthorization()
             .WithName("InstructorRecordTest")
             .WithTags("Instructors");
     }

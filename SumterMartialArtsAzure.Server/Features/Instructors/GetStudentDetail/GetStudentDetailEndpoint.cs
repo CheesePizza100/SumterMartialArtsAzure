@@ -13,7 +13,6 @@ public static class GetStudentDetailEndpoint
                     var result = await mediator.Send(query);
                     return Results.Ok(result);
                 })
-            .RequireAuthorization()
             .WithName("GetStudentDetail")
             .WithTags("Instructors");
     }

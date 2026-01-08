@@ -18,7 +18,6 @@ public static class CreateInstructorLoginEndpoint
                     var result = await mediator.Send(command);
                     return Results.Ok(result);
                 })
-            .RequireAuthorization()
             .WithName("CreateInstructorLogin")
             .WithTags("Instructors");
     }
