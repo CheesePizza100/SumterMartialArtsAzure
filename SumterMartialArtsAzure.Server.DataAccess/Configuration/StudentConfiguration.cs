@@ -10,6 +10,10 @@ public class StudentConfiguration : IEntityTypeConfiguration<Student>
     {
         builder.HasKey(s => s.Id);
 
+        // Add indexes for search performance
+        builder.HasIndex(s => s.Name);
+        builder.HasIndex(s => s.Email);
+
         // Enrollments collection
         builder.HasMany(s => s.ProgramEnrollments)
             .WithOne(e => e.Student)
