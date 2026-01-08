@@ -20,13 +20,13 @@ public class StudentSearchHandler
         var searchTerm = request.SearchTerm.ToLower();
 
         var students = await _dbContext.Students
-            .Include(s => s.ProgramEnrollments)
-            .Include(s => s.TestHistory)
+            .AsNoTracking() // No need to track for read-only
             .Where(s =>
-                s.Name.ToLower().Contains(searchTerm) ||
-                s.Email.ToLower().Contains(searchTerm) ||
-                s.ProgramEnrollments.Any(e => e.ProgramName.ToLower().Contains(searchTerm))
+                EF.Functions.Like(s.Name.ToLower(), $"%{searchTerm}%") ||
+                EF.Functions.Like(s.Email.ToLower(), $"%{searchTerm}%") ||
+                s.ProgramEnrollments.Any(e => EF.Functions.Like(e.ProgramName.ToLower(), $"%{searchTerm}%"))
             )
+            .Take(50) // Limit results - add pagination later
             .Select(s => new GetStudentSearchResponse(
                 s.Id,
                 s.Name,
@@ -48,6 +48,7 @@ public class StudentSearchHandler
                     )).ToList(),
                 s.TestHistory
                     .OrderByDescending(t => t.TestDate)
+                    .Take(5) // Only get last 5 tests per student
                     .Select(t => new TestHistoryDto(
                         t.TestDate,
                         t.ProgramName,
