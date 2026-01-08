@@ -80,10 +80,10 @@ public static class ApplicationEndpoints
     private static void MapStudentEndpoints(RouteGroupBuilder api)
     {
         // Students - Student Portal (viewing own data)
-        var studentsAuth = api.MapGroup("/students").RequireAuthorization("StudentOrAdmin");
+        var studentsAuth = api.MapGroup("/students").RequireAuthorization("StudentOnly");
         GetMyPrivateLessonRequestsEndpoint.MapEndpoint(studentsAuth);
-        //GetMyStudentProfileEndpoint.MapEndpoint(studentsAuth); // /api/students/me
-        // Add other student portal endpoints here later
+        GetMyProfileEndpoint.MapEndpoint(studentsAuth);
+        UpdateMyContactInfoEndpoint.MapEndpoint(studentsAuth);
     }
 
     private static void MapAdminEndpoints(RouteGroupBuilder api)
@@ -125,8 +125,6 @@ public static class ApplicationEndpoints
 
         // Auth - Authenticated Only
         var authProtected = api.MapGroup("/auth").RequireAuthorization();
-        GetMyProfileEndpoint.MapEndpoint(authProtected);
-        UpdateMyContactInfoEndpoint.MapEndpoint(authProtected);
         ChangePasswordEndpoint.MapEndpoint(authProtected);
     }
 }

@@ -18,7 +18,6 @@ public static class UpdateMyContactInfoEndpoint
                     var result = await mediator.Send(command);
                     return Results.Ok(result);
                 })
-            .RequireAuthorization()
             .WithName("UpdateMyContactInfo")
             .WithTags("Students");
     }
