@@ -89,7 +89,14 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy =>
+        policy.RequireRole("Admin"));
+
+    options.AddPolicy("InstructorOrAdmin", policy =>
+        policy.RequireRole("Instructor", "Admin"));
+});
 
 builder.Services.AddSwaggerGen(options =>
 {
