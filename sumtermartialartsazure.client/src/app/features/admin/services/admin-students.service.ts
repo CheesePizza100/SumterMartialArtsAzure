@@ -48,17 +48,6 @@ export class AdminStudentsService {
     );
   }
 
-  updateProgramNotes(
-    studentId: number,
-    programId: number,
-    notes: string
-  ): Observable<{ success: boolean; message: string }> {
-    return this.http.patch<{ success: boolean; message: string }>(
-      `${this.baseUrl}/${studentId}/programs/${programId}/notes`,
-      { notes }
-    );
-  }
-
   getAttendanceDetails(studentId: number): Observable<Attendance> {
     return this.http.get<Attendance>(`${this.baseUrl}/${studentId}/attendance`);
   }

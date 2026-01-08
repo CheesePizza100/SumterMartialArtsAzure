@@ -8,7 +8,6 @@ using SumterMartialArtsAzure.Server.Api.Features.Admin.GetStudentEventStream;
 using SumterMartialArtsAzure.Server.Api.Features.Admin.GetStudentRankAtDate;
 using SumterMartialArtsAzure.Server.Api.Features.Admin.GetStudents;
 using SumterMartialArtsAzure.Server.Api.Features.Admin.StudentSearch;
-using SumterMartialArtsAzure.Server.Api.Features.Admin.UpdateProgramNotes;
 using SumterMartialArtsAzure.Server.Api.Features.Admin.UpdateStudent;
 using SumterMartialArtsAzure.Server.Api.Features.Auth.ChangePassword;
 using SumterMartialArtsAzure.Server.Api.Features.Auth.Login;
@@ -101,7 +100,6 @@ public static class ApplicationEndpoints
         EnrollInProgramEndpoint.MapEndpoint(adminStudents);
         CreateStudentLoginEndpoint.MapEndpoint(adminStudents);
         GetProgressionAnalyticsEndpoint.MapEndpoint(adminStudents);
-        UpdateProgramNotesEndpoint.MapEndpoint(adminStudents);
     }
 
     private static void MapPrivateLessonEndpoints(RouteGroupBuilder api)
