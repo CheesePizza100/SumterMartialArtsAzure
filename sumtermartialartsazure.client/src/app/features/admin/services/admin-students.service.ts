@@ -8,20 +8,20 @@ import { environment } from '../../../../environments/environment.development';
   providedIn: 'root'
 })
 export class AdminStudentsService {
-  private baseUrl = `${environment.apiUrl}/api`;
+  private baseUrl = `${environment.apiUrl}/api/admin/students`;
 
   constructor(private http: HttpClient) { }
 
   getAllStudents(): Observable<Student[]> {
-    return this.http.get<Student[]>(`${this.baseUrl}/students`);
+    return this.http.get<Student[]>(`${this.baseUrl}`);
   }
 
   getStudentById(id: number): Observable<Student> {
-    return this.http.get<Student>(`${this.baseUrl}/students/${id}`);
+    return this.http.get<Student>(`${this.baseUrl}${id}`);
   }
 
   searchStudents(searchTerm: string): Observable<Student[]> {
-    return this.http.get<Student[]>(`${this.baseUrl}/students/search`, {
+    return this.http.get<Student[]>(`${this.baseUrl}/search`, {
       params: { q: searchTerm }
     });
   }
@@ -31,7 +31,7 @@ export class AdminStudentsService {
     email?: string;
     phone?: string;
   }): Observable<Student> {
-    return this.http.put<Student>(`${this.baseUrl}/students/${id}`, student);
+    return this.http.put<Student>(`${this.baseUrl}/${id}`, student);
   }
 
   addTestResult(studentId: number, testData: {
@@ -43,7 +43,7 @@ export class AdminStudentsService {
     testDate: string;
   }): Observable<{ success: boolean; message: string }> {
     return this.http.post<{ success: boolean; message: string }>(
-      `${this.baseUrl}/students/${studentId}/test-results`,
+      `${this.baseUrl}/${studentId}/test-results`,
       testData
     );
   }
@@ -54,13 +54,13 @@ export class AdminStudentsService {
     notes: string
   ): Observable<{ success: boolean; message: string }> {
     return this.http.patch<{ success: boolean; message: string }>(
-      `${this.baseUrl}/students/${studentId}/programs/${programId}/notes`,
+      `${this.baseUrl}/${studentId}/programs/${programId}/notes`,
       { notes }
     );
   }
 
   getAttendanceDetails(studentId: number): Observable<Attendance> {
-    return this.http.get<Attendance>(`${this.baseUrl}/students/${studentId}/attendance`);
+    return this.http.get<Attendance>(`${this.baseUrl}/${studentId}/attendance`);
   }
 
   createStudent(student: {
@@ -68,7 +68,7 @@ export class AdminStudentsService {
     email: string;
     phone: string;
   }): Observable<Student> {
-    return this.http.post<Student>(`${this.baseUrl}/students`, student);
+    return this.http.post<Student>(`${this.baseUrl}`, student);
   }
 
   createStudentLogin(studentId: number, request: {
@@ -87,7 +87,7 @@ export class AdminStudentsService {
       username: string;
       temporaryPassword: string;
       userId: string;
-    }>(`${this.baseUrl}/students/${studentId}/create-login`, request);
+    }>(`${this.baseUrl}/${studentId}/create-login`, request);
   }
 
   enrollInProgram(studentId: number, enrollment: {
@@ -96,7 +96,7 @@ export class AdminStudentsService {
     initialRank: string;
   }): Observable<{ success: boolean; message: string }> {
     return this.http.post<{ success: boolean; message: string }>(
-      `${this.baseUrl}/students/${studentId}/enroll`,
+      `${this.baseUrl}/${studentId}/enroll`,
       enrollment
     );
   }
@@ -107,14 +107,14 @@ export class AdminStudentsService {
     classesAttended: number
   ): Observable<{ success: boolean; message: string }> {
     return this.http.post<{ success: boolean; message: string }>(
-      `${this.baseUrl}/students/${studentId}/attendance`,
+      `${this.baseUrl}/${studentId}/attendance`,
       { programId, classesAttended }
     );
   }
 
   deactivateStudent(studentId: number): Observable<{ success: boolean; message: string }> {
     return this.http.delete<{ success: boolean; message: string }>(
-      `${this.baseUrl}/students/${studentId}`
+      `${this.baseUrl}/${studentId}`
     );
   }
 }
