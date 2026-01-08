@@ -19,6 +19,6 @@ public static class CreateStudentLoginEndpoint
                     return Results.Ok(result);
                 })
             .WithName("CreateStudentLogin")
-            .WithTags("Admin", "Students");
+            .WithTags("Admin");
     }
 }

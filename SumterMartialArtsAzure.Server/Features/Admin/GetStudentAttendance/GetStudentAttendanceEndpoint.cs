@@ -15,6 +15,6 @@ public class GetStudentAttendanceEndpoint
                         : Results.NotFound();
                 })
             .WithName("GetStudentAttendance")
-            .WithTags("Admin", "Students");
+            .WithTags("Admin");
     }
 }

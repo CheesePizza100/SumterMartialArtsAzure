@@ -22,6 +22,6 @@ public static class EnrollInProgramEndpoint
                         : Results.BadRequest(new { success = false, message = result.Message });
                 })
             .WithName("EnrollInProgram")
-            .WithTags("Admin", "Students");
+            .WithTags("Admin");
     }
 }

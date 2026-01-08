@@ -25,6 +25,6 @@ public static class AddTestResultEndpoint
                         : Results.NotFound(new { success = false, message = result.Message });
                 })
             .WithName("AddTestResult")
-            .WithTags("Admin", "Students");
+            .WithTags("Admin");
     }
 }

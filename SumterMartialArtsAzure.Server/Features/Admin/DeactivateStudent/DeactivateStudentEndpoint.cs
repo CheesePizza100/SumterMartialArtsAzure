@@ -18,6 +18,6 @@ public static class DeactivateStudentEndpoint
                 })
             .RequireAuthorization()
             .WithName("DeactivateStudent")
-            .WithTags("Admin", "Students");
+            .WithTags("Admin");
     }
 }

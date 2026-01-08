@@ -13,6 +13,6 @@ public class GetStudentsEndpoint
                     return Results.Ok(result);
                 })
             .WithName("GetStudents")
-            .WithTags("Admin", "Students");
+            .WithTags("Admin");
     }
 }

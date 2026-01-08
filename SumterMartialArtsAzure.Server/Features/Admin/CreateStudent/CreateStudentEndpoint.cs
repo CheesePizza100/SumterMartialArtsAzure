@@ -19,6 +19,6 @@ public static class CreateStudentEndpoint
                     return Results.Created($"/api/students/{result.Id}", result);
                 })
             .WithName("CreateStudent")
-            .WithTags("Admin", "Students");
+            .WithTags("Admin");
     }
 }

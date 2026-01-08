@@ -22,6 +22,6 @@ public static class UpdateStudentEndpoint
                         : Results.NotFound();
                 })
             .WithName("UpdateStudent")
-            .WithTags("Admin", "Students");
+            .WithTags("Admin");
     }
 }

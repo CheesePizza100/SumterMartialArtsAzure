@@ -21,6 +21,6 @@ public static class RecordAttendanceEndpoint
                         : Results.BadRequest(new { success = false, message = result.Message });
                 })
             .WithName("RecordAttendance")
-            .WithTags("Admin", "Students");
+            .WithTags("Admin");
     }
 }
