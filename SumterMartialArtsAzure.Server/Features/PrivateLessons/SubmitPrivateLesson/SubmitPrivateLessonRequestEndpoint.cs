@@ -7,7 +7,7 @@ public static class SubmitPrivateLessonRequestEndpoint
 {
     public static void MapEndpoint(this IEndpointRouteBuilder app)
     {
-        app.MapPost("/api/PrivateLessons", async (
+        app.MapPost("", async (
                 [FromBody] SubmitPrivateLessonCommand request,
                 IMediator mediator,
                 CancellationToken cancellationToken) =>

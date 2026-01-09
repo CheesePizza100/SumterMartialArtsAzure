@@ -6,7 +6,7 @@ public static class LogoutEndpoint
 {
     public static void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapPost("/api/auth/logout",
+        app.MapPost("logout",
                 async (IMediator mediator) =>
                 {
                     var command = new LogoutCommand();

@@ -7,7 +7,7 @@ public static class UpdateMyContactInfoEndpoint
 {
     public static void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapPut("/api/students/me",
+        app.MapPut("me",
                 async ([FromBody] UpdateMyContactInfoRequest request, IMediator mediator) =>
                 {
                     var command = new UpdateMyContactInfoCommand(
@@ -18,7 +18,6 @@ public static class UpdateMyContactInfoEndpoint
                     var result = await mediator.Send(command);
                     return Results.Ok(result);
                 })
-            .RequireAuthorization()
             .WithName("UpdateMyContactInfo")
             .WithTags("Students");
     }

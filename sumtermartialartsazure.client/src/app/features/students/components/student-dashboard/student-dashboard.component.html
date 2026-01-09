@@ -44,26 +44,55 @@
       </div>
       <table *ngIf="profile.testHistory.length > 0">
         <thead>
-          <tr>
-            <th>Date</th>
-            <th>Program</th>
-            <th>Rank</th>
-            <th>Result</th>
-            <th>Notes</th>
-          </tr>
+        <tr>
+          <th>Date</th>
+          <th>Program</th>
+          <th>Rank</th>
+          <th>Result</th>
+          <th>Notes</th>
+        </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let test of profile.testHistory.slice(0, 5)">
-            <td>{{ test.date | date }}</td>
-            <td>{{ test.program }}</td>
-            <td>{{ test.rank }}</td>
-            <td [class.pass]="test.result === 'Pass'" [class.fail]="test.result !== 'Pass'">
-              {{ test.result }}
-            </td>
-            <td>{{ test.notes || '-' }}</td>
-          </tr>
+        <tr *ngFor="let test of profile.testHistory.slice(0, 5)">
+          <td>{{ test.date | date }}</td>
+          <td>{{ test.program }}</td>
+          <td>{{ test.rank }}</td>
+          <td [class.pass]="test.result === 'Pass'" [class.fail]="test.result !== 'Pass'">
+            {{ test.result }}
+          </td>
+          <td>{{ test.notes || '-' }}</td>
+        </tr>
         </tbody>
       </table>
     </div>
+
+    <!-- Private Lesson Requests -->
+    <div class="private-lessons-section">
+      <h2>My Private Lesson Requests</h2>
+      <div *ngIf="privateLessonRequests.length === 0">
+        <p>You haven't requested any private lessons yet.</p>
+      </div>
+      <div *ngIf="privateLessonRequests.length > 0" class="lesson-requests">
+        <div *ngFor="let request of privateLessonRequests" class="lesson-request-card"
+             [class.pending]="request.status === 'Pending'"
+             [class.approved]="request.status === 'Approved'"
+             [class.rejected]="request.status === 'Rejected'">
+          <div class="request-header">
+            <h3>{{ request.instructorName }}</h3>
+            <span class="status-badge" [ngClass]="request.status.toLowerCase()">
+              {{ request.status }}
+            </span>
+          </div>
+          <div class="request-details">
+            <div><strong>Requested Time:</strong> {{ request.requestedStart | date:'short' }} - {{ request.requestedEnd | date:'shortTime' }}</div>
+            <div><strong>Submitted:</strong> {{ request.createdAt | date:'short' }}</div>
+            <div *ngIf="request.notes"><strong>Your Notes:</strong> {{ request.notes }}</div>
+            <div *ngIf="request.rejectionReason" class="rejection-reason">
+              <strong>Rejection Reason:</strong> {{ request.rejectionReason }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-</div>
+  </div>

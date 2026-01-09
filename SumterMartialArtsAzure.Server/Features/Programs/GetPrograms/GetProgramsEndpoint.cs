@@ -6,7 +6,7 @@ public static class GetProgramsEndpoint
 {
     public static void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapGet("/api/programs",
+        app.MapGet("",
                 async (IMediator mediator) =>
                 {
                     var result = await mediator.Send(

@@ -39,6 +39,18 @@ export interface UpdateContactInfoRequest {
   phone?: string;
 }
 
+export interface PrivateLessonRequest {
+  id: number;
+  instructorId: number;
+  instructorName: string;
+  requestedStart: string;
+  requestedEnd: string;
+  status: string;
+  notes?: string;
+  rejectionReason?: string;
+  createdAt: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -53,5 +65,9 @@ export class StudentService {
 
   updateMyContactInfo(request: UpdateContactInfoRequest): Observable<any> {
     return this.http.put(`${this.apiUrl}/me`, request);
+  }
+
+  getMyPrivateLessonRequests(): Observable<PrivateLessonRequest[]> {
+    return this.http.get<PrivateLessonRequest[]>(`${this.apiUrl}/me/private-lessons`);
   }
 }

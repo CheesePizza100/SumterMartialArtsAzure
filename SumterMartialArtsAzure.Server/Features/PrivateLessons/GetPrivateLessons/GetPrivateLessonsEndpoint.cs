@@ -7,7 +7,7 @@ public static class GetPrivateLessonsEndpoint
 {
     public static void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapGet("/api/private-lessons", async (
+        app.MapGet("", async (
                 [FromQuery] string filter,
                 IMediator mediator,
                 CancellationToken cancellationToken) =>

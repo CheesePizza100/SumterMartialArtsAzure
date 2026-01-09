@@ -6,7 +6,7 @@ public static class GetMyProfileEndpoint
 {
     public static void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapGet("/api/students/me",
+        app.MapGet("me",
                 async (IMediator mediator) =>
                 {
                     var query = new GetMyProfileQuery();

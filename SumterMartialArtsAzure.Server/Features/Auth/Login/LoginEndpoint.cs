@@ -7,7 +7,7 @@ public static class LoginEndpoint
 {
     public static void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapPost("/api/auth/login",
+        app.MapPost("login",
                 async ([FromBody] LoginRequest request, IMediator mediator) =>
                 {
                     var command = new LoginCommand(request.UserName, request.Password);

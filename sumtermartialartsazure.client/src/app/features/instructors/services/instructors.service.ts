@@ -23,7 +23,7 @@ export class InstructorsService {
   getInstructorWithPrograms(id: number): Observable<InstructorWithPrograms> {
     return forkJoin({
       instructor: this.getInstructorById(id),
-      allPrograms: this.http.get<any[]>(`${this.baseUrl}/Programs`)
+      allPrograms: this.http.get<any[]>(`${this.baseUrl}/programs`)
     }).pipe(
       map(({ instructor, allPrograms }) => {
         const programs = allPrograms

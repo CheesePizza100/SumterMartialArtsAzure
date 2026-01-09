@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { StudentService, StudentProfile } from '../../services/student.service';
+import { StudentService, StudentProfile, PrivateLessonRequest } from '../../services/student.service';
 
 @Component({
   selector: 'app-student-dashboard',
@@ -11,6 +11,7 @@ import { StudentService, StudentProfile } from '../../services/student.service';
 })
 export class StudentDashboardComponent implements OnInit {
   profile: StudentProfile | null = null;
+  privateLessonRequests: PrivateLessonRequest[] = [];
   loading = false;
   error = '';
 
@@ -18,6 +19,7 @@ export class StudentDashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadProfile();
+    this.loadPrivateLessonRequests();
   }
 
   loadProfile(): void {
@@ -33,6 +35,18 @@ export class StudentDashboardComponent implements OnInit {
         this.error = 'Failed to load profile';
         this.loading = false;
         console.error('Error loading profile:', err);
+      }
+    });
+  }
+
+  loadPrivateLessonRequests(): void {
+    this.studentService.getMyPrivateLessonRequests().subscribe({
+      next: (requests) => {
+        this.privateLessonRequests = requests;
+      },
+      error: (err) => {
+        console.error('Error loading private lesson requests:', err);
+        // Don't show error to user - just fail silently for this optional feature
       }
     });
   }

@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SumterMartialArtsAzure.Server.Api;
 using SumterMartialArtsAzure.Server.Api.Behaviors;
+using SumterMartialArtsAzure.Server.Api.EndpointConfigurations;
 using SumterMartialArtsAzure.Server.Api.Features.Auth.Login;
 using SumterMartialArtsAzure.Server.Api.Middleware;
 using SumterMartialArtsAzure.Server.DataAccess;
@@ -89,7 +90,17 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy =>
+        policy.RequireRole("Admin"));
+
+    options.AddPolicy("InstructorOrAdmin", policy =>
+        policy.RequireRole("Instructor", "Admin"));
+
+    options.AddPolicy("StudentOnly", policy =>
+        policy.RequireRole("Student"));
+});
 
 builder.Services.AddSwaggerGen(options =>
 {

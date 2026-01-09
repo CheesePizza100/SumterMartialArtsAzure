@@ -14,7 +14,7 @@ export class PrivateLessonsService {
 
   submitLessonRequest(request: PrivateLessonRequest): Observable<PrivateLessonRequest> {
     return this.http.post<PrivateLessonRequest>(
-      `${this.baseUrl}/PrivateLessons`,
+      `${this.baseUrl}/private-lessons`,
       request
     );
   }
@@ -29,13 +29,13 @@ export class PrivateLessonsService {
 
   getAllRequests(): Observable<PrivateLessonRequest[]> {
     return this.http.get<PrivateLessonRequest[]>(
-      `${this.baseUrl}/PrivateLesson`
+      `${this.baseUrl}/private-lessons`
     );
   }
 
   updateRequestStatus(id: number, status: string): Observable<void> {
     return this.http.put<void>(
-      `${this.baseUrl}/PrivateLesson/${id}/status`,
+      `${this.baseUrl}/private-lessons/${id}/status`,
       status
     );
   }

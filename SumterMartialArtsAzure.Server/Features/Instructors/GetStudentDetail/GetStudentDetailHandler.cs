@@ -71,8 +71,7 @@ public class GetStudentDetailHandler
                         t.RankAchieved,
                         t.Result,
                         t.Notes
-                    ))
-                    .ToList()
+                    )).ToList()
             ))
             .FirstOrDefaultAsync(cancellationToken);
 

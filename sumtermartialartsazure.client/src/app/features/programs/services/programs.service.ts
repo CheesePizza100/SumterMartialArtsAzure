@@ -13,7 +13,7 @@ export class ProgramsService {
   constructor(private http: HttpClient) { }
 
   getPrograms(): Observable<Program[]> {
-    return this.http.get<Program[]>(`${this.baseUrl}/Programs`);
+    return this.http.get<Program[]>(`${this.baseUrl}/programs`);
   }
 
   getProgramById(id: number) {
