@@ -32,7 +32,8 @@ export class HeaderComponent {
     { path: '/admin/private-lessons', label: 'Private Lessons' },
     { path: '/admin/students', label: 'Students' },
     { path: '/admin/instructors', label: 'Instructors' },
-    { path: '/admin/analytics', label: 'Analytics' }
+    { path: '/admin/analytics', label: 'Analytics' },
+    { path: '/admin/email-templates', label: 'Email'}
   ];
 
   constructor(
