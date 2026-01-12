@@ -1,20 +1,24 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using SumterMartialArtsAzure.Server.DataAccess;
+using SumterMartialArtsAzure.Server.Domain;
 using SumterMartialArtsAzure.Server.Domain.Events;
 using SumterMartialArtsAzure.Server.Services;
+using SumterMartialArtsAzure.Server.Services.Email;
+using SumterMartialArtsAzure.Server.Services.Email.ContentBuilders;
+using SumterMartialArtsAzure.Server.Services.Email.ContentBuilders.Constants;
 
 namespace SumterMartialArtsAzure.Server.Api.Features.PrivateLessons.EventHandlers;
 
 public class PrivateLessonRequestCreatedHandler
     : INotificationHandler<DomainEventNotification<PrivateLessonRequestCreated>>
 {
-    private readonly IEmailService _emailService;
+    private readonly EmailOrchestrator _emailOrchestrator;
     private readonly AppDbContext _dbContext;
 
-    public PrivateLessonRequestCreatedHandler(IEmailService emailService, AppDbContext dbContext)
+    public PrivateLessonRequestCreatedHandler(EmailOrchestrator emailOrchestrator, AppDbContext dbContext)
     {
-        _emailService = emailService;
+        _emailOrchestrator = emailOrchestrator;
         _dbContext = dbContext;
     }
 
@@ -30,21 +34,29 @@ public class PrivateLessonRequestCreatedHandler
             return;
         }
 
-        await _emailService.SendPrivateLessonRequestConfirmationAsync(
+        await _emailOrchestrator.SendAsync(
             domainEvent.StudentEmail,
             domainEvent.StudentName,
-            instructor.Name,
-            domainEvent.RequestedStart
+            new SimpleEmailContentBuilder(EmailTemplateKeys.PrivateLessonRequestConfirmation)
+                .WithVariable("StudentName", domainEvent.StudentName)
+                .WithVariable("InstructorName", instructor.Name)
+                .WithVariable("RequestedDate", domainEvent.RequestedStart.ToString("MMMM dd, yyyy 'at' h:mm tt"))
         );
 
-        // Send notification to admin (you'd configure admin email in settings)
-        // For now, you could use a hardcoded admin email or configuration setting
-        var adminEmail = "admin@sumtermartialarts.com"; // TODO: Get from configuration
-        await _emailService.SendPrivateLessonAdminNotificationAsync(
-            adminEmail,
-            domainEvent.StudentName,
-            instructor.Name,
-            domainEvent.RequestedStart
-        );
+        var admin = await _dbContext.Users
+            .AsNoTracking()
+            .FirstOrDefaultAsync(u => u.Username == "admin" && u.Role == UserRole.Admin, cancellationToken);
+
+        if (admin != null)
+        {
+            await _emailOrchestrator.SendAsync(
+                admin.Email,
+                admin.Username,
+                new SimpleEmailContentBuilder(EmailTemplateKeys.PrivateLessonAdminNotification)
+                    .WithVariable("StudentName", domainEvent.StudentName)
+                    .WithVariable("InstructorName", instructor.Name)
+                    .WithVariable("RequestedDate", domainEvent.RequestedStart.ToString("MMMM dd, yyyy 'at' h:mm tt"))
+            );
+        }
     }
 }

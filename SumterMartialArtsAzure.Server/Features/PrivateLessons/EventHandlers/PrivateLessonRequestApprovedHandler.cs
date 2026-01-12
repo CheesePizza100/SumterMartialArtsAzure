@@ -2,19 +2,21 @@
 using Microsoft.EntityFrameworkCore;
 using SumterMartialArtsAzure.Server.DataAccess;
 using SumterMartialArtsAzure.Server.Domain.Events;
-using SumterMartialArtsAzure.Server.Services;
+using SumterMartialArtsAzure.Server.Services.Email;
+using SumterMartialArtsAzure.Server.Services.Email.ContentBuilders;
+using SumterMartialArtsAzure.Server.Services.Email.ContentBuilders.Constants;
 
 namespace SumterMartialArtsAzure.Server.Api.Features.PrivateLessons.EventHandlers;
 
 public class PrivateLessonRequestApprovedHandler
     : INotificationHandler<DomainEventNotification<PrivateLessonRequestApproved>>
 {
-    private readonly IEmailService _emailService;
+    private readonly EmailOrchestrator _emailOrchestrator;
     private readonly AppDbContext _dbContext;
 
-    public PrivateLessonRequestApprovedHandler(IEmailService emailService, AppDbContext dbContext)
+    public PrivateLessonRequestApprovedHandler(EmailOrchestrator emailOrchestrator, AppDbContext dbContext)
     {
-        _emailService = emailService;
+        _emailOrchestrator = emailOrchestrator;
         _dbContext = dbContext;
     }
 
@@ -31,11 +33,13 @@ public class PrivateLessonRequestApprovedHandler
             return;
         }
 
-        await _emailService.SendPrivateLessonApprovedAsync(
+        await _emailOrchestrator.SendAsync(
             domainEvent.StudentEmail,
             domainEvent.StudentName,
-            request.Instructor.Name,
-            domainEvent.RequestedStart
+            new SimpleEmailContentBuilder(EmailTemplateKeys.PrivateLessonApproved)
+                .WithVariable("StudentName", domainEvent.StudentName)
+                .WithVariable("InstructorName", request.Instructor.Name)
+                .WithVariable("ScheduledDate", domainEvent.RequestedStart.ToString("MMMM dd, yyyy 'at' h:mm tt"))
         );
 
         // TODO: Could also send notification to instructor

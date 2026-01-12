@@ -1,27 +1,31 @@
 ﻿using MediatR;
 using SumterMartialArtsAzure.Server.DataAccess;
 using SumterMartialArtsAzure.Server.Domain.Events;
-using SumterMartialArtsAzure.Server.Services;
+using SumterMartialArtsAzure.Server.Services.Email;
+using SumterMartialArtsAzure.Server.Services.Email.ContentBuilders.Constants;
+using SumterMartialArtsAzure.Server.Services.Email.ContentBuilders;
 
 namespace SumterMartialArtsAzure.Server.Api.Features.Students.EventHandlers;
 
 public class StudentCreatedEventHandler
     : INotificationHandler<DomainEventNotification<StudentCreated>>
 {
-    private readonly IEmailService _emailService;
+    private readonly EmailOrchestrator _emailOrchestrator;
 
-    public StudentCreatedEventHandler(IEmailService emailService)
+    public StudentCreatedEventHandler(EmailOrchestrator emailOrchestrator)
     {
-        _emailService = emailService;
+        _emailOrchestrator = emailOrchestrator;
     }
 
     public Task Handle(DomainEventNotification<StudentCreated> notification, CancellationToken cancellationToken)
     {
         var domainEvent = notification.DomainEvent;
 
-        return _emailService.SendSchoolWelcomeEmailAsync(
+        return _emailOrchestrator.SendAsync(
             domainEvent.Email,
-            domainEvent.Name
+            domainEvent.Name,
+            new SimpleEmailContentBuilder(EmailTemplateKeys.SchoolWelcome)
+                .WithVariable("StudentName", domainEvent.Name)
         );
     }
 }
