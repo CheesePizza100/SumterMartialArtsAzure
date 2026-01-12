@@ -12,6 +12,7 @@ using SumterMartialArtsAzure.Server.Api.Middleware;
 using SumterMartialArtsAzure.Server.DataAccess;
 using SumterMartialArtsAzure.Server.Domain.Services;
 using SumterMartialArtsAzure.Server.Services;
+using SumterMartialArtsAzure.Server.Services.Email;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -50,12 +51,14 @@ builder.Services
         emailSettings.SmtpPort
     );
 
-builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<ITokenGeneratorService, TokenGeneratorService>();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<IAuditService, AuditService>();
 builder.Services.AddScoped<IPasswordHasher, BcryptPasswordHasher>();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<EmailOrchestrator>();
+builder.Services.AddScoped<EmailSender>();
+builder.Services.AddScoped<EmailBodyParser>();
 
 builder.Services.AddHealthChecks();
 builder.Services.AddCors(options =>
