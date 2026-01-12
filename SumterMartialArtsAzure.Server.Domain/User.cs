@@ -60,7 +60,7 @@ public class User : Entity
             StudentId = studentId,
             StudentName = studentName,
             StudentEmail = email,
-            Username = username,
+            UserName = username,
             TemporaryPassword = temporaryPassword,
             CreatedAt = DateTime.UtcNow
         });
