@@ -96,7 +96,7 @@ export class AuthService {
   }
 
   changePassword(currentPassword: string, newPassword: string): Observable<any> {
-    return this.http.post('/api/auth/change-password', {
+    return this.http.post('/auth/change-password', {
       currentPassword,
       newPassword
     }).pipe(
@@ -113,7 +113,7 @@ export class AuthService {
   }
 
   logout(): Observable<void> {
-    return this.http.post<void>('/api/auth/logout', {})
+    return this.http.post<void>('/auth/logout', {})
       .pipe(
         tap(() => {
           this.clearAuthData();
