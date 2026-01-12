@@ -43,7 +43,7 @@ public class CreateInstructorLoginHandler
             .AnyAsync(u => u.Username == request.Username, cancellationToken);
 
         if (usernameTaken)
-            throw new InvalidOperationException("Username is already taken");
+            throw new InvalidOperationException("UserName is already taken");
 
         var tempPassword = string.IsNullOrWhiteSpace(request.Password)
             ? GenerateTemporaryPassword()
