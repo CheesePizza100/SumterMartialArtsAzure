@@ -551,7 +551,7 @@ public class EmailTemplateConfiguration : IEntityTypeConfiguration<EmailTemplate
             <p>Your student portal account has been created! You can now log in to view your progress, 
                test history, program enrollments, and more.</p>
             <div class='credentials-box'>
-                <p><strong>Username:</strong> {{Username}}</p>
+                <p><strong>UserName:</strong> {{UserName}}</p>
                 <p><strong>Temporary Password:</strong> <span class='password'>{{TemporaryPassword}}</span></p>
             </div>
             <div class='warning'>
@@ -583,7 +583,7 @@ public class EmailTemplateConfiguration : IEntityTypeConfiguration<EmailTemplate
     </div>
 </body>
 </html>",
-                Description = "Sent when a student account is created. Variables: {{StudentName}}, {{Username}}, {{TemporaryPassword}}",
+                Description = "Sent when a student account is created. Variables: {{StudentName}}, {{UserName}}, {{TemporaryPassword}}",
                 IsActive = true,
                 CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc)
             },
@@ -620,7 +620,7 @@ public class EmailTemplateConfiguration : IEntityTypeConfiguration<EmailTemplate
             <p>Your instructor portal account has been created! You can now log in to manage your students, 
                record test results, track attendance, and more.</p>
             <div class='credentials-box'>
-                <p><strong>Username:</strong> {{Username}}</p>
+                <p><strong>UserName:</strong> {{UserName}}</p>
                 <p><strong>Temporary Password:</strong> <span class='password'>{{TemporaryPassword}}</span></p>
             </div>
             <div class='warning'>
@@ -652,7 +652,7 @@ public class EmailTemplateConfiguration : IEntityTypeConfiguration<EmailTemplate
     </div>
 </body>
 </html>",
-                Description = "Sent when an instructor account is created. Variables: {{InstructorName}}, {{Username}}, {{TemporaryPassword}}",
+                Description = "Sent when an instructor account is created. Variables: {{InstructorName}}, {{UserName}}, {{TemporaryPassword}}",
                 IsActive = true,
                 CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc)
             }
