@@ -9,6 +9,7 @@ public static class AuditActions
     public const string UserUpdated = "User.Updated";
     public const string UserDeactivated = "User.Deactivated";
     public const string PasswordChanged = "Password.Changed";
+    public const string EmailTemplateUpdated = "Email.Template.Updated";
 
     // Student actions
     public const string StudentCreated = "Student.Created";
