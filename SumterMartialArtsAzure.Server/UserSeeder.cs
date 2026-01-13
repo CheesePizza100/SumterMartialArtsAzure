@@ -15,6 +15,6 @@ public static class UserSeeder
         context.Users.Add(admin);
         context.SaveChanges();
 
-        Console.WriteLine("Seeded admin user - Username: admin, Password: Admin123!");
+        Console.WriteLine("Seeded admin user - UserName: admin, Password: Admin123!");
     }
 }

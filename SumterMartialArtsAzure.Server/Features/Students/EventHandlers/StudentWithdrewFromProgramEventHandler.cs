@@ -2,19 +2,20 @@
 using Microsoft.EntityFrameworkCore;
 using SumterMartialArtsAzure.Server.DataAccess;
 using SumterMartialArtsAzure.Server.Domain.Events;
-using SumterMartialArtsAzure.Server.Services;
+using SumterMartialArtsAzure.Server.Services.Email;
+using SumterMartialArtsAzure.Server.Services.Email.ContentBuilders;
 
 namespace SumterMartialArtsAzure.Server.Api.Features.Students.EventHandlers;
 
 public class StudentWithdrewFromProgramEventHandler
     : INotificationHandler<DomainEventNotification<StudentWithdrewFromProgram>>
 {
-    private readonly IEmailService _emailService;
+    private readonly EmailOrchestrator _emailOrchestrator;
     private readonly AppDbContext _dbContext;
 
-    public StudentWithdrewFromProgramEventHandler(IEmailService emailService, AppDbContext dbContext)
+    public StudentWithdrewFromProgramEventHandler(EmailOrchestrator emailOrchestrator, AppDbContext dbContext)
     {
-        _emailService = emailService;
+        _emailOrchestrator = emailOrchestrator;
         _dbContext = dbContext;
     }
 
@@ -32,11 +33,10 @@ public class StudentWithdrewFromProgramEventHandler
             .Select(e => e.ProgramName)
             .ToList();
 
-        await _emailService.SendProgramWithdrawalEmailAsync(
+        await _emailOrchestrator.SendAsync(
             student.Email,
             student.Name,
-            domainEvent.ProgramName,
-            remainingPrograms
+            new ProgramWithdrawalContentBuilder(student.Name, domainEvent.ProgramName, remainingPrograms)
         );
     }
 }

@@ -40,7 +40,7 @@ public class CreateStudentLoginHandler
             .AnyAsync(u => u.Username == request.Username, cancellationToken);
 
         if (usernameTaken)
-            throw new InvalidOperationException("Username is already taken");
+            throw new InvalidOperationException("UserName is already taken");
 
         // Generate password if not provided or empty
         var tempPassword = string.IsNullOrWhiteSpace(request.Password)

@@ -11,5 +11,6 @@ public static class ApplicationEndpoints
         AdminEndpoints.Map(api);
         PrivateLessonEndpoints.Map(api);
         AuthEndpoints.Map(api);
+        EmailTemplatesEndpoints.Map(api);
     }
 }

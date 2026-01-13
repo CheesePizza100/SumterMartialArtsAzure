@@ -1,0 +1,27 @@
+<div class="templates-container">
+  <div class="header">
+    <h1>Email Templates</h1>
+    <p class="subtitle">Manage email templates sent to students and instructors</p>
+  </div>
+
+  <div *ngIf="loading" class="loading">Loading templates...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <div *ngIf="!loading && !error" class="templates-grid">
+    <div *ngFor="let template of templates"
+         class="template-card"
+         [class.inactive]="!template.isActive"
+         (click)="editTemplate(template.id)">
+      <div class="template-header">
+        <h3>{{ template.name }}</h3>
+        <span class="status-badge" [class.active]="template.isActive" [class.inactive]="!template.isActive">
+          {{ template.isActive ? 'Active' : 'Inactive' }}
+        </span>
+      </div>
+      <p class="template-key">{{ template.templateKey }}</p>
+      <p class="template-subject">{{ template.subject }}</p>
+      <p *ngIf="template.description" class="template-description">{{ template.description }}</p>
+      <p class="template-modified">Last modified: {{ template.lastModified | date:'short' }}</p>
+    </div>
+  </div>
+</div>

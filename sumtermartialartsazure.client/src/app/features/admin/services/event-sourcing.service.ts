@@ -9,7 +9,7 @@ import { MonthlyTestActivity, RankDistribution, ProgressionAnalytics, StudentEve
   providedIn: 'root'
 })
 export class EventSourcingService {
-  private baseUrl = `${environment.apiUrl}/api`;
+  private baseUrl = `${environment.apiUrl}/api/admin`;
 
   constructor(private http: HttpClient) { }
 

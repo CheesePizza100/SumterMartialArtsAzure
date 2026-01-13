@@ -1,0 +1,121 @@
+.templates-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.header {
+  margin-bottom: 2rem;
+}
+
+  .header h1 {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #1a1a1a;
+  }
+
+.subtitle {
+  color: #666;
+  font-size: 1rem;
+}
+
+.loading, .error {
+  text-align: center;
+  padding: 3rem;
+  font-size: 1.1rem;
+}
+
+.error {
+  color: #dc3545;
+  background: #fee;
+  border-radius: 8px;
+}
+
+.templates-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
+}
+
+.template-card {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+  .template-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    border-color: #667eea;
+  }
+
+  .template-card.inactive {
+    opacity: 0.6;
+    background: #f8f9fa;
+  }
+
+.template-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+  .template-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: #2c3e50;
+  }
+
+.status-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+  .status-badge.active {
+    background: #d4edda;
+    color: #155724;
+  }
+
+  .status-badge.inactive {
+    background: #f8d7da;
+    color: #721c24;
+  }
+
+.template-key {
+  font-family: monospace;
+  font-size: 0.875rem;
+  color: #667eea;
+  background: #f0f0f0;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  display: inline-block;
+  margin-bottom: 0.75rem;
+}
+
+.template-subject {
+  font-weight: 500;
+  color: #495057;
+  margin-bottom: 0.5rem;
+}
+
+.template-description {
+  font-size: 0.875rem;
+  color: #6c757d;
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
+}
+
+.template-modified {
+  font-size: 0.75rem;
+  color: #999;
+  margin-top: 1rem;
+}

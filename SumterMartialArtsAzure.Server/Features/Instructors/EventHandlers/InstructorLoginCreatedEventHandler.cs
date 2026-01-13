@@ -1,18 +1,20 @@
 ﻿using MediatR;
 using SumterMartialArtsAzure.Server.DataAccess;
 using SumterMartialArtsAzure.Server.Domain.Events;
-using SumterMartialArtsAzure.Server.Services;
+using SumterMartialArtsAzure.Server.Services.Email;
+using SumterMartialArtsAzure.Server.Services.Email.ContentBuilders;
+using SumterMartialArtsAzure.Server.Services.Email.ContentBuilders.Constants;
 
 namespace SumterMartialArtsAzure.Server.Api.Features.Instructors.EventHandlers;
 
 public class InstructorLoginCreatedEventHandler
     : INotificationHandler<DomainEventNotification<InstructorLoginCreated>>
 {
-    private readonly IEmailService _emailService;
+    private readonly EmailOrchestrator _emailOrchestrator;
 
-    public InstructorLoginCreatedEventHandler(IEmailService emailService)
+    public InstructorLoginCreatedEventHandler(EmailOrchestrator emailOrchestrator)
     {
-        _emailService = emailService;
+        _emailOrchestrator = emailOrchestrator;
     }
 
     public async Task Handle(
@@ -21,11 +23,13 @@ public class InstructorLoginCreatedEventHandler
     {
         var domainEvent = notification.DomainEvent;
 
-        await _emailService.SendInstructorLoginCredentialsAsync(
+        await _emailOrchestrator.SendAsync(
             domainEvent.InstructorEmail,
             domainEvent.InstructorName,
-            domainEvent.Username,
-            domainEvent.TemporaryPassword
+            new SimpleEmailContentBuilder(EmailTemplateKeys.InstructorLoginCredentials)
+                .WithVariable("InstructorName", domainEvent.InstructorName)
+                .WithVariable("UserName", domainEvent.Username)
+                .WithVariable("TemporaryPassword", domainEvent.TemporaryPassword)
         );
     }
 }

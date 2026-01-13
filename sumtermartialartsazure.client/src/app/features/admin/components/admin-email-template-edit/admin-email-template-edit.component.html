@@ -1,0 +1,55 @@
+<div class="edit-container">
+  <div class="header">
+    <button class="back-button" (click)="cancel()">← Back to Templates</button>
+    <h1>Edit Email Template</h1>
+  </div>
+
+  <div *ngIf="loading" class="loading">Loading template...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+  <div *ngIf="successMessage" class="success">{{ successMessage }}</div>
+
+  <form *ngIf="template && !loading" (ngSubmit)="saveTemplate()">
+    <div class="form-group">
+      <label>Template Key (Read-only)</label>
+      <input type="text" [value]="template.templateKey" disabled class="readonly">
+    </div>
+
+    <div class="form-group">
+      <label>Template Name *</label>
+      <input type="text" [(ngModel)]="template.name" name="name" required>
+    </div>
+
+    <div class="form-group">
+      <label>Subject Line *</label>
+      <input type="text" [(ngModel)]="template.subject" name="subject" required>
+      <small class="hint">You can use variables like {{'{{'}}StudentName{{'}}'}}, {{'{{'}}InstructorName{{'}}'}}, etc.</small>
+    </div>
+
+    <div class="form-group">
+      <label>Description</label>
+      <textarea [(ngModel)]="template.description" name="description" rows="2"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label>Email Body (HTML) *</label>
+      <textarea [(ngModel)]="template.body" name="body" rows="20" required class="code-editor"></textarea>
+      <small class="hint">Full HTML template. Available variables vary by template - check description.</small>
+    </div>
+
+    <div class="form-group">
+      <label class="checkbox-label">
+        <input type="checkbox" [(ngModel)]="template.isActive" name="isActive">
+        Active (template will be used when sending emails)
+      </label>
+    </div>
+
+    <div class="actions">
+      <button type="button" class="btn-secondary" (click)="cancel()" [disabled]="saving">
+        Cancel
+      </button>
+      <button type="submit" class="btn-primary" [disabled]="saving">
+        {{ saving ? 'Saving...' : 'Save Changes' }}
+      </button>
+    </div>
+  </form>
+</div>
