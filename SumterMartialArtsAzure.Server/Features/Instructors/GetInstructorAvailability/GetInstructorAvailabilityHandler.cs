@@ -25,7 +25,7 @@ public class GetInstructorAvailabilityHandler
         // it's a JSON-serialized collection stored as a string. You can't use .Include() on it.
         // AvailabilityRules are automatically loaded because they're stored as JSON in the same
         // table row - no need to .Include() them. You only use .Include() for actual entity relationships (like Programs)
-        var instructor = await _db.Instructors.FirstOrDefaultAsync(i => i.Id == request.InstructorId);
+        var instructor = await _db.Instructors.AsNoTracking().FirstOrDefaultAsync(i => i.Id == request.InstructorId);
         if (instructor == null) return null;
 
         // Generate all potential slots during business hours

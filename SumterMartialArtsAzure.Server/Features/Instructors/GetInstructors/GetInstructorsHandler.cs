@@ -22,6 +22,7 @@ public class GetInstructorsHandler
         // table row - no need to .Include() them. You only use .Include() for actual entity relationships (like Programs)
         //var instructors = await _db.Instructors.Select(x => new GetInstructorsResponse(x)).ToListAsync();
         var instructorIdsWithLogins = await _dbContext.Users
+            .AsNoTracking()
             .Where(u => u.InstructorId.HasValue)
             .Select(u => u.InstructorId.Value)
             .ToListAsync(cancellationToken);

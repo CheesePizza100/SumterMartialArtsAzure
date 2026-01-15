@@ -7,7 +7,7 @@ using SumterMartialArtsAzure.Server.Services;
 namespace SumterMartialArtsAzure.Server.Api.Features.Instructors.GetMyStudents;
 
 public class GetMyStudentsHandler
-    : IRequestHandler<GetMyStudentsQuery, List<InstructorStudentDto>>
+    : IRequestHandler<GetMyStudentsQuery, List<GetMyStudentsResponse>>
 {
     private readonly AppDbContext _dbContext;
     private readonly ICurrentUserService _currentUserService;
@@ -20,7 +20,7 @@ public class GetMyStudentsHandler
         _currentUserService = currentUserService;
     }
 
-    public async Task<List<InstructorStudentDto>> Handle(
+    public async Task<List<GetMyStudentsResponse>> Handle(
         GetMyStudentsQuery request,
         CancellationToken cancellationToken)
     {
@@ -31,18 +31,20 @@ public class GetMyStudentsHandler
 
         // Get programs this instructor teaches
         var instructorProgramIds = await _dbContext.Instructors
+            .AsNoTracking()
             .Where(i => i.Id == instructorId.Value)
             .SelectMany(i => i.Programs.Select(p => p.Id))
             .ToListAsync(cancellationToken);
 
         if (!instructorProgramIds.Any())
-            return new List<InstructorStudentDto>(); // Instructor doesn't teach any programs
+            return new List<GetMyStudentsResponse>(); // Instructor doesn't teach any programs
 
         // Get students enrolled in those programs
         var students = await _dbContext.Students
+            .AsNoTracking()
             .Where(s => s.ProgramEnrollments.Any(e =>
                 e.IsActive && instructorProgramIds.Contains(e.ProgramId)))
-            .Select(s => new InstructorStudentDto(
+            .Select(s => new GetMyStudentsResponse(
                 s.Id,
                 s.Name,
                 s.Email,

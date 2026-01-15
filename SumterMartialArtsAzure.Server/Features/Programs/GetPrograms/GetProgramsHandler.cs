@@ -19,6 +19,7 @@ public class GetProgramsHandler
         CancellationToken cancellationToken)
     {
         var programs = await _dbContext.Programs
+            .AsNoTracking()
             .Include(p => p.Instructors)
             .Select(p => new GetProgramsResponse(
                 p.Id,

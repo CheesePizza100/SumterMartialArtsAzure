@@ -8,7 +8,7 @@ using SumterMartialArtsAzure.Server.Services;
 namespace SumterMartialArtsAzure.Server.Api.Features.Instructors.GetStudentDetail;
 
 public class GetStudentDetailHandler
-    : IRequestHandler<GetStudentDetailQuery, InstructorStudentDto>
+    : IRequestHandler<GetStudentDetailQuery, GetMyStudentsResponse>
 {
     private readonly AppDbContext _dbContext;
     private readonly ICurrentUserService _currentUserService;
@@ -21,7 +21,7 @@ public class GetStudentDetailHandler
         _currentUserService = currentUserService;
     }
 
-    public async Task<InstructorStudentDto> Handle(
+    public async Task<GetMyStudentsResponse> Handle(
         GetStudentDetailQuery request,
         CancellationToken cancellationToken)
     {
@@ -32,16 +32,18 @@ public class GetStudentDetailHandler
 
         // Get programs this instructor teaches
         var instructorProgramIds = await _dbContext.Instructors
+            .AsNoTracking()
             .Where(i => i.Id == instructorId.Value)
             .SelectMany(i => i.Programs.Select(p => p.Id))
             .ToListAsync(cancellationToken);
 
         // Get student (only if enrolled in instructor's programs)
         var student = await _dbContext.Students
+            .AsNoTracking()
             .Where(s => s.Id == request.StudentId &&
                         s.ProgramEnrollments.Any(e =>
                             e.IsActive && instructorProgramIds.Contains(e.ProgramId)))
-            .Select(s => new InstructorStudentDto(
+            .Select(s => new GetMyStudentsResponse(
                 s.Id,
                 s.Name,
                 s.Email,

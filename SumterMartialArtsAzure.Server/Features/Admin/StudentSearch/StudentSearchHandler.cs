@@ -56,8 +56,7 @@ public class StudentSearchHandler
                         t.Result,
                         t.Notes
                     )).ToList()
-            ))
-            .ToListAsync(cancellationToken);
+            )).ToListAsync(cancellationToken);
 
         return students;
     }

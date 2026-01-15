@@ -20,6 +20,7 @@ public class GetStudentAttendanceHandler
         CancellationToken cancellationToken)
     {
         var enrollment = await _dbContext.Set<StudentProgramEnrollment>()
+            .AsNoTracking()
             .Where(e => e.StudentId == request.StudentId
                         && e.ProgramId == request.ProgramId
                         && e.IsActive)
@@ -27,8 +28,7 @@ public class GetStudentAttendanceHandler
                 e.Attendance.Last30Days,
                 e.Attendance.Total,
                 e.Attendance.AttendanceRate
-            ))
-            .FirstOrDefaultAsync(cancellationToken);
+            )).FirstOrDefaultAsync(cancellationToken);
 
         return enrollment;
     }

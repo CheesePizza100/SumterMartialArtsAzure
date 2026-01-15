@@ -17,6 +17,7 @@ public class GetProgramByIdHandler
     public async Task<GetProgramByIdResponse?> Handle(GetProgramByIdQuery request, CancellationToken cancellationToken)
     {
         var program = await _db.Programs
+            .AsNoTracking()
             .Include(p => p.Instructors)
             .FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken);
 

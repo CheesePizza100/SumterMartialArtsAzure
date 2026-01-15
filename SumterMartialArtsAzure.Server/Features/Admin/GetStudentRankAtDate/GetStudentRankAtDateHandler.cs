@@ -22,6 +22,7 @@ public class GetStudentRankAtDateHandler
     {
         // Get all events up to the specified date
         var events = await _dbContext.StudentProgressionEvents
+            .AsNoTracking()
             .Where(e => e.StudentId == request.StudentId
                         && e.ProgramId == request.ProgramId
                         && e.OccurredAt <= request.AsOfDate)
