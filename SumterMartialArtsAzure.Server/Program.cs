@@ -73,10 +73,10 @@ builder.Services.AddTransient<IProgressionAnalyticsCalculator, TestStatisticsCal
 builder.Services.AddTransient<IProgressionAnalyticsCalculator, PromotionCountCalculator>();
 builder.Services.AddTransient<IProgressionAnalyticsCalculator, MonthlyTestActivityCalculator>();
 builder.Services.AddTransient<IProgressionAnalyticsCalculator, RankDistributionCalculator>();
-
-// Note: AverageTimeToRankCalculator needs special registration because of the constructor parameter
-builder.Services.AddTransient<IProgressionAnalyticsCalculator>(sp =>
-    new AverageTimeToRankCalculator("Blue Belt"));
+builder.Services.AddTransient<IProgressionAnalyticsCalculator, AverageTimeToRankCalculator>();
+builder.Services.AddTransient<IStudentProgressionEventService, StudentProgressionEventService>();
+builder.Services.AddTransient<RankProgressionCalculator>();
+builder.Services.AddTransient<TimeToPromotionCalculator>();
 
 builder.Services.AddHealthChecks();
 builder.Services.AddCors(options =>
