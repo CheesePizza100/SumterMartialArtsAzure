@@ -21,6 +21,7 @@ public class GetInstructorByIdHandler
         // AvailabilityRules are automatically loaded because they're stored as JSON in the same
         // table row - no need to .Include() them. You only use .Include() for actual entity relationships (like Programs)
         var instructor = await _db.Instructors
+            .AsNoTracking()
             .Include(i => i.Programs)
             .FirstOrDefaultAsync(i => i.Id == query.Id);
 
