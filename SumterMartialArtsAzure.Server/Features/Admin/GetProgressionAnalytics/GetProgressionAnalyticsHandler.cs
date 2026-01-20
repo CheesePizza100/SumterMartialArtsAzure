@@ -1,6 +1,8 @@
 ﻿using System.Text.Json;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using SumterMartialArtsAzure.Server.Api.Features.Admin.GetProgressionAnalytics.Calculators;
+using SumterMartialArtsAzure.Server.Api.Features.Admin.GetProgressionAnalytics.Visitor;
 using SumterMartialArtsAzure.Server.DataAccess;
 using SumterMartialArtsAzure.Server.Domain.Entities;
 using SumterMartialArtsAzure.Server.Domain.Events;
@@ -10,10 +12,12 @@ namespace SumterMartialArtsAzure.Server.Api.Features.Admin.GetProgressionAnalyti
 public class GetProgressionAnalyticsHandler
     : IRequestHandler<GetProgressionAnalyticsQuery, GetProgressionAnalyticsResponse>
 {
+    private readonly IEnumerable<IProgressionAnalyticsCalculator> _calculators;
     private readonly AppDbContext _dbContext;
 
-    public GetProgressionAnalyticsHandler(AppDbContext dbContext)
+    public GetProgressionAnalyticsHandler(IEnumerable<IProgressionAnalyticsCalculator> calculators, AppDbContext dbContext)
     {
+        _calculators = calculators;
         _dbContext = dbContext;
     }
 
@@ -22,108 +26,117 @@ public class GetProgressionAnalyticsHandler
             CancellationToken cancellationToken)
     {
         var query = _dbContext.StudentProgressionEvents.AsQueryable();
+        var builder = new AnalyticsResponseVisitor();
+
+        foreach (var calculator in _calculators)
+        {
+            var result = await calculator.Calculate(query, request.ProgramId, cancellationToken);
+            result.Accept(builder);
+        }
+
+        return builder.ProduceResult();
 
         // Filter by program if specified
-        if (request.ProgramId.HasValue)
-        {
-            query = query.Where(e => e.ProgramId == request.ProgramId.Value);
-        }
+        //if (request.ProgramId.HasValue)
+        //{
+        //    query = query.Where(e => e.ProgramId == request.ProgramId.Value);
+        //}
 
-        var allEvents = await query.ToListAsync(cancellationToken);
+        //var allEvents = await query.ToListAsync(cancellationToken);
 
         // Total students enrolled
-        var enrollmentEvents = allEvents
-            .Where(e => e.EventType == "EnrollmentEventData")
-            .GroupBy(e => new { e.StudentId, e.ProgramId })
-            .Count();
+        //var enrollmentEvents = allEvents
+        //    .Where(e => e.EventType == "EnrollmentEventData")
+        //    .GroupBy(e => new { e.StudentId, e.ProgramId })
+        //    .Count();
 
         // Test statistics
-        var testEvents = allEvents
-            .Where(e => e.EventType == "TestAttemptEventData")
-            .Select(e => new
-            {
-                e.StudentId,
-                e.ProgramId,
-                e.OccurredAt,
-                Data = JsonSerializer.Deserialize<TestAttemptEventData>(e.EventData)
-            })
-            .ToList();
+        //var testEvents = allEvents
+        //    .Where(e => e.EventType == "TestAttemptEventData")
+        //    .Select(e => new
+        //    {
+        //        e.StudentId,
+        //        e.ProgramId,
+        //        e.OccurredAt,
+        //        Data = JsonSerializer.Deserialize<TestAttemptEventData>(e.EventData)
+        //    })
+        //    .ToList();
 
-        var totalTests = testEvents.Count;
-        var passedTests = testEvents.Count(t => t.Data?.Passed == true);
-        var failedTests = testEvents.Count(t => t.Data?.Passed == false);
-        var passRate = totalTests > 0 ? (double)passedTests / totalTests * 100 : 0;
+        //var totalTests = testEvents.Count;
+        //var passedTests = testEvents.Count(t => t.Data?.Passed == true);
+        //var failedTests = testEvents.Count(t => t.Data?.Passed == false);
+        //var passRate = totalTests > 0 ? (double)passedTests / totalTests * 100 : 0;
 
         // Promotion statistics
-        var promotionEvents = allEvents
-            .Where(e => e.EventType == "PromotionEventData")
-            .Select(e => new
-            {
-                e.StudentId,
-                e.ProgramId,
-                e.OccurredAt,
-                Data = JsonSerializer.Deserialize<PromotionEventData>(e.EventData)
-            })
-            .ToList();
+        //var promotionEvents = allEvents
+        //    .Where(e => e.EventType == "PromotionEventData")
+        //    .Select(e => new
+        //    {
+        //        e.StudentId,
+        //        e.ProgramId,
+        //        e.OccurredAt,
+        //        Data = JsonSerializer.Deserialize<PromotionEventData>(e.EventData)
+        //    })
+        //    .ToList();
 
-        var totalPromotions = promotionEvents.Count;
+        //var totalPromotions = promotionEvents.Count;
 
         // Average time to blue belt (example - you can expand this)
-        var blueBeltPromotions = promotionEvents
-            .Where(p => p.Data?.ToRank == "Blue Belt")
-            .ToList();
+        //var blueBeltPromotions = promotionEvents
+        //    .Where(p => p.Data?.ToRank == "Blue Belt")
+        //    .ToList();
 
-        var avgDaysToBlue = 0.0;
-        if (blueBeltPromotions.Any())
-        {
-            var times = new List<double>();
-            foreach (var promotion in blueBeltPromotions)
-            {
-                // Find enrollment event for this student/program
-                var enrollment = allEvents
-                    .Where(e => e.EventType == "EnrollmentEventData"
-                             && e.StudentId == promotion.StudentId
-                             && e.ProgramId == promotion.ProgramId)
-                    .OrderBy(e => e.OccurredAt)
-                    .FirstOrDefault();
+        //var avgDaysToBlue = 0.0;
+        //if (blueBeltPromotions.Any())
+        //{
+        //    var times = new List<double>();
+        //    foreach (var promotion in blueBeltPromotions)
+        //    {
+        //        // Find enrollment event for this student/program
+        //        var enrollment = allEvents
+        //            .Where(e => e.EventType == "EnrollmentEventData"
+        //                     && e.StudentId == promotion.StudentId
+        //                     && e.ProgramId == promotion.ProgramId)
+        //            .OrderBy(e => e.OccurredAt)
+        //            .FirstOrDefault();
 
-                if (enrollment != null)
-                {
-                    var days = (promotion.OccurredAt - enrollment.OccurredAt).TotalDays;
-                    times.Add(days);
-                }
-            }
+        //        if (enrollment != null)
+        //        {
+        //            var days = (promotion.OccurredAt - enrollment.OccurredAt).TotalDays;
+        //            times.Add(days);
+        //        }
+        //    }
 
-            if (times.Any())
-                avgDaysToBlue = times.Average();
-        }
+        //    if (times.Any())
+        //        avgDaysToBlue = times.Average();
+        //}
 
         // Most active testing months
-        var testsByMonth = testEvents
-            .GroupBy(t => new { t.OccurredAt.Year, t.OccurredAt.Month })
-            .Select(g => new MonthlyTestActivity(
-                g.Key.Year,
-                g.Key.Month,
-                g.Count()
-            ))
-            .OrderByDescending(m => m.TestCount)
-            .Take(6)
-            .ToList();
+        //var testsByMonth = testEvents
+        //    .GroupBy(t => new { t.OccurredAt.Year, t.OccurredAt.Month })
+        //    .Select(g => new MonthlyTestActivity(
+        //        g.Key.Year,
+        //        g.Key.Month,
+        //        g.Count()
+        //    ))
+        //    .OrderByDescending(m => m.TestCount)
+        //    .Take(6)
+        //    .ToList();
 
         // Rank distribution (current state)
-        var rankDistribution = await GetCurrentRankDistribution(request.ProgramId, cancellationToken);
+        //var rankDistribution = await GetCurrentRankDistribution(request.ProgramId, cancellationToken);
 
-        return new GetProgressionAnalyticsResponse(
-            enrollmentEvents,
-            totalTests,
-            passedTests,
-            failedTests,
-            Math.Round(passRate, 2),
-            totalPromotions,
-            Math.Round(avgDaysToBlue, 0),
-            testsByMonth,
-            rankDistribution
-        );
+        //return new GetProgressionAnalyticsResponse(
+        //    enrollmentEvents,
+        //    totalTests,
+        //    passedTests,
+        //    failedTests,
+        //    Math.Round(passRate, 2),
+        //    totalPromotions,
+        //    Math.Round(avgDaysToBlue, 0),
+        //    testsByMonth,
+        //    rankDistribution
+        //);
     }
     private async Task<List<RankDistribution>> GetCurrentRankDistribution(
         int? programId,
