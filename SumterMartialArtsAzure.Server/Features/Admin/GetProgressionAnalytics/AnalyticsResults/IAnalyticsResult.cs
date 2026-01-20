@@ -26,7 +26,9 @@ public record PromotionCountResult(int Count) : IAnalyticsResult
     public void Accept(IAnalyticsResultVisitor visitor) => visitor.Visit(this);
 }
 
-public record AverageTimeToRankResult(double AverageDays, string RankName) : IAnalyticsResult
+public record RankProgression(string RankName, double AverageDays);
+
+public record AverageTimeToRankResult(List<RankProgression> RankProgressions) : IAnalyticsResult
 {
     public void Accept(IAnalyticsResultVisitor visitor) => visitor.Visit(this);
 }
