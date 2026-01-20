@@ -1,4 +1,6 @@
-﻿namespace SumterMartialArtsAzure.Server.Domain.Events;
+﻿using System.Text.Json;
+
+namespace SumterMartialArtsAzure.Server.Domain.Events;
 
 public record StudentProgressionEventRecord
 {
@@ -32,4 +34,86 @@ public class PromotionEventData
     public string ToRank { get; set; } = string.Empty;
     public int PromotingInstructorId { get; set; }
     public string Reason { get; set; } = string.Empty;
+}
+
+public record StudentProgressionState
+{
+    public string CurrentRank { get; init; } = "Not Enrolled";
+    public DateTime? EnrolledDate { get; init; }
+    public DateTime? LastTestDate { get; init; }
+    public string? LastTestNotes { get; init; }
+}
+
+public interface IEventProjector
+{
+    string EventType { get; }
+    StudentProgressionState Project(StudentProgressionEventRecord evt, StudentProgressionState currentState);
+}
+public abstract class EventProjectorBase<TEventData> : IEventProjector
+{
+    public abstract string EventType { get; }
+
+    public StudentProgressionState Project(StudentProgressionEventRecord evt, StudentProgressionState currentState)
+    {
+        var data = JsonSerializer.Deserialize<TEventData>(evt.EventData);
+        return data == null
+            ? currentState
+            : ProjectEvent(data, evt, currentState);
+    }
+
+    protected abstract StudentProgressionState ProjectEvent(
+        TEventData data,
+        StudentProgressionEventRecord evt,
+        StudentProgressionState currentState);
+}
+public class EnrollmentEventProjector : EventProjectorBase<EnrollmentEventData>
+{
+    public override string EventType => nameof(EnrollmentEventData);
+
+    protected override StudentProgressionState ProjectEvent(
+        EnrollmentEventData data,
+        StudentProgressionEventRecord evt,
+        StudentProgressionState currentState)
+    {
+        return currentState with
+        {
+            CurrentRank = data.InitialRank ?? "Unknown",
+            EnrolledDate = evt.OccurredAt
+        };
+    }
+}
+
+public class PromotionEventProjector : EventProjectorBase<PromotionEventData>
+{
+    public override string EventType => nameof(PromotionEventData);
+
+    protected override StudentProgressionState ProjectEvent(
+        PromotionEventData data,
+        StudentProgressionEventRecord evt,
+        StudentProgressionState currentState)
+    {
+        return currentState with
+        {
+            CurrentRank = data.ToRank,
+            LastTestDate = evt.OccurredAt,
+            LastTestNotes = data.Reason
+        };
+    }
+}
+
+public class TestAttemptEventProjector : EventProjectorBase<TestAttemptEventData>
+{
+    public override string EventType => nameof(TestAttemptEventData);
+
+    protected override StudentProgressionState ProjectEvent(
+        TestAttemptEventData data,
+        StudentProgressionEventRecord evt,
+        StudentProgressionState currentState)
+    {
+        return currentState with
+        {
+            LastTestDate = evt.OccurredAt,
+            LastTestNotes = data.InstructorNotes
+        };
+    }
 }
