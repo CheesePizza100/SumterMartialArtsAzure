@@ -36,6 +36,11 @@ public class PromotionEventData
     public string Reason { get; set; } = string.Empty;
 }
 
+// Helper records for cleaner handling
+public record EnrollmentEvent(int StudentId, int ProgramId, DateTime OccurredAt, EnrollmentEventData Data);
+public record PromotionEvent(int StudentId, int ProgramId, DateTime OccurredAt, PromotionEventData Data);
+public record TestAttemptEvent(int StudentId, int ProgramId, DateTime OccurredAt, TestAttemptEventData Data);
+
 public record StudentProgressionState
 {
     public string CurrentRank { get; init; } = "Not Enrolled";
