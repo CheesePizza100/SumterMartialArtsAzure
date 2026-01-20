@@ -8,8 +8,10 @@ using SumterMartialArtsAzure.Server.Api;
 using SumterMartialArtsAzure.Server.Api.Behaviors;
 using SumterMartialArtsAzure.Server.Api.EndpointConfigurations;
 using SumterMartialArtsAzure.Server.Api.Features.Auth.Login;
+using SumterMartialArtsAzure.Server.Api.Features.PrivateLessons.GetPrivateLessons.Filters;
 using SumterMartialArtsAzure.Server.Api.Middleware;
 using SumterMartialArtsAzure.Server.DataAccess;
+using SumterMartialArtsAzure.Server.Domain.Events;
 using SumterMartialArtsAzure.Server.Domain.Services;
 using SumterMartialArtsAzure.Server.Services;
 using SumterMartialArtsAzure.Server.Services.Email;
@@ -59,6 +61,12 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<EmailOrchestrator>();
 builder.Services.AddScoped<EmailSender>();
 builder.Services.AddScoped<EmailBodyParser>();
+builder.Services.AddTransient<IEventProjector, EnrollmentEventProjector>();
+builder.Services.AddTransient<IEventProjector, PromotionEventProjector>();
+builder.Services.AddTransient<IEventProjector, TestAttemptEventProjector>();
+builder.Services.AddTransient<IPrivateLessonFilter, PendingLessonsFilter>();
+builder.Services.AddTransient<IPrivateLessonFilter, RecentLessonsFilter>();
+builder.Services.AddTransient<IPrivateLessonFilter, AllLessonsFilter>();
 
 builder.Services.AddHealthChecks();
 builder.Services.AddCors(options =>

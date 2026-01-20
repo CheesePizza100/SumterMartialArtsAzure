@@ -1,17 +1,19 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
+using SumterMartialArtsAzure.Server.Api.Features.PrivateLessons.GetPrivateLessons.Filters;
 using SumterMartialArtsAzure.Server.DataAccess;
-using SumterMartialArtsAzure.Server.Domain.ValueObjects;
 
 namespace SumterMartialArtsAzure.Server.Api.Features.PrivateLessons.GetPrivateLessons;
 
 public class GetPrivateLessonsHandler 
     : IRequestHandler<GetPrivateLessonsQuery, List<GetPrivateLessonsResponse>>
 {
+    private readonly IEnumerable<IPrivateLessonFilter> _filters;
     private readonly AppDbContext _db;
 
-    public GetPrivateLessonsHandler(AppDbContext db)
+    public GetPrivateLessonsHandler(IEnumerable<IPrivateLessonFilter> filters, AppDbContext db)
     {
+        _filters = filters;
         _db = db;
     }
 
@@ -21,13 +23,9 @@ public class GetPrivateLessonsHandler
             .Include(r => r.Instructor)
             .AsQueryable();
 
-        query = request.Filter switch
-        {
-            "Pending" => query.Where(r => r.Status == RequestStatus.Pending),
-            "Recent" => query.Where(r => r.CreatedAt >= DateTime.UtcNow.AddDays(-30)),
-            "All" => query,
-            _ => query.Where(r => r.Status == RequestStatus.Pending) // Default to pending
-        };
+        var filter = _filters.FirstOrDefault(x => x.FilterName == request.Filter, new PendingLessonsFilter());
+
+        query = filter.Apply(query);
 
         var requests = await query
             .OrderByDescending(r => r.CreatedAt)
