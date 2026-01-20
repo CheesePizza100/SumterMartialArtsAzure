@@ -22,6 +22,7 @@ public class AnalyticsResponseVisitor : IAnalyticsResultVisitor
     private double _avgDaysToBlue;
     private List<MonthlyTestActivity> _monthlyActivity = new();
     private List<RankDistribution> _rankDistribution = new();
+    private List<RankProgression> _rankProgressions;
 
     public void Visit(EnrollmentCountResult result)
     {
@@ -43,7 +44,7 @@ public class AnalyticsResponseVisitor : IAnalyticsResultVisitor
 
     public void Visit(AverageTimeToRankResult result)
     {
-        _avgDaysToBlue = result.AverageDays;
+        _rankProgressions = result.RankProgressions;
     }
 
     public void Visit(MonthlyTestActivityResult result)
@@ -65,7 +66,7 @@ public class AnalyticsResponseVisitor : IAnalyticsResultVisitor
             _failedTests,
             _passRate,
             _totalPromotions,
-            _avgDaysToBlue,
+            _rankProgressions,
             _monthlyActivity,
             _rankDistribution
         );
