@@ -1,9 +1,9 @@
-﻿using System.Text.Json;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using SumterMartialArtsAzure.Server.Api.Features.Admin.GetProgressionAnalytics.AnalyticsResults;
 using SumterMartialArtsAzure.Server.DataAccess;
 using SumterMartialArtsAzure.Server.Domain.Entities;
 using SumterMartialArtsAzure.Server.Domain.Events;
+using SumterMartialArtsAzure.Server.Services;
 
 namespace SumterMartialArtsAzure.Server.Api.Features.Admin.GetProgressionAnalytics.Calculators;
 
@@ -31,25 +31,22 @@ public class EnrollmentCountCalculator : IProgressionAnalyticsCalculator
 
 public class TestStatisticsCalculator : IProgressionAnalyticsCalculator
 {
+    private readonly IStudentProgressionEventService _eventService;
+
+    public TestStatisticsCalculator(IStudentProgressionEventService eventService)
+    {
+        _eventService = eventService;
+    }
     public async Task<IAnalyticsResult> Calculate(
         IQueryable<StudentProgressionEventRecord> events,
         int? programId,
         CancellationToken cancellationToken)
     {
-        var testEvents = await events
-            .AsNoTracking()
-            .Where(e => e.EventType == nameof(TestAttemptEventData))
-            .Where(e => !programId.HasValue || e.ProgramId == programId.Value)
-            .ToListAsync(cancellationToken);
+        var testEvents = await _eventService.GetTestAttemptEvents(programId, cancellationToken);
 
-        var testData = testEvents
-            .Select(e => JsonSerializer.Deserialize<TestAttemptEventData>(e.EventData))
-            .Where(data => data != null)
-            .ToList();
-
-        var totalTests = testData.Count;
-        var passedTests = testData.Count(t => t!.Passed);
-        var failedTests = testData.Count(t => !t!.Passed);
+        var totalTests = testEvents.Count;
+        var passedTests = testEvents.Count(t => t.Data.Passed);
+        var failedTests = testEvents.Count(t => !t.Data.Passed);
         var passRate = totalTests > 0 ? (double)passedTests / totalTests * 100 : 0;
 
         return new TestStatisticsResult(
@@ -79,11 +76,15 @@ public class PromotionCountCalculator : IProgressionAnalyticsCalculator
 
 public class AverageTimeToRankCalculator : IProgressionAnalyticsCalculator
 {
-    private readonly string _targetRank;
+    private readonly IStudentProgressionEventService _eventService;
+    private readonly RankProgressionCalculator _rankCalculator;
 
-    public AverageTimeToRankCalculator(string targetRank = "Blue Belt")
+    public AverageTimeToRankCalculator(
+        IStudentProgressionEventService eventService,
+        RankProgressionCalculator rankCalculator)
     {
-        _targetRank = targetRank;
+        _eventService = eventService;
+        _rankCalculator = rankCalculator;
     }
 
     public async Task<IAnalyticsResult> Calculate(
@@ -91,69 +92,70 @@ public class AverageTimeToRankCalculator : IProgressionAnalyticsCalculator
         int? programId,
         CancellationToken cancellationToken)
     {
-        var allEvents = await events
-            .AsNoTracking()
-            .Where(e => !programId.HasValue || e.ProgramId == programId.Value)
-            .Where(e => e.EventType == nameof(PromotionEventData) ||
-                       e.EventType == nameof(EnrollmentEventData))
-            .OrderBy(e => e.OccurredAt)
-            .ToListAsync(cancellationToken);
+        var enrollments = await _eventService.GetEnrollmentEvents(programId, cancellationToken);
+        var promotions = await _eventService.GetPromotionEvents(programId, cancellationToken);
 
-        var promotions = allEvents
-            .Where(e => e.EventType == nameof(PromotionEventData))
-            .Select(e => new
-            {
-                e.StudentId,
-                e.ProgramId,
-                e.OccurredAt,
-                Data = JsonSerializer.Deserialize<PromotionEventData>(e.EventData)
-            })
-            .Where(p => p.Data?.ToRank == _targetRank)
+        var averagesByRank = promotions
+            .GroupBy(p => p.Data.ToRank)
+            .Select(rankGroup => _rankCalculator.Calculate(rankGroup, enrollments))
             .ToList();
 
-        if (!promotions.Any())
-            return new AverageTimeToRankResult(0.0, _targetRank);
+        return new AverageTimeToRankResult(averagesByRank);
+    }
+}
+public class RankProgressionCalculator
+{
+    public RankProgression Calculate(
+        IGrouping<string, PromotionEvent> rankGroup,
+        List<EnrollmentEvent> enrollments)
+    {
+        var calculator = new TimeToPromotionCalculator();
 
-        var times = promotions
-            .Select(promotion =>
-            {
-                var enrollment = allEvents
-                    .Where(e => e.EventType == nameof(EnrollmentEventData)
-                             && e.StudentId == promotion.StudentId
-                             && e.ProgramId == promotion.ProgramId)
-                    .OrderBy(e => e.OccurredAt)
-                    .FirstOrDefault();
-
-                return enrollment != null
-                    ? (promotion.OccurredAt - enrollment.OccurredAt).TotalDays
-                    : (double?)null;
-            })
+        var times = rankGroup
+            .Select(promotion => calculator.Calculate(promotion, enrollments))
             .Where(days => days.HasValue)
             .Select(days => days!.Value)
             .ToList();
 
         var avgDays = times.Any() ? Math.Round(times.Average(), 0) : 0.0;
-
-        return new AverageTimeToRankResult(avgDays, _targetRank);
+        return new RankProgression(rankGroup.Key, avgDays);
     }
 }
 
+public class TimeToPromotionCalculator
+{
+    public double? Calculate(
+        PromotionEvent promotion,
+        List<EnrollmentEvent> enrollments)
+    {
+        var enrollment = enrollments
+            .Where(e => e.StudentId == promotion.StudentId && e.ProgramId == promotion.ProgramId)
+            .OrderBy(e => e.OccurredAt)
+            .FirstOrDefault();
+
+        return enrollment != null
+            ? (promotion.OccurredAt - enrollment.OccurredAt).TotalDays
+            : null;
+    }
+}
 public class MonthlyTestActivityCalculator : IProgressionAnalyticsCalculator
 {
+    private readonly IStudentProgressionEventService _eventService;
+
+    public MonthlyTestActivityCalculator(IStudentProgressionEventService eventService)
+    {
+        _eventService = eventService;
+    }
+
     public async Task<IAnalyticsResult> Calculate(
         IQueryable<StudentProgressionEventRecord> events,
         int? programId,
         CancellationToken cancellationToken)
     {
-        var testEvents = await events
-            .AsNoTracking()
-            .Where(e => e.EventType == nameof(TestAttemptEventData))
-            .Where(e => !programId.HasValue || e.ProgramId == programId.Value)
-            .Select(e => e.OccurredAt)
-            .ToListAsync(cancellationToken);
+        var testEvents = await _eventService.GetTestAttemptEvents(programId, cancellationToken);
 
         var testsByMonth = testEvents
-            .GroupBy(t => new { t.Year, t.Month })
+            .GroupBy(t => new { t.OccurredAt.Year, t.OccurredAt.Month })
             .Select(g => new MonthlyTestActivity(
                 g.Key.Year,
                 g.Key.Month,
@@ -166,7 +168,6 @@ public class MonthlyTestActivityCalculator : IProgressionAnalyticsCalculator
         return new MonthlyTestActivityResult(testsByMonth);
     }
 }
-
 public class RankDistributionCalculator : IProgressionAnalyticsCalculator
 {
     private readonly AppDbContext _dbContext;
