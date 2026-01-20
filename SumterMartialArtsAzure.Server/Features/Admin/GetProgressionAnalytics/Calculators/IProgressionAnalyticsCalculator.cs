@@ -9,12 +9,12 @@ namespace SumterMartialArtsAzure.Server.Api.Features.Admin.GetProgressionAnalyti
 
 public interface IProgressionAnalyticsCalculator
 {
-    Task<IAnalyticsResult> Calculate(IQueryable<StudentProgressionEventRecord> events, int? programId, CancellationToken cancellationToken);
+    Task<IAnalyticsResult> Calculate(IQueryable<StudentProgressionEvent> events, int? programId, CancellationToken cancellationToken);
 }
 public class EnrollmentCountCalculator : IProgressionAnalyticsCalculator
 {
     public async Task<IAnalyticsResult> Calculate(
-        IQueryable<StudentProgressionEventRecord> events,
+        IQueryable<StudentProgressionEvent> events,
         int? programId,
         CancellationToken cancellationToken)
     {
@@ -38,7 +38,7 @@ public class TestStatisticsCalculator : IProgressionAnalyticsCalculator
         _eventService = eventService;
     }
     public async Task<IAnalyticsResult> Calculate(
-        IQueryable<StudentProgressionEventRecord> events,
+        IQueryable<StudentProgressionEvent> events,
         int? programId,
         CancellationToken cancellationToken)
     {
@@ -60,7 +60,7 @@ public class TestStatisticsCalculator : IProgressionAnalyticsCalculator
 public class PromotionCountCalculator : IProgressionAnalyticsCalculator
 {
     public async Task<IAnalyticsResult> Calculate(
-        IQueryable<StudentProgressionEventRecord> events,
+        IQueryable<StudentProgressionEvent> events,
         int? programId,
         CancellationToken cancellationToken)
     {
@@ -88,7 +88,7 @@ public class AverageTimeToRankCalculator : IProgressionAnalyticsCalculator
     }
 
     public async Task<IAnalyticsResult> Calculate(
-        IQueryable<StudentProgressionEventRecord> events,
+        IQueryable<StudentProgressionEvent> events,
         int? programId,
         CancellationToken cancellationToken)
     {
@@ -148,7 +148,7 @@ public class MonthlyTestActivityCalculator : IProgressionAnalyticsCalculator
     }
 
     public async Task<IAnalyticsResult> Calculate(
-        IQueryable<StudentProgressionEventRecord> events,
+        IQueryable<StudentProgressionEvent> events,
         int? programId,
         CancellationToken cancellationToken)
     {
@@ -178,7 +178,7 @@ public class RankDistributionCalculator : IProgressionAnalyticsCalculator
     }
 
     public async Task<IAnalyticsResult> Calculate(
-        IQueryable<StudentProgressionEventRecord> events,
+        IQueryable<StudentProgressionEvent> events,
         int? programId,
         CancellationToken cancellationToken)
     {

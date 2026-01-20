@@ -1,10 +1,7 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.EntityFrameworkCore.Internal;
 using SumterMartialArtsAzure.Server.Domain;
 using SumterMartialArtsAzure.Server.Domain.Common;
-using SumterMartialArtsAzure.Server.Domain.Entities;
 using SumterMartialArtsAzure.Server.Domain.Events;
 using SumterMartialArtsAzure.Server.Domain.ValueObjects;
 
@@ -24,7 +21,7 @@ public class AppDbContext : DbContext
     public DbSet<Instructor> Instructors => Set<Instructor>();
     public DbSet<PrivateLessonRequest> PrivateLessonRequests => Set<PrivateLessonRequest>();
     public DbSet<Student> Students => Set<Student>();
-    public DbSet<StudentProgressionEventRecord> StudentProgressionEvents => Set<StudentProgressionEventRecord>();
+    public DbSet<StudentProgressionEvent> StudentProgressionEvents => Set<StudentProgressionEvent>();
     public DbSet<User> Users => Set<User>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
     public DbSet<EmailTemplate> EmailTemplates => Set<EmailTemplate>();

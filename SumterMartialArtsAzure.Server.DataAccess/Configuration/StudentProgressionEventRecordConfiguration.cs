@@ -4,9 +4,9 @@ using SumterMartialArtsAzure.Server.Domain.Events;
 
 namespace SumterMartialArtsAzure.Server.DataAccess.Configuration;
 
-public class StudentProgressionEventRecordConfiguration : IEntityTypeConfiguration<StudentProgressionEventRecord>
+public class StudentProgressionEventRecordConfiguration : IEntityTypeConfiguration<StudentProgressionEvent>
 {
-    public void Configure(EntityTypeBuilder<StudentProgressionEventRecord> builder)
+    public void Configure(EntityTypeBuilder<StudentProgressionEvent> builder)
     {
         builder.HasKey(e => e.EventId);
 
