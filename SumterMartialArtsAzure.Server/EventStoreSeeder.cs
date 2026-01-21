@@ -16,7 +16,7 @@ public static class EventStoreSeeder
         if (!context.Students.Any())
             throw new InvalidOperationException("Students must be seeded before Event Store");
 
-        var events = new List<StudentProgressionEventRecord>();
+        var events = new List<StudentProgressionEvent>();
 
         // Get students and programs
         var sarahJohnson = context.Students.First(s => s.Email == "sarah.j@email.com");
@@ -346,14 +346,14 @@ public static class EventStoreSeeder
     }
 
     // Helper methods for creating events
-    private static StudentProgressionEventRecord CreateEvent<T>(
+    private static StudentProgressionEvent CreateEvent<T>(
         int studentId, int programId, string programName, DateTime occurredAt, int version,
         T eventData) where T : class
     {
         var eventType = typeof(T).Name;
         var eventJson = JsonSerializer.Serialize(eventData);
 
-        return new StudentProgressionEventRecord
+        return new StudentProgressionEvent
         {
             EventId = Guid.NewGuid(),
             StudentId = studentId,
@@ -365,7 +365,7 @@ public static class EventStoreSeeder
         };
     }
 
-    private static StudentProgressionEventRecord CreateTestEvent(
+    private static StudentProgressionEvent CreateTestEvent(
         int studentId, int programId, string programName, string rankTested,
         bool passed, string notes, DateTime testDate, int instructorId, int version)
     {
@@ -381,7 +381,7 @@ public static class EventStoreSeeder
         return CreateEvent(studentId, programId, programName, testDate, version, testEvent);
     }
 
-    private static StudentProgressionEventRecord CreatePromotionEvent(
+    private static StudentProgressionEvent CreatePromotionEvent(
         int studentId, int programId, string programName,
         string fromRank, string toRank, string reason,
         DateTime promotedAt, int instructorId, int version)

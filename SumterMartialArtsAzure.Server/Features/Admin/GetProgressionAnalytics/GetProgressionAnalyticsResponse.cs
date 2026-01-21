@@ -1,4 +1,6 @@
-﻿namespace SumterMartialArtsAzure.Server.Api.Features.Admin.GetProgressionAnalytics;
+﻿using SumterMartialArtsAzure.Server.Api.Features.Admin.GetProgressionAnalytics.AnalyticsResults;
+
+namespace SumterMartialArtsAzure.Server.Api.Features.Admin.GetProgressionAnalytics;
 
 public record GetProgressionAnalyticsResponse(
     int TotalEnrollments,
@@ -7,7 +9,7 @@ public record GetProgressionAnalyticsResponse(
     int FailedTests,
     double PassRate,
     int TotalPromotions,
-    double AverageDaysToBlue,
+    List<RankProgression> RankProgressions,
     List<MonthlyTestActivity> MostActiveTestingMonths,
     List<RankDistribution> CurrentRankDistribution
 );

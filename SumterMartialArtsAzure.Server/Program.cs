@@ -7,6 +7,7 @@ using Microsoft.OpenApi.Models;
 using SumterMartialArtsAzure.Server.Api;
 using SumterMartialArtsAzure.Server.Api.Behaviors;
 using SumterMartialArtsAzure.Server.Api.EndpointConfigurations;
+using SumterMartialArtsAzure.Server.Api.Features.Admin.GetProgressionAnalytics.Calculators;
 using SumterMartialArtsAzure.Server.Api.Features.Auth.Login;
 using SumterMartialArtsAzure.Server.Api.Features.PrivateLessons.GetPrivateLessons.Filters;
 using SumterMartialArtsAzure.Server.Api.Middleware;
@@ -67,6 +68,15 @@ builder.Services.AddTransient<IEventProjector, TestAttemptEventProjector>();
 builder.Services.AddTransient<IPrivateLessonFilter, PendingLessonsFilter>();
 builder.Services.AddTransient<IPrivateLessonFilter, RecentLessonsFilter>();
 builder.Services.AddTransient<IPrivateLessonFilter, AllLessonsFilter>();
+builder.Services.AddTransient<IProgressionAnalyticsCalculator, EnrollmentCountCalculator>();
+builder.Services.AddTransient<IProgressionAnalyticsCalculator, TestStatisticsCalculator>();
+builder.Services.AddTransient<IProgressionAnalyticsCalculator, PromotionCountCalculator>();
+builder.Services.AddTransient<IProgressionAnalyticsCalculator, MonthlyTestActivityCalculator>();
+builder.Services.AddTransient<IProgressionAnalyticsCalculator, RankDistributionCalculator>();
+builder.Services.AddTransient<IProgressionAnalyticsCalculator, AverageTimeToRankCalculator>();
+builder.Services.AddTransient<IStudentProgressionEventService, StudentProgressionEventService>();
+builder.Services.AddTransient<RankProgressionCalculator>();
+builder.Services.AddTransient<TimeToPromotionCalculator>();
 
 builder.Services.AddHealthChecks();
 builder.Services.AddCors(options =>

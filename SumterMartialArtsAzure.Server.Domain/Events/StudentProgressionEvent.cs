@@ -2,7 +2,7 @@
 
 namespace SumterMartialArtsAzure.Server.Domain.Events;
 
-public record StudentProgressionEventRecord
+public record StudentProgressionEvent
 {
     public Guid EventId { get; set; }
     public int StudentId { get; set; }
@@ -36,6 +36,11 @@ public class PromotionEventData
     public string Reason { get; set; } = string.Empty;
 }
 
+// Helper records for cleaner handling
+public record EnrollmentEvent(int StudentId, int ProgramId, DateTime OccurredAt, EnrollmentEventData Data);
+public record PromotionEvent(int StudentId, int ProgramId, DateTime OccurredAt, PromotionEventData Data);
+public record TestAttemptEvent(int StudentId, int ProgramId, DateTime OccurredAt, TestAttemptEventData Data);
+
 public record StudentProgressionState
 {
     public string CurrentRank { get; init; } = "Not Enrolled";
@@ -47,13 +52,13 @@ public record StudentProgressionState
 public interface IEventProjector
 {
     string EventType { get; }
-    StudentProgressionState Project(StudentProgressionEventRecord evt, StudentProgressionState currentState);
+    StudentProgressionState Project(StudentProgressionEvent evt, StudentProgressionState currentState);
 }
 public abstract class EventProjectorBase<TEventData> : IEventProjector
 {
     public abstract string EventType { get; }
 
-    public StudentProgressionState Project(StudentProgressionEventRecord evt, StudentProgressionState currentState)
+    public StudentProgressionState Project(StudentProgressionEvent evt, StudentProgressionState currentState)
     {
         var data = JsonSerializer.Deserialize<TEventData>(evt.EventData);
         return data == null
@@ -63,7 +68,7 @@ public abstract class EventProjectorBase<TEventData> : IEventProjector
 
     protected abstract StudentProgressionState ProjectEvent(
         TEventData data,
-        StudentProgressionEventRecord evt,
+        StudentProgressionEvent evt,
         StudentProgressionState currentState);
 }
 public class EnrollmentEventProjector : EventProjectorBase<EnrollmentEventData>
@@ -72,7 +77,7 @@ public class EnrollmentEventProjector : EventProjectorBase<EnrollmentEventData>
 
     protected override StudentProgressionState ProjectEvent(
         EnrollmentEventData data,
-        StudentProgressionEventRecord evt,
+        StudentProgressionEvent evt,
         StudentProgressionState currentState)
     {
         return currentState with
@@ -89,7 +94,7 @@ public class PromotionEventProjector : EventProjectorBase<PromotionEventData>
 
     protected override StudentProgressionState ProjectEvent(
         PromotionEventData data,
-        StudentProgressionEventRecord evt,
+        StudentProgressionEvent evt,
         StudentProgressionState currentState)
     {
         return currentState with
@@ -107,7 +112,7 @@ public class TestAttemptEventProjector : EventProjectorBase<TestAttemptEventData
 
     protected override StudentProgressionState ProjectEvent(
         TestAttemptEventData data,
-        StudentProgressionEventRecord evt,
+        StudentProgressionEvent evt,
         StudentProgressionState currentState)
     {
         return currentState with

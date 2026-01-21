@@ -19,6 +19,7 @@ public class GetStudentEventStreamHandler
         CancellationToken cancellationToken)
     {
         var events = await _dbContext.StudentProgressionEvents
+            .AsNoTracking()
             .Where(e => e.StudentId == request.StudentId && e.ProgramId == request.ProgramId)
             .OrderBy(e => e.Version)
             .Select(e => new GetStudentEventStreamResponse(

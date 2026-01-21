@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using SumterMartialArtsAzure.Server.DataAccess;
 using SumterMartialArtsAzure.Server.Domain;
 using SumterMartialArtsAzure.Server.Domain.Events;
-using SumterMartialArtsAzure.Server.Services;
 using SumterMartialArtsAzure.Server.Services.Email;
 using SumterMartialArtsAzure.Server.Services.Email.ContentBuilders;
 using SumterMartialArtsAzure.Server.Services.Email.ContentBuilders.Constants;

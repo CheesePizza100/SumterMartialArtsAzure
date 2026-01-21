@@ -25,6 +25,7 @@ public class GetInstructorProfileHandler
             throw new UnauthorizedAccessException("User is not associated with an instructor");
 
         var instructor = await _dbContext.Instructors
+            .AsNoTracking()
             .Include(i => i.Programs)
             .Include(i => i.ClassSchedule)
             .FirstOrDefaultAsync(i => i.Id == instructorId.Value, cancellationToken);
