@@ -78,6 +78,8 @@ builder.Services.AddTransient<IStudentProgressionEventService, StudentProgressio
 builder.Services.AddTransient<RankProgressionCalculator>();
 builder.Services.AddTransient<TimeToPromotionCalculator>();
 
+builder.Services.AddApplicationInsightsTelemetry();
+
 builder.Services.AddHealthChecks();
 builder.Services.AddCors(options =>
 {
