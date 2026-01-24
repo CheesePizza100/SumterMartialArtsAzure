@@ -6,7 +6,58 @@ A full-stack web application for managing martial arts programs, instructors, st
 
 ---
 
-## Table of Contents
+## Overview
+
+This project demonstrates enterprise-level backend architecture deployed as a cloud-native application on Microsoft Azure using managed PaaS services. It combines modern backend and frontend frameworks with automated CI/CD pipelines and production-ready cloud infrastructure.
+
+---
+
+## Cloud Architecture Highlights (Azure)
+
+- Deployed a full-stack application on **Microsoft Azure** using managed PaaS services
+- Hosted Angular SPA on **Azure Static Web Apps** with built-in HTTPS and CDN
+- Hosted .NET 8 Web API on **Azure App Service (Linux)** with zero server management
+- Implemented **Azure SQL Database** for transactional data and event store
+- Automated deployments with **GitHub Actions CI/CD pipelines**
+- Applied **EF Core migrations automatically during deployment**
+- Managed secrets and configuration using **Azure App Service settings**
+- Designed for **low-cost, production-ready cloud hosting** (Free + Basic tiers)
+
+---
+
+## Why This Project Stands Out
+
+This project goes beyond CRUD and tutorials by demonstrating how **real systems are designed and deployed in the cloud**:
+
+- Event Sourcing with full audit history and time-travel queries
+- CQRS with MediatR for clean separation of reads and writes
+- Advanced OOP & DDD with rich domain models and strict encapsulation
+- CI/CD with database migrations (no manual schema updates)
+- Cloud-native architecture using Azure-managed services
+- Production concerns addressed: versioning, concurrency, analytics, audit trails
+
+---
+
+## Architecture
+
+Angular SPA  
+(Azure Static Web Apps)  
+        │  
+        │ HTTPS  
+        ▼  
+.NET 8 Web API  
+(Azure App Service - Linux)  
+        │  
+        │ EF Core  
+        ▼  
+Azure SQL Database  
+(Read Models + Event Store)  
+
+CI/CD powered by GitHub Actions with automated builds, migrations, and deployments.
+
+---
+
+## Technical Details
 
 - [Overview](#overview)
 - [Advanced Design Patterns](#advanced-design-patterns)
