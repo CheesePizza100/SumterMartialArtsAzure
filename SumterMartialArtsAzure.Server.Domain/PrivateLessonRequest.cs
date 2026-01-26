@@ -56,15 +56,7 @@ public class PrivateLessonRequest : Entity
         };
 
         // Raise domain event
-        request.AddDomainEvent(new PrivateLessonRequestCreated
-        {
-            RequestId = request.Id,
-            InstructorId = request.InstructorId,
-            StudentName = request.StudentName,
-            StudentEmail = request.StudentEmail,
-            RequestedStart = request.RequestedLessonTime.Start,
-            RequestedEnd = request.RequestedLessonTime.End
-        }); 
+        request.AddDomainEvent(new PrivateLessonRequestCreated(request.Id, request.InstructorId, request.StudentName, request.StudentEmail, request.RequestedLessonTime.Start, request.RequestedLessonTime.End)); 
         return request;
     }
 
@@ -80,15 +72,7 @@ public class PrivateLessonRequest : Entity
         Status = RequestStatus.Approved;
 
         // Raise domain event
-        AddDomainEvent(new PrivateLessonRequestApproved
-        {
-            RequestId = Id,
-            InstructorId = InstructorId,
-            StudentName = StudentName,
-            StudentEmail = StudentEmail,
-            RequestedStart = RequestedLessonTime.Start,
-            RequestedEnd = RequestedLessonTime.End
-        });
+        AddDomainEvent(new PrivateLessonRequestApproved(Id, InstructorId, StudentName, StudentEmail, RequestedLessonTime.Start, RequestedLessonTime.End));
     }
 
     /// <summary>
@@ -104,14 +88,7 @@ public class PrivateLessonRequest : Entity
         RejectionReason = reason;
 
         // Raise domain event
-        AddDomainEvent(new PrivateLessonRequestRejected
-        {
-            RequestId = Id,
-            InstructorId = InstructorId,
-            StudentName = StudentName,
-            StudentEmail = StudentEmail,
-            Reason = reason
-        });
+        AddDomainEvent(new PrivateLessonRequestRejected(Id, InstructorId, StudentName, StudentEmail, reason));
     }
 
     /// <summary>
