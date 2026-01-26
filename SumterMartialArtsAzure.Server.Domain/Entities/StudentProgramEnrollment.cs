@@ -51,11 +51,15 @@ public class StudentProgramEnrollment
         Attendance = Attendance.RecordAttendance(classesAttended);
     }
 
-    public void PromoteToRank(string newRank, string notes, DateTime testDate)
+    public string PromoteToRank(string newRank, string notes, DateTime testDate)
     {
+        var previousRank = CurrentRank;
+
         CurrentRank = newRank;
         InstructorNotes = notes;
         LastTestDate = testDate;
+
+        return previousRank;
     }
 
     public void UpdateNotes(string notes)
