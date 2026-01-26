@@ -2,19 +2,21 @@
 
 namespace SumterMartialArtsAzure.Server.Domain.Events;
 
-public class StudentDeactivated : IDomainEvent
+public record StudentDeactivated(
+    int StudentId,
+    string StudentName,
+    DateTime DeactivatedAt
+) : IDomainEvent
 {
-    public int StudentId { get; init; }
-    public string StudentName { get; init; } = string.Empty;
-    public DateTime DeactivatedAt { get; init; }
-
     public DateTime OccurredOn { get; init; } = DateTime.UtcNow;
 }
 
-public class StudentReactivated : IDomainEvent
+
+public record StudentReactivated(
+    int StudentId,
+    string StudentName,
+    DateTime ReactivatedAt
+) : IDomainEvent
 {
-    public int StudentId { get; init; }
-    public string StudentName { get; init; } = string.Empty;
-    public DateTime ReactivatedAt { get; init; }
     public DateTime OccurredOn { get; init; } = DateTime.UtcNow;
 }
