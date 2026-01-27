@@ -16,6 +16,8 @@ using SumterMartialArtsAzure.Server.Domain.Events;
 using SumterMartialArtsAzure.Server.Domain.Services;
 using SumterMartialArtsAzure.Server.Services;
 using SumterMartialArtsAzure.Server.Services.Email;
+using SumterMartialArtsAzure.Server.Services.Telemetry;
+using SumterMartialArtsAzure.Server.Services.Telemetry.Enrichers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +25,26 @@ builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddTransient(
+    typeof(INotificationHandler<>),
+    typeof(DomainEventTelemetryHandler<>)
+);
+
+builder.Services.AddTransient<IDomainEventTelemetryEnricher<StudentCreated>, StudentCreatedTelemetryEnricher>();
+builder.Services.AddTransient<IDomainEventTelemetryEnricher<StudentContactInfoUpdated>, StudentContactInfoUpdatedTelemetryEnricher>();
+builder.Services.AddTransient<IDomainEventTelemetryEnricher<StudentPromoted>, StudentPromotedTelemetryEnricher>();
+builder.Services.AddTransient<IDomainEventTelemetryEnricher<StudentWithdrewFromProgram>, StudentWithdrewFromProgramTelemetryEnricher>();
+builder.Services.AddTransient<IDomainEventTelemetryEnricher<StudentTestRecorded>, StudentTestRecordedTelemetryEnricher>();
+builder.Services.AddTransient<IDomainEventTelemetryEnricher<StudentAttendanceRecorded>, StudentAttendanceRecordedTelemetryEnricher>();
+builder.Services.AddTransient<IDomainEventTelemetryEnricher<StudentEnrolledInProgram>, StudentEnrolledInProgramTelemetryEnricher>();
+builder.Services.AddTransient<IDomainEventTelemetryEnricher<InstructorLoginCreated>, InstructorLoginCreatedTelemetryEnricher>();
+builder.Services.AddTransient<IDomainEventTelemetryEnricher<PrivateLessonRequestCreated>, PrivateLessonRequestCreatedTelemetryEnricher>();
+builder.Services.AddTransient<IDomainEventTelemetryEnricher<PrivateLessonRequestApproved>, PrivateLessonRequestApprovedTelemetryEnricher>();
+builder.Services.AddTransient<IDomainEventTelemetryEnricher<PrivateLessonRequestRejected>, PrivateLessonRequestRejectedTelemetryEnricher>();
+builder.Services.AddTransient<IDomainEventTelemetryEnricher<StudentDeactivated>, StudentDeactivatedTelemetryEnricher>();
+builder.Services.AddTransient<IDomainEventTelemetryEnricher<StudentReactivated>, StudentReactivatedTelemetryEnricher>();
+builder.Services.AddTransient<IDomainEventTelemetryEnricher<StudentLoginCreated>, StudentLoginCreatedTelemetryEnricher>();
 
 builder.Services.AddMediatR(cfg =>
 {
