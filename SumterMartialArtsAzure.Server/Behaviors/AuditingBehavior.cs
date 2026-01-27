@@ -22,19 +22,18 @@ public class AuditingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest,
         RequestHandlerDelegate<TResponse> next,
         CancellationToken cancellationToken)
     {
-        if (!_currentUserService.IsAuthenticated())
-        {
-            return await next();
-        }
-
         var response = await next();
 
-        await _auditService.LogAsync(
-            request.Action,
-            request.EntityType,
-            response.EntityId,
-            response.GetAuditDetails()
-        );
+        // Only audit if we have a valid entity
+        if (!string.IsNullOrEmpty(response.EntityId) && response.EntityId != Guid.Empty.ToString())
+        {
+            await _auditService.LogAsync(
+                request.Action,
+                request.EntityType,
+                response.EntityId,
+                response.GetAuditDetails()
+            );
+        }
 
         return response;
     }
