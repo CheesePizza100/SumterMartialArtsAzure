@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../../environments/environment.development';
+
 export interface StudentProfile {
   id: number;
   name: string;
@@ -55,19 +57,19 @@ export interface PrivateLessonRequest {
   providedIn: 'root'
 })
 export class StudentService {
-  private readonly apiUrl = '/api/students';
+  private baseUrl = `${environment.apiUrl}/api`;
 
   constructor(private http: HttpClient) { }
 
   getMyProfile(): Observable<StudentProfile> {
-    return this.http.get<StudentProfile>(`${this.apiUrl}/me`);
+    return this.http.get<StudentProfile>(`${this.baseUrl}/students/me`);
   }
 
   updateMyContactInfo(request: UpdateContactInfoRequest): Observable<any> {
-    return this.http.put(`${this.apiUrl}/me`, request);
+    return this.http.put(`${this.baseUrl}/students/me`, request);
   }
 
   getMyPrivateLessonRequests(): Observable<PrivateLessonRequest[]> {
-    return this.http.get<PrivateLessonRequest[]>(`${this.apiUrl}/me/private-lessons`);
+    return this.http.get<PrivateLessonRequest[]>(`${this.baseUrl}/students/me/private-lessons`);
   }
 }
