@@ -47,14 +47,7 @@ public class Student : Entity
             Phone = phone,
         };
 
-        student.AddDomainEvent(new StudentCreated
-        {
-            StudentId = student.Id,
-            Name = name,
-            Email = email,
-            Phone = phone,
-            CreatedAt = DateTime.UtcNow
-        });
+        student.AddDomainEvent(new StudentCreated(student.Id, name, email, phone, DateTime.UtcNow));
 
         return student;
     }
@@ -77,15 +70,7 @@ public class Student : Entity
 
         _programEnrollments.Add(enrollment);
 
-        AddDomainEvent(new StudentEnrolledInProgram
-        {
-            StudentId = Id,
-            StudentName = Name,
-            ProgramId = programId,
-            ProgramName = programName,
-            InitialRank = initialRank,
-            EnrolledAt = DateTime.UtcNow
-        });
+        AddDomainEvent(new StudentEnrolledInProgram(Id, Name, programId, programName, initialRank, DateTime.UtcNow));
 
         return enrollment;
     }
@@ -138,7 +123,19 @@ public class Student : Entity
         // If passed, promote student in the enrollment
         if (passed)
         {
-            enrollment.PromoteToRank(rankAchieved, notes, testDate ?? DateTime.UtcNow);
+            var promotedAt = testDate ?? DateTime.UtcNow;
+            var previousRank = enrollment.PromoteToRank(rankAchieved, notes, promotedAt);
+            AddDomainEvent(
+                new StudentPromoted(
+                    StudentId: Id,
+                    StudentName: Name,
+                    ProgramId: programId,
+                    ProgramName: programName,
+                    PreviousRank: previousRank,
+                    NewRank: rankAchieved,
+                    PromotedAt: promotedAt,
+                    Notes: notes
+                ));
         }
 
         return testResult;
@@ -175,16 +172,7 @@ public class Student : Entity
 
         enrollment.RecordAttendance(classesAttended);
 
-        AddDomainEvent(new StudentAttendanceRecorded
-        {
-            StudentId = Id,
-            ProgramId = programId,
-            StudentName = Name,
-            ClassesAttended = classesAttended,
-            NewTotal = enrollment.Attendance.Total,
-            NewAttendanceRate = enrollment.Attendance.AttendanceRate,
-            RecordedAt = DateTime.UtcNow
-        });
+        AddDomainEvent(new StudentAttendanceRecorded(Id, programId, Name, classesAttended, enrollment.Attendance.Total, enrollment.Attendance.AttendanceRate, DateTime.UtcNow));
     }
 
     public void UpdateContactInfo(string? name = null, string? email = null, string? phone = null)
@@ -201,6 +189,13 @@ public class Student : Entity
 
         if (!string.IsNullOrWhiteSpace(phone))
             Phone = phone;
+
+        AddDomainEvent(
+            new StudentContactInfoUpdated(
+                Id,
+                Name,
+                Email,
+                DateTime.UtcNow));
     }
 
     /// <summary>
@@ -261,12 +256,7 @@ public class Student : Entity
             enrollment.Deactivate();
         }
 
-        AddDomainEvent(new StudentDeactivated
-        {
-            StudentId = Id,
-            StudentName = Name,
-            DeactivatedAt = DateTime.UtcNow
-        });
+        AddDomainEvent(new StudentDeactivated(Id, Name, DateTime.UtcNow));
     }
 
     public void Reactivate()
@@ -276,11 +266,6 @@ public class Student : Entity
 
         IsActive = true;
 
-        AddDomainEvent(new StudentReactivated
-        {
-            StudentId = Id,
-            StudentName = Name,
-            ReactivatedAt = DateTime.UtcNow
-        });
+        AddDomainEvent(new StudentReactivated(Id, Name, DateTime.UtcNow));
     }
 }

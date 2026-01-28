@@ -23,11 +23,11 @@ public class LogoutCommandHandler : IRequestHandler<LogoutCommand, LogoutCommand
 
     public Task<LogoutCommandResponse> Handle(LogoutCommand request, CancellationToken cancellationToken)
     {
-        if (!_currentUserService.IsAuthenticated() || _currentUserService.GetUserId() == Guid.Empty)
-        {
-            throw new UnauthorizedAccessException("User not authenticated");
-        }
+        // If not authenticated, return empty Guid (audit will be skipped)
+        var userId = _currentUserService.IsAuthenticated()
+            ? _currentUserService.GetUserId()
+            : Guid.Empty;
 
-        return Task.FromResult(new LogoutCommandResponse(_currentUserService.GetUserId()));
+        return Task.FromResult(new LogoutCommandResponse(userId));
     }
 }

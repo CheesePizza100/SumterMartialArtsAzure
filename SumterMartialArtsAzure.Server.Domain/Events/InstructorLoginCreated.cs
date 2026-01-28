@@ -2,12 +2,13 @@
 
 namespace SumterMartialArtsAzure.Server.Domain.Events;
 
-public class InstructorLoginCreated : IDomainEvent
+public record InstructorLoginCreated(
+    int InstructorId,
+    string InstructorName,
+    string InstructorEmail,
+    string Username,
+    string TemporaryPassword
+) : IDomainEvent
 {
-    public int InstructorId { get; set; }
-    public string InstructorName { get; set; } = string.Empty;
-    public string InstructorEmail { get; set; } = string.Empty;
-    public string Username { get; set; } = string.Empty;
-    public string TemporaryPassword { get; set; } = string.Empty;
     public DateTime OccurredOn { get; init; } = DateTime.UtcNow;
 }

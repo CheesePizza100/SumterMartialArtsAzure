@@ -55,15 +55,7 @@ public class User : Entity
             CreatedAt = DateTime.UtcNow
         };
 
-        user.AddDomainEvent(new StudentLoginCreated
-        {
-            StudentId = studentId,
-            StudentName = studentName,
-            StudentEmail = email,
-            UserName = username,
-            TemporaryPassword = temporaryPassword,
-            CreatedAt = DateTime.UtcNow
-        });
+        user.AddDomainEvent(new StudentLoginCreated(studentId, studentName, email, username, temporaryPassword, DateTime.UtcNow));
 
         return user;
     }
@@ -89,14 +81,7 @@ public class User : Entity
             CreatedAt = DateTime.UtcNow
         };
 
-        user.AddDomainEvent(new InstructorLoginCreated
-        {
-            InstructorId = instructorId,
-            InstructorName = instructorName,
-            InstructorEmail = email,
-            Username = username,
-            TemporaryPassword = temporaryPassword,
-        });
+        user.AddDomainEvent(new InstructorLoginCreated(instructorId, instructorName, email, username, temporaryPassword));
 
         return user;
     }
