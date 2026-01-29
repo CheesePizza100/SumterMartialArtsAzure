@@ -9,16 +9,16 @@ import { AdminEmailTemplateEditComponent } from './components/admin-email-templa
 export const ADMIN_ROUTES: Routes = [
   {
     path: '',
-    redirectTo: 'private-lessons',
+    redirectTo: 'students',
     pathMatch: 'full'
-  },
-  {
-    path: 'private-lessons',
-    component: AdminPrivateLessonsComponent
   },
   {
     path: 'students',
     component: AdminStudentsComponent
+  },
+  {
+    path: 'private-lessons',
+    component: AdminPrivateLessonsComponent
   },
   {
     path: 'instructors',
