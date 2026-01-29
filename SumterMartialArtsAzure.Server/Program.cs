@@ -26,11 +26,6 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddTransient(
-    typeof(INotificationHandler<>),
-    typeof(DomainEventTelemetryHandler<>)
-);
-
 builder.Services.AddTransient<IDomainEventTelemetryEnricher<StudentCreated>, StudentCreatedTelemetryEnricher>();
 builder.Services.AddTransient<IDomainEventTelemetryEnricher<StudentContactInfoUpdated>, StudentContactInfoUpdatedTelemetryEnricher>();
 builder.Services.AddTransient<IDomainEventTelemetryEnricher<StudentPromoted>, StudentPromotedTelemetryEnricher>();
@@ -49,6 +44,7 @@ builder.Services.AddTransient<IDomainEventTelemetryEnricher<StudentLoginCreated>
 builder.Services.AddMediatR(cfg =>
 {
     cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
+    cfg.RegisterServicesFromAssembly(typeof(DomainEventTelemetryHandler<>).Assembly);
 
     // Order matters! These run in the order registered:
     // 1. Logging (first - logs everything)
@@ -62,6 +58,8 @@ builder.Services.AddMediatR(cfg =>
     cfg.NotificationPublisherType = typeof(LoggingNotificationPublisher);
 });
 
+builder.Services.AddDomainEventTelemetry(typeof(StudentCreated).Assembly);
+
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -69,6 +67,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 var emailSettings = builder.Configuration.GetSection("EmailSettings").Get<EmailSettings>()
                     ?? throw new InvalidOperationException("EmailSettings not configured");
 
+// to access smtp4dev UI
+// cmd prompt: smtp4dev localhost:5000
 builder.Services
     .AddFluentEmail(emailSettings.FromEmail, emailSettings.FromName)
     .AddSmtpSender(
