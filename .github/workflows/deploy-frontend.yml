@@ -1,5 +1,4 @@
-﻿name: Deploy Frontend to Azure Static Web Apps
-
+name: Deploy Frontend to Azure Static Web Apps
 on:
   push:
     branches:
@@ -7,7 +6,6 @@ on:
     paths:
       - 'sumtermartialartsazure.client/**'
   workflow_dispatch:
-
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -17,6 +15,21 @@ jobs:
     - uses: actions/checkout@v4
       with:
         submodules: true
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        cache-dependency-path: sumtermartialartsazure.client/package-lock.json
+
+    - name: Install dependencies
+      working-directory: sumtermartialartsazure.client
+      run: npm ci
+
+    - name: Run tests
+      working-directory: sumtermartialartsazure.client
+      run: npx ng test --watch=false --browsers=ChromeHeadless
 
     - name: Build And Deploy
       uses: Azure/static-web-apps-deploy@v1
