@@ -23,11 +23,13 @@ jobs:
         dotnet publish -c Release -o ${{github.workspace}}/publish
     
     - name: Run database migrations
+      env:
+        CONNECTION_STRING: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
       run: |
         dotnet new tool-manifest || true
         dotnet tool install dotnet-ef --version 8.0.0
         cd SumterMartialArtsAzure.Server.DataAccess
-        dotnet ef database update --project . --startup-project ../SumterMartialArtsAzure.Server --connection "${{ secrets.AZURE_SQL_CONNECTION_STRING }}"
+        dotnet ef database update --project . --startup-project ../SumterMartialArtsAzure.Server --connection "$CONNECTION_STRING"
     
     - name: Login to Azure
       uses: azure/login@v1
