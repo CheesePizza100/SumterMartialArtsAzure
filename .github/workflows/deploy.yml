@@ -3,6 +3,11 @@ on:
   push:
     branches:
       - master
+    paths:
+      - 'SumterMartialArtsAzure.Server/**'
+      - 'SumterMartialArtsAzure.Server.DataAccess/**'
+      - 'SumterMartialArtsAzure.Server.Domain/**'
+      - 'SumterMartialArtsAzure.Server.Services/**'
   workflow_dispatch:
 jobs:
   build-and-deploy:
